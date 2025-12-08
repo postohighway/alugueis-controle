@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Aluguéis & Acerto Juliano</title>
+  <title>Aluguéis & DR Consolidado</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
@@ -396,19 +396,21 @@
       .tabs-header,
       .tab-button,
       #tab-acerto,
-      #tab-receitas {
+      #tab-receitas,
+      #tab-dr {
         display: none !important;
       }
     }
   </style>
 </head>
 <body>
-  <h1>Aluguéis & Acerto Juliano</h1>
+  <h1>Aluguéis & DR Consolidado</h1>
 
   <div class="tabs-header">
     <button class="tab-button active" id="btnTabAlugueis" onclick="showTab('alugueis')">Aluguéis + Energia</button>
     <button class="tab-button" id="btnTabAcerto" onclick="showTab('acerto')">Acerto Juliano (Lava Rápido)</button>
     <button class="tab-button" id="btnTabReceitas" onclick="showTab('receitas')">Receitas em Dinheiro</button>
+    <button class="tab-button" id="btnTabDR" onclick="showTab('dr')">DR</button>
   </div>
 
   <!-- TAB ALUGUÉIS -->
@@ -662,24 +664,85 @@
     </div>
   </div>
 
+  <!-- TAB DR CONSOLIDADO -->
+  <div id="tab-dr" class="tab-content">
+    <div class="card">
+      <h2>DR – Resultado Consolidado</h2>
+      <div class="acet-sub">
+        Junta Receitas Operacionais (DRE), Aluguéis + Energia e Receitas em Dinheiro num único resultado.
+      </div>
+
+      <div class="card">
+        <div class="acet-top-bar">
+          <div>
+            <label for="drFilterMonth">Mês (YYYY-MM)</label>
+            <input type="month" id="drFilterMonth">
+          </div>
+        </div>
+        <div class="acet-actions-top">
+          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="drSetCurrentMonth()">Hoje</button>
+        </div>
+        <div class="acet-footer-note">
+          Use os valores do seu DRE (arquivo externo) e digite abaixo.  
+          Aluguéis, energia e receitas em dinheiro são puxados automaticamente.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Dados do DRE Operacional</h2>
+
+        <label for="drReceitaOperacional">Receitas operacionais (DRE do posto) – R$</label>
+        <input type="number" id="drReceitaOperacional" step="0.01" inputmode="decimal" oninput="drUpdateInputs()">
+
+        <label for="drOutrasReceitas">Outras receitas operacionais – R$</label>
+        <input type="number" id="drOutrasReceitas" step="0.01" inputmode="decimal" oninput="drUpdateInputs()">
+
+        <label for="drResultadoCaixa">Resultado REAL em dinheiro (caixa / extrato) – R$</label>
+        <input type="number" id="drResultadoCaixa" step="0.01" inputmode="decimal" oninput="drUpdateInputs()">
+      </div>
+
+      <div class="card">
+        <h2>Resumo numérico</h2>
+        <div class="summary-table-wrapper">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th>Valor (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="drResumoTabelaBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Resumo para WhatsApp / Print</h2>
+        <div id="drResumoTexto" class="acet-resumo-box"></div>
+        <div class="acet-footer-note">
+          Este DR consolida: Operacional (DRE) + Aluguéis + Energia + Receitas em Dinheiro.  
+          A diferença mostra se o caixa real bateu com o teórico.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ---------- TABS ----------
     function showTab(tab) {
       const alugueis = document.getElementById("tab-alugueis");
       const acerto = document.getElementById("tab-acerto");
       const receitas = document.getElementById("tab-receitas");
+      const dr = document.getElementById("tab-dr");
 
       const btnAlugueis = document.getElementById("btnTabAlugueis");
       const btnAcerto = document.getElementById("btnTabAcerto");
       const btnReceitas = document.getElementById("btnTabReceitas");
+      const btnDR = document.getElementById("btnTabDR");
 
-      alugueis.classList.remove("active");
-      acerto.classList.remove("active");
-      receitas.classList.remove("active");
-
-      btnAlugueis.classList.remove("active");
-      btnAcerto.classList.remove("active");
-      btnReceitas.classList.remove("active");
+      [alugueis, acerto, receitas, dr].forEach(el => el && el.classList.remove("active"));
+      [btnAlugueis, btnAcerto, btnReceitas, btnDR].forEach(el => el && el.classList.remove("active"));
 
       if (tab === "alugueis") {
         alugueis.classList.add("active");
@@ -690,6 +753,9 @@
       } else if (tab === "receitas") {
         receitas.classList.add("active");
         btnReceitas.classList.add("active");
+      } else if (tab === "dr") {
+        dr.classList.add("active");
+        btnDR.classList.add("active");
       }
     }
 
@@ -769,10 +835,9 @@
       localStorage.setItem(key, JSON.stringify(tenantsData));
     }
 
-    // ---------- ACERTO JULIANO (AcetJuli) - FUNÇÕES E INTEGRAÇÃO ----------
+    // ---------- ACERTO JULIANO (AcetJuli) ----------
     const ACET_STORAGE_KEY = "AcetJuli_v1";
 
-    // Pré-carrega seed se estiver vazio
     function acetEnsureSeedData() {
       const raw = localStorage.getItem(ACET_STORAGE_KEY);
       if (!raw || raw === "[]") {
@@ -949,7 +1014,7 @@
         <span class="${saldoClass}" style="margin-top:4px;">${saldoText}</span>
       `;
 
-      // ----- RESUMO TIPO WHATSAPP / PRINT -----
+      // ----- RESUMO WHATSAPP -----
       let resumo = "";
 
       const mesLabel = filterMonth || "sem mês selecionado";
@@ -1046,19 +1111,19 @@
       window.print();
     }
 
-    // Totais do acerto para o mês (Débitos RF = "aluguel" do Lava Rápido; Créditos Juliano = pagamentos do aluguel)
+    // Totais do acerto para o mês (Débitos RF = "aluguel" do Lava Rápido; Créditos Juliano = pagamentos)
     function getLavaRapidoDebitoCreditoMes(monthStr) {
       if (!monthStr) return { debitos: 0, creditos: 0 };
       const data = acetLoadData();
       let debitos = 0;
-      let creditos = 0;
+      let cred = 0;
       data.forEach(t => {
         if (t.date && t.date.slice(0,7) === monthStr) {
           if (t.type === "DEBITO_RF") debitos += t.value || 0;
-          if (t.type === "CREDITO_JULIANO") creditos += t.value || 0;
+          if (t.type === "CREDITO_JULIANO") cred += t.value || 0;
         }
       });
-      return { debitos, creditos };
+      return { debitos, creditos: cred };
     }
 
     // ---------- RECEITAS EM DINHEIRO ----------
@@ -1147,7 +1212,6 @@
       renderTenants();
     }
 
-    // Cria automaticamente lançamentos de recorrentes num mês se ainda não existirem
     function recEnsureRecurringForMonth(monthStr) {
       if (!monthStr) return;
       let data = recLoadData();
@@ -1323,6 +1387,186 @@
       return { totalCreditos, totalDebitos, liquido };
     }
 
+    // ---------- DR CONSOLIDADO ----------
+    const DR_PREFIX = "DRMes_";
+
+    function drLoadMes(monthStr) {
+      if (!monthStr) return { receitaOperacional: 0, outrasReceitas: 0, resultadoCaixa: 0 };
+      const raw = localStorage.getItem(DR_PREFIX + monthStr);
+      if (!raw) return { receitaOperacional: 0, outrasReceitas: 0, resultadoCaixa: 0 };
+      try {
+        const obj = JSON.parse(raw);
+        return {
+          receitaOperacional: obj.receitaOperacional || 0,
+          outrasReceitas: obj.outrasReceitas || 0,
+          resultadoCaixa: obj.resultadoCaixa || 0
+        };
+      } catch(e) {
+        return { receitaOperacional: 0, outrasReceitas: 0, resultadoCaixa: 0 };
+      }
+    }
+
+    function drSaveMes(monthStr, data) {
+      if (!monthStr) return;
+      localStorage.setItem(DR_PREFIX + monthStr, JSON.stringify(data));
+    }
+
+    function getResumoAlugueisEnergiaMes(monthStr) {
+      if (!monthStr) return { sumAlugueis: 0, sumEnergia: 0, sumTotal: 0 };
+
+      let valorKwh = 0;
+      const cfgStr = localStorage.getItem("alugueisConfig");
+      if (cfgStr) {
+        try {
+          const cfg = JSON.parse(cfgStr);
+          valorKwh = parseFloat(cfg.valorKwh || "0") || 0;
+        } catch(e) {}
+      }
+
+      const key = "alugueisMes_" + monthStr;
+      const dataStr = localStorage.getItem(key);
+      let map = {};
+      if (dataStr) {
+        try {
+          const parsed = JSON.parse(dataStr);
+          tenantsDefault.forEach(nome => {
+            if (parsed[nome]) {
+              map[nome] = parsed[nome];
+              if (!Array.isArray(map[nome].payments)) map[nome].payments = [];
+            } else {
+              map[nome] = defaultTenantData();
+            }
+          });
+        } catch(e) {
+          tenantsDefault.forEach(nome => map[nome] = defaultTenantData());
+        }
+      } else {
+        tenantsDefault.forEach(nome => map[nome] = defaultTenantData());
+      }
+
+      const lavaTotals = getLavaRapidoDebitoCreditoMes(monthStr);
+
+      let sumAlugueis = 0;
+      let sumEnergia = 0;
+      let sumTotal = 0;
+
+      tenantsDefault.forEach(nome => {
+        let tData = map[nome];
+        if (!tData) tData = defaultTenantData();
+
+        let rent = tData.rent || 0;
+        if (nome === "Lava Rápido") {
+          rent = lavaTotals.debitos || 0;
+        }
+
+        const consumo = Math.max((tData.eEnd || 0) - (tData.eStart || 0), 0);
+        const energiaBruta = consumo * valorKwh;
+        const descontoValor = energiaBruta * ((tData.discount || 0) / 100);
+        const energiaLiquida = energiaBruta - descontoValor;
+        const totalMes = rent + energiaLiquida;
+
+        sumAlugueis += rent;
+        sumEnergia += energiaLiquida;
+        sumTotal += totalMes;
+      });
+
+      return { sumAlugueis, sumEnergia, sumTotal };
+    }
+
+    function drSetCurrentMonth() {
+      const today = new Date();
+      const monthStr = today.toISOString().slice(0,7);
+      const input = document.getElementById("drFilterMonth");
+      if (input) input.value = monthStr;
+      drRender();
+    }
+
+    function drUpdateInputs() {
+      const monthInput = document.getElementById("drFilterMonth");
+      if (!monthInput || !monthInput.value) return;
+      const m = monthInput.value;
+
+      const receitaOperacional = parseFloat(document.getElementById("drReceitaOperacional").value || "0") || 0;
+      const outrasReceitas = parseFloat(document.getElementById("drOutrasReceitas").value || "0") || 0;
+      const resultadoCaixa = parseFloat(document.getElementById("drResultadoCaixa").value || "0") || 0;
+
+      drSaveMes(m, { receitaOperacional, outrasReceitas, resultadoCaixa });
+      drRender();
+    }
+
+    function drRender() {
+      const tabelaBody = document.getElementById("drResumoTabelaBody");
+      const texto = document.getElementById("drResumoTexto");
+      const monthInput = document.getElementById("drFilterMonth");
+      if (!tabelaBody || !texto || !monthInput) return;
+
+      const mes = monthInput.value;
+      if (!mes) {
+        tabelaBody.innerHTML = `<tr><td colspan="2">Selecione um mês.</td></tr>`;
+        texto.textContent = "";
+        return;
+      }
+
+      const dadosDR = drLoadMes(mes);
+      const receitaOperacional = dadosDR.receitaOperacional || 0;
+      const outrasReceitas = dadosDR.outrasReceitas || 0;
+      const resultadoCaixa = dadosDR.resultadoCaixa || 0;
+
+      const inpRO = document.getElementById("drReceitaOperacional");
+      const inpOR = document.getElementById("drOutrasReceitas");
+      const inpCx = document.getElementById("drResultadoCaixa");
+      if (inpRO && document.activeElement !== inpRO) inpRO.value = receitaOperacional || "";
+      if (inpOR && document.activeElement !== inpOR) inpOR.value = outrasReceitas || "";
+      if (inpCx && document.activeElement !== inpCx) inpCx.value = resultadoCaixa || "";
+
+      const totalOperacional = receitaOperacional + outrasReceitas;
+
+      const resumoAlug = getResumoAlugueisEnergiaMes(mes);
+      const alugueisMaisEnergia = resumoAlug.sumTotal;
+
+      const receitasDinheiro = getReceitasLiquidasMes(mes);
+      const receitasEmDinheiroLiquido = receitasDinheiro.liquido;
+
+      const totalConsolidado = totalOperacional + alugueisMaisEnergia + receitasEmDinheiroLiquido;
+      const diferencaCaixa = resultadoCaixa - totalConsolidado;
+
+      function fmt(v) {
+        return "R$ " + (v || 0).toFixed(2).replace(".", ",");
+      }
+
+      tabelaBody.innerHTML = `
+        <tr><td>Receitas operacionais (DRE)</td><td>${fmt(receitaOperacional)}</td></tr>
+        <tr><td>Outras receitas operacionais</td><td>${fmt(outrasReceitas)}</td></tr>
+        <tr><td><strong>Total operacional (DRE)</strong></td><td><strong>${fmt(totalOperacional)}</strong></td></tr>
+        <tr><td>Aluguéis + energia (todas unidades)</td><td>${fmt(alugueisMaisEnergia)}</td></tr>
+        <tr><td>Receitas em dinheiro (líquido)</td><td>${fmt(receitasEmDinheiroLiquido)}</td></tr>
+        <tr><td><strong>Total consolidado (teórico)</strong></td><td><strong>${fmt(totalConsolidado)}</strong></td></tr>
+        <tr><td>Resultado REAL em dinheiro (caixa)</td><td>${fmt(resultadoCaixa)}</td></tr>
+        <tr><td><strong>Diferença (caixa - teórico)</strong></td><td><strong>${fmt(diferencaCaixa)}</strong></td></tr>
+      `;
+
+      let txt = "";
+      txt += "DR CONSOLIDADO – " + mes + "\n\n";
+      txt += "Receitas operacionais (DRE): " + fmt(receitaOperacional) + "\n";
+      txt += "Outras receitas operacionais: " + fmt(outrasReceitas) + "\n";
+      txt += "Total operacional (DRE): " + fmt(totalOperacional) + "\n\n";
+      txt += "Aluguéis + energia (todas unidades): " + fmt(alugueisMaisEnergia) + "\n";
+      txt += "Receitas em dinheiro (não operacionais – líquido): " + fmt(receitasEmDinheiroLiquido) + "\n\n";
+      txt += "TOTAL CONSOLIDADO (teórico): " + fmt(totalConsolidado) + "\n";
+      txt += "Resultado REAL em dinheiro (caixa): " + fmt(resultadoCaixa) + "\n";
+      txt += "Diferença (caixa - teórico): " + fmt(diferencaCaixa) + "\n";
+
+      if (diferencaCaixa > 0.005) {
+        txt += "\nSituação: entrou MAIS dinheiro do que o DR teórico indica (sobrou no caixa).";
+      } else if (diferencaCaixa < -0.005) {
+        txt += "\nSituação: entrou MENOS dinheiro do que o DR teórico indica (faltou no caixa).";
+      } else {
+        txt += "\nSituação: caixa batendo com o DR (diferença desprezível).";
+      }
+
+      texto.textContent = txt;
+    }
+
     // ---------- CÁLCULOS ALUGUÉIS ----------
     function calcTenant(tData, valorKwh, extraPagos) {
       extraPagos = extraPagos || 0;
@@ -1388,7 +1632,6 @@
 
       const quickRows = [];
 
-      // Totais do Lava Rápido vindos do AcetJuli
       const lavaTotals = currentMonth ? getLavaRapidoDebitoCreditoMes(currentMonth) : { debitos: 0, creditos: 0 };
 
       tenantsDefault.forEach((nome, i) => {
@@ -1401,8 +1644,8 @@
         let extraPagos = 0;
 
         if (nome === "Lava Rápido") {
-          displayRent = lavaTotals.debitos;   // aluguel = tudo que a RF pagou no mês
-          extraPagos = lavaTotals.creditos;   // pagamentos = tudo que o Juliano pagou no mês
+          displayRent = lavaTotals.debitos;
+          extraPagos = lavaTotals.credits || lavaTotals.creditos || 0;
         }
 
         const calc = calcTenant({ ...tData, rent: displayRent }, valorKwh, extraPagos);
@@ -1559,11 +1802,9 @@
         container.appendChild(card);
       });
 
-      // Totais gerais de receitas em dinheiro para o mês
-      const receitasMes = currentMonth ? getReceitasLiquidasMes(currentMonth) : { totalCreditos: 0, totalDebitos: 0, liquido: 0 };
-      const receitasLiquidas = receitasMes.liquido;
+      const receitasMes = currentMonth ? getReceitasLiquidasMes(currentMonth) : { liquido: 0 };
+      const receitasLiquidas = receitasMes.liquido || 0;
 
-      // Atualiza resumo geral
       const summaryBox = document.getElementById("summaryBox");
       if (tenantsDefault.length > 0) {
         summaryBox.style.display = "block";
@@ -1578,7 +1819,6 @@
         summaryBox.style.display = "none";
       }
 
-      // Atualiza resumo rápido por unidade
       const summaryUnidadesBox = document.getElementById("summaryUnidadesBox");
       const tbody = document.getElementById("summaryUnidadesBody");
       if (quickRows.length > 0) {
@@ -1598,6 +1838,9 @@
         summaryUnidadesBox.style.display = "none";
         tbody.innerHTML = "";
       }
+
+      // Atualiza DR se estiver com mês atual
+      drRender();
     }
 
     // ---------- AÇÕES ALUGUÉIS ----------
@@ -1680,7 +1923,6 @@
       saveConfig();
       renderTenants();
 
-      // sincroniza o mês do acerto (para o Lava Rápido bater)
       const acetFilterMonth = document.getElementById("acetFilterMonth");
       if (acetFilterMonth && currentMonth) {
         acetFilterMonth.value = currentMonth;
@@ -1693,14 +1935,18 @@
         recEnsureRecurringForMonth(currentMonth);
         recRender();
       }
+
+      const drFilterMonth = document.getElementById("drFilterMonth");
+      if (drFilterMonth && currentMonth) {
+        drFilterMonth.value = currentMonth;
+        drRender();
+      }
     }
 
     // ---------- INICIALIZAÇÃO GLOBAL ----------
     window.addEventListener("load", () => {
-      // Config inicial alugueis
       loadConfig();
 
-      // Define mês atual como padrão
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth() + 1).padStart(2, "0");
@@ -1718,7 +1964,7 @@
         renderTenants();
       });
 
-      // Inicializa AcetJuli
+      // AcetJuli
       acetEnsureSeedData();
 
       const today = new Date();
@@ -1736,7 +1982,7 @@
       }
       acetRender();
 
-      // Inicializa Receitas em Dinheiro
+      // Receitas em dinheiro
       const recDateInput = document.getElementById("recDateInput");
       if (recDateInput) {
         recDateInput.value = dateStr;
@@ -1752,6 +1998,16 @@
       }
       recEnsureRecurringForMonth(`${yyyy}-${mm}`);
       recRender();
+
+      // DR
+      const drFilterMonth = document.getElementById("drFilterMonth");
+      if (drFilterMonth) {
+        drFilterMonth.addEventListener("change", () => {
+          drRender();
+        });
+        drFilterMonth.value = `${yyyy}-${mm}`;
+      }
+      drRender();
     });
   </script>
 </body>
