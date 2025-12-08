@@ -369,6 +369,22 @@
       white-space: pre-line;
     }
 
+    /* Estilos Receitas em Dinheiro */
+    .rec-row-debito {
+      background-color: #ffecec;
+    }
+
+    .rec-row-credito {
+      background-color: #e9ffea;
+    }
+
+    .rec-footer-note {
+      font-size: 11px;
+      color: #666666;
+      margin-top: 4px;
+      text-align: center;
+    }
+
     @media (min-width: 768px) {
       body {
         max-width: 900px;
@@ -379,7 +395,8 @@
     @media print {
       .tabs-header,
       .tab-button,
-      #tab-acerto {
+      #tab-acerto,
+      #tab-receitas {
         display: none !important;
       }
     }
@@ -391,6 +408,7 @@
   <div class="tabs-header">
     <button class="tab-button active" id="btnTabAlugueis" onclick="showTab('alugueis')">Aluguéis + Energia</button>
     <button class="tab-button" id="btnTabAcerto" onclick="showTab('acerto')">Acerto Juliano (Lava Rápido)</button>
+    <button class="tab-button" id="btnTabReceitas" onclick="showTab('receitas')">Receitas em Dinheiro</button>
   </div>
 
   <!-- TAB ALUGUÉIS -->
@@ -428,11 +446,19 @@
           <div class="summary-item-value" id="sumTotalMes">R$ 0,00</div>
         </div>
         <div>
-          <div class="summary-item-label">Total recebido</div>
+          <div class="summary-item-label">Receitas não operacionais (líquido)</div>
+          <div class="summary-item-value" id="sumReceitasExtra">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total geral (aluguéis + energia + receitas em dinheiro)</div>
+          <div class="summary-item-value" id="sumTotalGeral">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total recebido (aluguéis)</div>
           <div class="summary-item-value" id="sumRecebido">R$ 0,00</div>
         </div>
         <div>
-          <div class="summary-item-label">Saldo a receber</div>
+          <div class="summary-item-label">Saldo a receber (aluguéis)</div>
           <div class="summary-item-value" id="sumSaldo">R$ 0,00</div>
         </div>
       </div>
@@ -550,24 +576,120 @@
     </div>
   </div>
 
+  <!-- TAB RECEITAS EM DINHEIRO -->
+  <div id="tab-receitas" class="tab-content">
+    <div class="card">
+      <h2>Receitas não operacionais em dinheiro</h2>
+      <div class="acet-sub">Créditos e débitos em dinheiro que entram como resultado líquido na aba principal.</div>
+
+      <div class="card">
+        <div class="acet-top-bar">
+          <div>
+            <label for="recFilterMonth">Mês (YYYY-MM)</label>
+            <input type="month" id="recFilterMonth">
+          </div>
+        </div>
+        <div class="acet-actions-top">
+          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="recSetCurrentMonth()">Hoje</button>
+          <button class="btn-small btn-outline" onclick="recExportData()">Ver JSON</button>
+          <button class="btn-small btn-outline" onclick="recDownloadBackup()">Backup (.json)</button>
+          <button class="btn-small btn-outline" onclick="recImportData()">Importar</button>
+        </div>
+        <div class="rec-footer-note">
+          Lançamentos ficam salvos apenas neste aparelho. Marque “recorrente” para repetir automaticamente todo mês.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Novo lançamento em dinheiro</h2>
+
+        <label for="recDateInput">Data</label>
+        <input type="date" id="recDateInput">
+
+        <label for="recDescInput">Descrição</label>
+        <input type="text" id="recDescInput" placeholder="Ex.: festa, serviços, extras em dinheiro...">
+
+        <label for="recTypeInput">Tipo</label>
+        <select id="recTypeInput">
+          <option value="CREDITO">Crédito em dinheiro (entra)</option>
+          <option value="DEBITO">Débito em dinheiro (sai)</option>
+        </select>
+
+        <label for="recValueInput">Valor (R$)</label>
+        <input type="number" id="recValueInput" step="0.01" inputmode="decimal" placeholder="0,00">
+
+        <label style="margin-top:8px;">
+          <input type="checkbox" id="recRecurringInput" style="width:auto;margin-right:6px;">
+          Lançamento recorrente (repete automaticamente todo mês)
+        </label>
+
+        <button class="btn-primary" onclick="recAddTransaction()">Incluir lançamento</button>
+      </div>
+
+      <div class="card">
+        <h2>Lançamentos do mês</h2>
+        <div class="acet-scroll-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Tipo</th>
+                <th style="text-align:right;">Crédito (R$)</th>
+                <th style="text-align:right;">Débito (R$)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="recTableBody">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="acet-totais" id="recTotaisBox"></div>
+      </div>
+
+      <div class="card">
+        <h2>Resumo do mês (para a aba principal)</h2>
+        <div id="recResumoMes" class="acet-resumo-box"></div>
+        <div class="rec-footer-note">
+          O resultado líquido acima entra automaticamente na aba “Aluguéis + Energia” como
+          <strong>“Receitas não operacionais (líquido)”</strong>.  
+          Se for negativo, entra como débito.
+        </div>
+      </div>
+
+      <textarea id="recJsonArea" style="width:100%;height:140px;display:none;"></textarea>
+    </div>
+  </div>
+
   <script>
     // ---------- TABS ----------
     function showTab(tab) {
       const alugueis = document.getElementById("tab-alugueis");
       const acerto = document.getElementById("tab-acerto");
+      const receitas = document.getElementById("tab-receitas");
+
       const btnAlugueis = document.getElementById("btnTabAlugueis");
       const btnAcerto = document.getElementById("btnTabAcerto");
+      const btnReceitas = document.getElementById("btnTabReceitas");
+
+      alugueis.classList.remove("active");
+      acerto.classList.remove("active");
+      receitas.classList.remove("active");
+
+      btnAlugueis.classList.remove("active");
+      btnAcerto.classList.remove("active");
+      btnReceitas.classList.remove("active");
 
       if (tab === "alugueis") {
         alugueis.classList.add("active");
-        acerto.classList.remove("active");
         btnAlugueis.classList.add("active");
-        btnAcerto.classList.remove("active");
-      } else {
-        alugueis.classList.remove("active");
+      } else if (tab === "acerto") {
         acerto.classList.add("active");
-        btnAlugueis.classList.remove("active");
         btnAcerto.classList.add("active");
+      } else if (tab === "receitas") {
+        receitas.classList.add("active");
+        btnReceitas.classList.add("active");
       }
     }
 
@@ -650,7 +772,7 @@
     // ---------- ACERTO JULIANO (AcetJuli) - FUNÇÕES E INTEGRAÇÃO ----------
     const ACET_STORAGE_KEY = "AcetJuli_v1";
 
-    // Pré-carrega os lançamentos que você mostrou no print (dezembro/2025)
+    // Pré-carrega seed se estiver vazio
     function acetEnsureSeedData() {
       const raw = localStorage.getItem(ACET_STORAGE_KEY);
       if (!raw || raw === "[]") {
@@ -864,7 +986,7 @@
 
       resumoBox.textContent = resumo;
 
-      // Depois de recalcular o acerto, atualiza os aluguéis (Lava Rápido)
+      // Atualiza aluguéis (Lava Rápido) depois de recalcular o acerto
       renderTenants();
     }
 
@@ -937,6 +1059,268 @@
         }
       });
       return { debitos, creditos };
+    }
+
+    // ---------- RECEITAS EM DINHEIRO ----------
+    const REC_STORAGE_KEY = "ReceitasNaoOperacionais_v1";
+
+    function recLoadData() {
+      const raw = localStorage.getItem(REC_STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function recSaveData(data) {
+      localStorage.setItem(REC_STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function recSetCurrentMonth() {
+      const today = new Date();
+      const monthStr = today.toISOString().slice(0,7);
+      const input = document.getElementById("recFilterMonth");
+      if (input) {
+        input.value = monthStr;
+      }
+      recEnsureRecurringForMonth(monthStr);
+      recRender();
+      renderTenants();
+    }
+
+    function recAddTransaction() {
+      const dateInput = document.getElementById("recDateInput");
+      const descInput = document.getElementById("recDescInput");
+      const typeInput = document.getElementById("recTypeInput");
+      const valueInput = document.getElementById("recValueInput");
+      const recInput = document.getElementById("recRecurringInput");
+
+      const date = dateInput.value;
+      const desc = descInput.value.trim();
+      const type = typeInput.value;
+      const valueStr = String(valueInput.value).replace(",", ".");
+      const value = parseFloat(valueStr);
+      const recurring = !!recInput.checked;
+
+      if (!date || !desc || !type || isNaN(value)) {
+        alert("Preencha data, descrição e valor corretamente.");
+        return;
+      }
+
+      const data = recLoadData();
+      const id = Date.now() + Math.floor(Math.random()*1000);
+
+      data.push({
+        id,
+        date,
+        description: desc,
+        type,
+        value,
+        recurring
+      });
+
+      recSaveData(data);
+
+      const filter = document.getElementById("recFilterMonth");
+      if (filter && !filter.value) {
+        filter.value = date.slice(0,7);
+      }
+
+      descInput.value = "";
+      valueInput.value = "";
+      recInput.checked = false;
+
+      recEnsureRecurringForMonth(date.slice(0,7));
+      recRender();
+      renderTenants();
+    }
+
+    function recDeleteTransaction(id) {
+      if (!confirm("Excluir este lançamento?")) return;
+      let data = recLoadData();
+      data = data.filter(t => t.id !== id);
+      recSaveData(data);
+      recRender();
+      renderTenants();
+    }
+
+    // Cria automaticamente lançamentos de recorrentes num mês se ainda não existirem
+    function recEnsureRecurringForMonth(monthStr) {
+      if (!monthStr) return;
+      let data = recLoadData();
+      const recurringTemplates = data.filter(t => t.recurring);
+      let changed = false;
+
+      recurringTemplates.forEach(tpl => {
+        const exists = data.some(t =>
+          t.recurring &&
+          t.type === tpl.type &&
+          t.description === tpl.description &&
+          Math.abs((t.value || 0) - (tpl.value || 0)) < 0.001 &&
+          t.date &&
+          t.date.slice(0,7) === monthStr
+        );
+        if (!exists) {
+          const day = (tpl.date && tpl.date.length >= 10) ? tpl.date.slice(8,10) : "01";
+          const newDate = monthStr + "-" + day;
+          data.push({
+            id: Date.now() + Math.floor(Math.random()*100000),
+            date: newDate,
+            description: tpl.description,
+            type: tpl.type,
+            value: tpl.value,
+            recurring: true
+          });
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        recSaveData(data);
+      }
+    }
+
+    function recRender() {
+      const tbody = document.getElementById("recTableBody");
+      const totaisBox = document.getElementById("recTotaisBox");
+      const resumoBox = document.getElementById("recResumoMes");
+      const filterMonthInput = document.getElementById("recFilterMonth");
+      const filterMonth = filterMonthInput ? filterMonthInput.value : "";
+
+      if (!tbody || !totaisBox || !resumoBox) return;
+
+      let data = recLoadData();
+
+      if (filterMonth) {
+        recEnsureRecurringForMonth(filterMonth);
+        data = recLoadData();
+      }
+
+      let filtered = data;
+      if (filterMonth) {
+        filtered = data.filter(t => t.date && t.date.slice(0,7) === filterMonth);
+      }
+
+      filtered.sort((a,b) => a.date.localeCompare(b.date) || a.id - b.id);
+
+      tbody.innerHTML = "";
+
+      let totalCreditos = 0;
+      let totalDebitos = 0;
+
+      filtered.forEach(t => {
+        if (t.type === "CREDITO") totalCreditos += t.value || 0;
+        if (t.type === "DEBITO") totalDebitos += t.value || 0;
+
+        const tr = document.createElement("tr");
+        tr.className = (t.type === "CREDITO") ? "rec-row-credito" : "rec-row-debito";
+
+        const creditoStr = (t.type === "CREDITO") ? t.value.toFixed(2).replace(".", ",") : "";
+        const debitoStr = (t.type === "DEBITO") ? t.value.toFixed(2).replace(".", ",") : "";
+        const tipoLegenda = (t.type === "CREDITO") ? "Crédito" : "Débito";
+
+        tr.innerHTML = `
+          <td>${t.date || ""}</td>
+          <td>${t.description || ""}${t.recurring ? " 🔁" : ""}</td>
+          <td>${tipoLegenda}</td>
+          <td style="text-align:right;">${creditoStr ? "R$ " + creditoStr : ""}</td>
+          <td style="text-align:right;">${debitoStr ? "R$ " + debitoStr : ""}</td>
+          <td style="text-align:center;">
+            <button class="btn-danger" onclick="recDeleteTransaction(${t.id})">X</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" style="text-align:center;">Nenhum lançamento para este mês.</td>`;
+        tbody.appendChild(tr);
+      }
+
+      const liquido = totalCreditos - totalDebitos;
+
+      totaisBox.innerHTML = `
+        <span><strong>Total Créditos:</strong> R$ ${totalCreditos.toFixed(2).replace(".", ",")}</span>
+        <span><strong>Total Débitos:</strong> R$ ${totalDebitos.toFixed(2).replace(".", ",")}</span>
+        <span style="margin-top:4px;"><strong>Resultado líquido:</strong> R$ ${liquido.toFixed(2).replace(".", ",")} (${liquido >= 0 ? "entra como RECEITA" : "entra como DÉBITO"})</span>
+      `;
+
+      let resumo = "";
+      const mesLabel = filterMonth || "sem mês selecionado";
+      resumo += "RECEITAS EM DINHEIRO (NÃO OPERACIONAIS)\n";
+      resumo += "Mês: " + mesLabel + "\n\n";
+      resumo += `Total Créditos: R$ ${totalCreditos.toFixed(2).replace(".", ",")}\n`;
+      resumo += `Total Débitos: R$ ${totalDebitos.toFixed(2).replace(".", ",")}\n`;
+      resumo += `Resultado líquido (para aba principal): R$ ${liquido.toFixed(2).replace(".", ",")}\n`;
+      resumo += liquido >= 0
+        ? "Situação: entra como RECEITA adicional.\n"
+        : "Situação: entra como DÉBITO (reduz o resultado).\n";
+
+      resumoBox.textContent = resumo;
+    }
+
+    function recExportData() {
+      const data = recLoadData();
+      const json = JSON.stringify(data, null, 2);
+      const area = document.getElementById("recJsonArea");
+      area.style.display = "block";
+      area.value = json;
+      alert("JSON dos lançamentos exibido abaixo. Copie e salve se quiser backup manual.");
+    }
+
+    function recDownloadBackup() {
+      const data = recLoadData();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      const now = new Date();
+      const stamp = now.toISOString().replace(/[:.]/g, "-");
+      a.href = url;
+      a.download = "ReceitasNaoOperacionais-backup-" + stamp + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function recImportData() {
+      const area = document.getElementById("recJsonArea");
+      area.style.display = "block";
+      if (!area.value.trim()) {
+        alert("Cole aqui o JSON exportado antes de importar.");
+        return;
+      }
+      try {
+        const arr = JSON.parse(area.value);
+        if (!Array.isArray(arr)) throw new Error("Formato inválido");
+        recSaveData(arr);
+        alert("Dados importados com sucesso.");
+        recRender();
+        renderTenants();
+      } catch(e) {
+        alert("Erro ao importar JSON: " + e.message);
+      }
+    }
+
+    function getReceitasLiquidasMes(monthStr) {
+      if (!monthStr) return { totalCreditos: 0, totalDebitos: 0, liquido: 0 };
+      const data = recLoadData();
+      let totalCreditos = 0;
+      let totalDebitos = 0;
+      data.forEach(t => {
+        if (t.date && t.date.slice(0,7) === monthStr) {
+          if (t.type === "CREDITO") totalCreditos += t.value || 0;
+          if (t.type === "DEBITO") totalDebitos += t.value || 0;
+        }
+      });
+      const liquido = totalCreditos - totalDebitos;
+      return { totalCreditos, totalDebitos, liquido };
     }
 
     // ---------- CÁLCULOS ALUGUÉIS ----------
@@ -1175,13 +1559,19 @@
         container.appendChild(card);
       });
 
+      // Totais gerais de receitas em dinheiro para o mês
+      const receitasMes = currentMonth ? getReceitasLiquidasMes(currentMonth) : { totalCreditos: 0, totalDebitos: 0, liquido: 0 };
+      const receitasLiquidas = receitasMes.liquido;
+
       // Atualiza resumo geral
       const summaryBox = document.getElementById("summaryBox");
       if (tenantsDefault.length > 0) {
         summaryBox.style.display = "block";
         document.getElementById("sumAlugueis").textContent = formatMoney(sumAlugueis);
         document.getElementById("sumEnergia").textContent = formatMoney(sumEnergia);
-        document.getElementById("sumTotalMes").textContent = formatMoney(sumTotalMes);
+        document.getElementById("sumTotalMes").textContent = formatMoney(sumAlugueis + sumEnergia);
+        document.getElementById("sumReceitasExtra").textContent = formatMoney(receitasLiquidas);
+        document.getElementById("sumTotalGeral").textContent = formatMoney(sumAlugueis + sumEnergia + receitasLiquidas);
         document.getElementById("sumRecebido").textContent = formatMoney(sumRecebido);
         document.getElementById("sumSaldo").textContent = formatMoney(sumSaldo);
       } else {
@@ -1296,6 +1686,13 @@
         acetFilterMonth.value = currentMonth;
         acetRender();
       }
+
+      const recFilterMonth = document.getElementById("recFilterMonth");
+      if (recFilterMonth && currentMonth) {
+        recFilterMonth.value = currentMonth;
+        recEnsureRecurringForMonth(currentMonth);
+        recRender();
+      }
     }
 
     // ---------- INICIALIZAÇÃO GLOBAL ----------
@@ -1321,7 +1718,7 @@
         renderTenants();
       });
 
-      // Inicializa AcetJuli (carrega seed se ainda não houver nada)
+      // Inicializa AcetJuli
       acetEnsureSeedData();
 
       const today = new Date();
@@ -1335,10 +1732,26 @@
         acetFilterMonth.addEventListener("change", () => {
           acetRender();
         });
-        // por padrão mostra o mês atual do sistema
         acetFilterMonth.value = `${yyyy}-${mm}`;
       }
       acetRender();
+
+      // Inicializa Receitas em Dinheiro
+      const recDateInput = document.getElementById("recDateInput");
+      if (recDateInput) {
+        recDateInput.value = dateStr;
+      }
+      const recFilterMonth = document.getElementById("recFilterMonth");
+      if (recFilterMonth) {
+        recFilterMonth.addEventListener("change", () => {
+          recEnsureRecurringForMonth(recFilterMonth.value);
+          recRender();
+          renderTenants();
+        });
+        recFilterMonth.value = `${yyyy}-${mm}`;
+      }
+      recEnsureRecurringForMonth(`${yyyy}-${mm}`);
+      recRender();
     });
   </script>
 </body>
