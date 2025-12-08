@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Aluguéis + Acerto Juliano</title>
+  <title>Aluguéis & Acerto Juliano</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
@@ -650,6 +650,25 @@
     // ---------- ACERTO JULIANO (AcetJuli) - FUNÇÕES E INTEGRAÇÃO ----------
     const ACET_STORAGE_KEY = "AcetJuli_v1";
 
+    // Pré-carrega os lançamentos que você mostrou no print (dezembro/2025)
+    function acetEnsureSeedData() {
+      const raw = localStorage.getItem(ACET_STORAGE_KEY);
+      if (!raw || raw === "[]") {
+        const seed = [
+          { id: 1, date: "2025-12-06", description: "BIOTR", type: "DEBITO_RF", value: 750.00 },
+          { id: 2, date: "2025-12-06", description: "CEMIG", type: "DEBITO_RF", value: 350.00 },
+          { id: 3, date: "2025-12-06", description: "acerto parcela 2/2 da DMAE", type: "DEBITO_RF", value: 1247.00 },
+          { id: 4, date: "2025-12-06", description: "saldo devedor do mes passado", type: "DEBITO_RF", value: 279.37 },
+          { id: 5, date: "2025-12-06", description: "DMAE DESSE MES QUE AINDA NAO CHEGOU", type: "DEBITO_RF", value: 0.01 },
+          { id: 6, date: "2025-12-06", description: "EMPORIO DO FARLEY", type: "CREDITO_JULIANO", value: 798.00 },
+          { id: 7, date: "2025-12-06", description: "MESAS PARA FESTA", type: "CREDITO_JULIANO", value: 170.00 },
+          { id: 8, date: "2025-12-06", description: "PEBOLIM", type: "CREDITO_JULIANO", value: 170.00 },
+          { id: 9, date: "2025-12-06", description: "PACOTE CARVAO", type: "CREDITO_JULIANO", value: 55.00 }
+        ];
+        localStorage.setItem(ACET_STORAGE_KEY, JSON.stringify(seed));
+      }
+    }
+
     function acetLoadData() {
       const raw = localStorage.getItem(ACET_STORAGE_KEY);
       if (!raw) return [];
@@ -1270,6 +1289,13 @@
       loadMonthData(currentMonth);
       saveConfig();
       renderTenants();
+
+      // sincroniza o mês do acerto (para o Lava Rápido bater)
+      const acetFilterMonth = document.getElementById("acetFilterMonth");
+      if (acetFilterMonth && currentMonth) {
+        acetFilterMonth.value = currentMonth;
+        acetRender();
+      }
     }
 
     // ---------- INICIALIZAÇÃO GLOBAL ----------
@@ -1289,21 +1315,15 @@
       loadMonthData(currentMonth);
       renderTenants();
 
-      document.getElementById("btnCarregarMes").addEventListener("click", () => {
-        initMonth();
-        // quando muda o mês de aluguel, sincroniza mês do acerto para bater o Lava Rápido
-        const acetFilterMonth = document.getElementById("acetFilterMonth");
-        if (acetFilterMonth && currentMonth) {
-          acetFilterMonth.value = currentMonth;
-          acetRender();
-        }
-      });
+      document.getElementById("btnCarregarMes").addEventListener("click", initMonth);
       document.getElementById("valorKwh").addEventListener("change", () => {
         saveConfig();
         renderTenants();
       });
 
-      // Inicializa AcetJuli
+      // Inicializa AcetJuli (carrega seed se ainda não houver nada)
+      acetEnsureSeedData();
+
       const today = new Date();
       const dateStr = today.toISOString().slice(0,10);
       const dateInput = document.getElementById("acetDateInput");
@@ -1315,6 +1335,7 @@
         acetFilterMonth.addEventListener("change", () => {
           acetRender();
         });
+        // por padrão mostra o mês atual do sistema
         acetFilterMonth.value = `${yyyy}-${mm}`;
       }
       acetRender();
