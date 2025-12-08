@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aluguéis + Acerto Juliano</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      background: #f2f2f7;
+      font-size: 16px;
+    }
+
+    h1 {
+      font-size: 22px;
+      text-align: center;
+      margin: 0 0 10px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 18px 0 8px;
+    }
+
+    .top-bar-main {
+      background: #ffffff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    input, select, button, textarea {
+      width: 100%;
+      padding: 6px 8px;
+      margin-top: 3px;
+      border-radius: 8px;
+      border: 1px solid #d1d1d6;
+      font-size: 15px;
+    }
+
+    input:focus, textarea:focus, button:focus {
+      outline: none;
+      border-color: #007aff;
+      box-shadow: 0 0 0 1px rgba(0,122,255,0.3);
+    }
+
+    button {
+      background: #007aff;
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #ffffff;
+      color: #007aff;
+      border: 1px solid #007aff;
+    }
+
+    .cards-container {
+      margin-top: 10px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .status-tag {
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    .status-aberto { background: #ff3b30; }
+    .status-parcial { background: #ff9f0a; }
+    .status-pago { background: #34c759; }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .small-label {
+      font-size: 12px;
+      color: #8e8e93;
+    }
+
+    .small-value {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .payments {
+      margin-top: 8px;
+      border-top: 1px solid #e5e5ea;
+      padding-top: 6px;
+    }
+
+    .payments-list {
+      max-height: 140px;
+      overflow-y: auto;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid #e5e5ea;
+      padding: 4px 6px;
+      background: #fafafa;
+      font-size: 13px;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 2px 0;
+      border-bottom: 1px dashed #e5e5ea;
+    }
+
+    .payment-row:last-child {
+      border-bottom: none;
+    }
+
+    .payment-note {
+      color: #8e8e93;
+      font-size: 12px;
+    }
+
+    .summary-box {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .summary-item-label {
+      font-size: 13px;
+      color: #8e8e93;
+    }
+
+    .summary-item-value {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .whatsapp-hint {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 4px;
+    }
+
+    .summary-table-wrapper {
+      overflow-x: auto;
+      margin-top: 6px;
+    }
+
+    table.summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.summary-table thead {
+      background: #f2f2f7;
+    }
+
+    table.summary-table th,
+    table.summary-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #e5e5ea;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    table.summary-table th:first-child,
+    table.summary-table td:first-child {
+      text-align: left;
+    }
+
+    table.summary-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Tabs */
+    .tabs-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 8px;
+      border-radius: 999px;
+      border: 1px solid #d1d1d6;
+      background: #ffffff;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .tab-button.active {
+      background: #007aff;
+      color: #ffffff;
+      border-color: #007aff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Estilos específicos do AcetJuli embutido */
+    .acet-sub {
+      font-size: 12px;
+      text-align: center;
+      color: #666666;
+      margin-bottom: 8px;
+    }
+
+    .acet-top-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .acet-top-bar > div {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .acet-actions-top {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: #007aff;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #ff3b30;
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 6px;
+    }
+
+    .btn-small {
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 20px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #d1d1d6;
+      color: #666666;
+    }
+
+    .acet-scroll-table {
+      max-height: 320px;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .acet-debit-row {
+      background-color: #ffecec;
+    }
+
+    .acet-credit-row {
+      background-color: #e9ffea;
+    }
+
+    .acet-totais {
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .acet-totais span {
+      display: block;
+    }
+
+    .saldo-positivo {
+      color: #ff3b30;
+      font-weight: 600;
+    }
+
+    .saldo-negativo {
+      color: #30d158;
+      font-weight: 600;
+    }
+
+    .acet-pill {
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      border: 1px solid #d1d1d6;
+      color: #666666;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .acet-footer-note {
+      font-size: 10px;
+      text-align: center;
+      color: #666666;
+      margin-top: 6px;
+    }
+
+    .acet-resumo-box {
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+    }
+
+    @media print {
+      .tabs-header,
+      .tab-button,
+      #tab-acerto {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Aluguéis & Acerto Juliano</h1>
+
+  <div class="tabs-header">
+    <button class="tab-button active" id="btnTabAlugueis" onclick="showTab('alugueis')">Aluguéis + Energia</button>
+    <button class="tab-button" id="btnTabAcerto" onclick="showTab('acerto')">Acerto Juliano (Lava Rápido)</button>
+  </div>
+
+  <!-- TAB ALUGUÉIS -->
+  <div id="tab-alugueis" class="tab-content active">
+    <div class="top-bar-main">
+      <label for="valorKwh">Valor do kWh (Cemig) – R$</label>
+      <input type="number" id="valorKwh" step="0.0001" inputmode="decimal" placeholder="Ex: 0.95" />
+
+      <label for="mesRef">Mês de referência</label>
+      <input type="month" id="mesRef" />
+
+      <button id="btnCarregarMes">Carregar mês</button>
+      <small class="whatsapp-hint">
+        Dica: preencha tudo, depois use o resumo rápido ou tire print dos cartões para mandar no WhatsApp.
+      </small>
+    </div>
+
+    <div class="cards-container" id="cardsContainer">
+      <!-- Cards das unidades serão gerados via JavaScript -->
+    </div>
+
+    <div class="summary-box" id="summaryBox" style="display:none;">
+      <h2>Resumo geral do mês</h2>
+      <div class="summary-grid">
+        <div>
+          <div class="summary-item-label">Total de aluguéis</div>
+          <div class="summary-item-value" id="sumAlugueis">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total energia líquida</div>
+          <div class="summary-item-value" id="sumEnergia">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total (aluguéis + energia)</div>
+          <div class="summary-item-value" id="sumTotalMes">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total recebido</div>
+          <div class="summary-item-value" id="sumRecebido">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Saldo a receber</div>
+          <div class="summary-item-value" id="sumSaldo">R$ 0,00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-box" id="summaryUnidadesBox" style="display:none;">
+      <h2>Resumo rápido por unidade</h2>
+      <div class="whatsapp-hint">
+        Acompanhe rapidamente a situação de cada unidade (aluguel, energia, total, pagos e saldo).
+      </div>
+      <div class="summary-table-wrapper">
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>Unidade</th>
+              <th>Aluguel</th>
+              <th>Energia líquida</th>
+              <th>Total mês</th>
+              <th>Pago</th>
+              <th>Saldo</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="summaryUnidadesBody">
+            <!-- Linhas geradas via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB ACERTO JULIANO (AcetJuli) -->
+  <div id="tab-acerto" class="tab-content">
+    <div class="card">
+      <h2>AcetJuli</h2>
+      <div class="acet-sub">Acerto mensal Juliano × RF – offline no iPhone</div>
+
+      <div class="card">
+        <div class="acet-top-bar">
+          <div>
+            <label for="acetFilterMonth">Mês (YYYY-MM)</label>
+            <input type="month" id="acetFilterMonth">
+          </div>
+        </div>
+        <div class="acet-actions-top">
+          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="acetSetCurrentMonth()">Hoje</button>
+          <button class="btn-small btn-outline" onclick="acetExportData()">Ver JSON</button>
+          <button class="btn-small btn-outline" onclick="acetDownloadBackup()">Backup (.json)</button>
+          <button class="btn-small btn-outline" onclick="acetImportData()">Importar</button>
+          <button class="btn-small" style="background:#8e8e93;color:#fff;" onclick="acetPrintPDF()">PDF</button>
+          <button class="btn-small" style="background:#555555;color:#fff;" onclick="acetClearAll()">Zerar tudo</button>
+        </div>
+        <div class="acet-footer-note">
+          Dados do acerto ficam somente neste aparelho (localStorage). Use “Backup (.json)” para salvar em outro lugar.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Novo lançamento</h2>
+        <span class="acet-pill">Débito = RF pagou · Crédito = Juliano pagou</span>
+
+        <label for="acetDateInput">Data</label>
+        <input type="date" id="acetDateInput">
+
+        <label for="acetDescInput">Descrição</label>
+        <input type="text" id="acetDescInput" placeholder="Ex.: contas do Lava Rápido, Biotri, CEMIG...">
+
+        <label for="acetTypeInput">Tipo</label>
+        <select id="acetTypeInput">
+          <option value="DEBITO_RF">Débito - RF pagou (a favor da RF)</option>
+          <option value="CREDITO_JULIANO">Crédito - Juliano pagou (a favor do Juliano)</option>
+        </select>
+
+        <label for="acetValueInput">Valor (R$)</label>
+        <input type="number" id="acetValueInput" step="0.01" inputmode="decimal" placeholder="0,00">
+
+        <button class="btn-primary" onclick="acetAddTransaction()">Incluir lançamento</button>
+      </div>
+
+      <div class="card">
+        <h2>Lançamentos do mês</h2>
+        <div class="acet-scroll-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Tipo</th>
+                <th style="text-align:right;">Valor (R$)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="acetTableBody">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="acet-totais" id="acetTotaisBox">
+          <!-- Totais via JS -->
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Resumo para WhatsApp / Print</h2>
+        <div id="acetWhatsResumo" class="acet-resumo-box">
+          <!-- Resumo amigável gerado via JS -->
+        </div>
+        <div class="acet-footer-note">
+          Use este bloco como “tela oficial” para print e envio no WhatsApp.
+        </div>
+      </div>
+
+      <!-- Área oculta para exportar/importar JSON -->
+      <textarea id="acetJsonArea" style="width:100%;height:140px;display:none;"></textarea>
+    </div>
+  </div>
+
+  <script>
+    // ---------- TABS ----------
+    function showTab(tab) {
+      const alugueis = document.getElementById("tab-alugueis");
+      const acerto = document.getElementById("tab-acerto");
+      const btnAlugueis = document.getElementById("btnTabAlugueis");
+      const btnAcerto = document.getElementById("btnTabAcerto");
+
+      if (tab === "alugueis") {
+        alugueis.classList.add("active");
+        acerto.classList.remove("active");
+        btnAlugueis.classList.add("active");
+        btnAcerto.classList.remove("active");
+      } else {
+        alugueis.classList.remove("active");
+        acerto.classList.add("active");
+        btnAlugueis.classList.remove("active");
+        btnAcerto.classList.add("active");
+      }
+    }
+
+    // ---------- CONFIGURAÇÃO INICIAL ALUGUÉIS ----------
+    const tenantsDefault = [
+      "Pet Shop",
+      "Loja de Conveniência",
+      "Loja de Acessórios",
+      "Cabeleireiro",
+      "Loja de Celulares",
+      "Lava Rápido",
+      "Loja de Chocolate"
+    ];
+
+    let currentMonth = null;
+    let tenantsData = {}; // { nome: { rent, eStart, eEnd, discount, payments: [] } }
+
+    function defaultTenantData() {
+      return {
+        rent: 0,
+        eStart: 0,
+        eEnd: 0,
+        discount: 0,
+        payments: [] // {date, value, note}
+      };
+    }
+
+    function loadConfig() {
+      const cfgStr = localStorage.getItem("alugueisConfig");
+      if (cfgStr) {
+        try {
+          const cfg = JSON.parse(cfgStr);
+          if (cfg.valorKwh != null) {
+            document.getElementById("valorKwh").value = cfg.valorKwh;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler config:", e);
+        }
+      }
+    }
+
+    function saveConfig() {
+      const valorKwh = parseFloat(document.getElementById("valorKwh").value || "0") || 0;
+      const cfg = { valorKwh };
+      localStorage.setItem("alugueisConfig", JSON.stringify(cfg));
+    }
+
+    function loadMonthData(monthStr) {
+      const key = "alugueisMes_" + monthStr;
+      const dataStr = localStorage.getItem(key);
+      tenantsData = {};
+      if (dataStr) {
+        try {
+          const parsed = JSON.parse(dataStr);
+          tenantsDefault.forEach(nome => {
+            if (parsed[nome]) {
+              tenantsData[nome] = parsed[nome];
+              if (!Array.isArray(tenantsData[nome].payments)) {
+                tenantsData[nome].payments = [];
+              }
+            } else {
+              tenantsData[nome] = defaultTenantData();
+            }
+          });
+        } catch (e) {
+          console.warn("Erro ao ler mês, iniciando novo:", e);
+          tenantsDefault.forEach(nome => tenantsData[nome] = defaultTenantData());
+        }
+      } else {
+        tenantsDefault.forEach(nome => tenantsData[nome] = defaultTenantData());
+      }
+    }
+
+    function saveMonthData() {
+      if (!currentMonth) return;
+      const key = "alugueisMes_" + currentMonth;
+      localStorage.setItem(key, JSON.stringify(tenantsData));
+    }
+
+    // ---------- ACERTO JULIANO (AcetJuli) - FUNÇÕES E INTEGRAÇÃO ----------
+    const ACET_STORAGE_KEY = "AcetJuli_v1";
+
+    function acetLoadData() {
+      const raw = localStorage.getItem(ACET_STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return arr;
+        return [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function acetSaveData(data) {
+      localStorage.setItem(ACET_STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function acetSetCurrentMonth() {
+      const today = new Date();
+      const monthStr = today.toISOString().slice(0,7);
+      const input = document.getElementById("acetFilterMonth");
+      if (input) {
+        input.value = monthStr;
+      }
+      acetRender();
+      renderTenants();
+    }
+
+    function acetFormatMoney(v) {
+      return v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function acetAddTransaction() {
+      const dateInput = document.getElementById("acetDateInput");
+      const descInput = document.getElementById("acetDescInput");
+      const typeInput = document.getElementById("acetTypeInput");
+      const valueInput = document.getElementById("acetValueInput");
+
+      const date = dateInput.value;
+      const desc = descInput.value.trim();
+      const type = typeInput.value;
+      const valueStr = String(valueInput.value).replace(",", ".");
+      const value = parseFloat(valueStr);
+
+      if (!date || !desc || !type || isNaN(value)) {
+        alert("Preencha data, descrição e valor corretamente.");
+        return;
+      }
+
+      const data = acetLoadData();
+      const id = Date.now();
+
+      data.push({
+        id,
+        date,
+        description: desc,
+        type,
+        value
+      });
+
+      acetSaveData(data);
+
+      const filter = document.getElementById("acetFilterMonth");
+      if (filter && !filter.value) {
+        filter.value = date.slice(0,7);
+      }
+
+      descInput.value = "";
+      valueInput.value = "";
+
+      acetRender();
+      renderTenants();
+    }
+
+    function acetDeleteTransaction(id) {
+      if (!confirm("Excluir este lançamento?")) return;
+      let data = acetLoadData();
+      data = data.filter(t => t.id !== id);
+      acetSaveData(data);
+      acetRender();
+      renderTenants();
+    }
+
+    function acetRender() {
+      const data = acetLoadData();
+      const tbody = document.getElementById("acetTableBody");
+      const totaisBox = document.getElementById("acetTotaisBox");
+      const resumoBox = document.getElementById("acetWhatsResumo");
+      const filterMonthInput = document.getElementById("acetFilterMonth");
+      const filterMonth = filterMonthInput ? filterMonthInput.value : "";
+
+      if (!tbody || !totaisBox || !resumoBox) return;
+
+      tbody.innerHTML = "";
+
+      let filtered = data;
+      if (filterMonth) {
+        filtered = data.filter(t => t.date.slice(0,7) === filterMonth);
+      }
+
+      filtered.sort((a,b) => a.date.localeCompare(b.date) || a.id - b.id);
+
+      let totalDebitos = 0;
+      let totalCreditos = 0;
+      const debitos = [];
+      const creditos = [];
+
+      for (const t of filtered) {
+        if (t.type === "DEBITO_RF") {
+          totalDebitos += t.value;
+          debitos.push(t);
+        } else if (t.type === "CREDITO_JULIANO") {
+          totalCreditos += t.value;
+          creditos.push(t);
+        }
+
+        const tr = document.createElement("tr");
+        tr.className = (t.type === "DEBITO_RF") ? "acet-debit-row" : "acet-credit-row";
+
+        const tipoLegenda = (t.type === "DEBITO_RF")
+          ? "Débito (RF pagou)"
+          : "Crédito (Juliano pagou)";
+
+        tr.innerHTML = `
+          <td>${t.date}</td>
+          <td>${t.description}</td>
+          <td>${tipoLegenda}</td>
+          <td style="text-align:right;">${acetFormatMoney(t.value)}</td>
+          <td style="text-align:center;">
+            <button class="btn-danger" onclick="acetDeleteTransaction(${t.id})">X</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" style="text-align:center;">Nenhum lançamento para este mês.</td>`;
+        tbody.appendChild(tr);
+      }
+
+      const saldo = totalDebitos - totalCreditos;
+      let saldoText = "";
+      let saldoClass = "";
+
+      if (saldo >= 0) {
+        saldoText = `Saldo do mês: R$ ${acetFormatMoney(saldo)} (Juliano devendo para RF)`;
+        saldoClass = "saldo-positivo";
+      } else {
+        saldoText = `Saldo do mês: R$ ${acetFormatMoney(Math.abs(saldo))} (RF devendo para Juliano)`;
+        saldoClass = "saldo-negativo";
+      }
+
+      totaisBox.innerHTML = `
+        <span><strong>Total Débitos (RF pagou):</strong> R$ ${acetFormatMoney(totalDebitos)}</span>
+        <span><strong>Total Créditos (Juliano pagou):</strong> R$ ${acetFormatMoney(totalCreditos)}</span>
+        <span class="${saldoClass}" style="margin-top:4px;">${saldoText}</span>
+      `;
+
+      // ----- RESUMO TIPO WHATSAPP / PRINT -----
+      let resumo = "";
+
+      const mesLabel = filterMonth || "sem mês selecionado";
+      resumo += "ACERTO JULIANO × RF\n";
+      resumo += "Mês: " + mesLabel + "\n\n";
+
+      resumo += "🔵 Débitos – RF pagou (a favor da RF):\n";
+      if (debitos.length === 0) {
+        resumo += "• Nenhum lançamento de débito.\n";
+      } else {
+        debitos.forEach(t => {
+          resumo += `• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}\n`;
+        });
+      }
+      resumo += `Total Débitos: R$ ${acetFormatMoney(totalDebitos)}\n\n`;
+
+      resumo += "🟢 Créditos – Juliano pagou (a favor do Juliano):\n";
+      if (creditos.length === 0) {
+        resumo += "• Nenhum lançamento de crédito.\n";
+      } else {
+        creditos.forEach(t => {
+          resumo += `• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}\n`;
+        });
+      }
+      resumo += `Total Créditos: R$ ${acetFormatMoney(totalCreditos)}\n\n`;
+
+      if (saldo >= 0) {
+        resumo += `🧮 Saldo final do mês: R$ ${acetFormatMoney(saldo)}\n`;
+        resumo += "Situação: Juliano DEVENDO para RF.\n";
+      } else {
+        resumo += `🧮 Saldo final do mês: R$ ${acetFormatMoney(Math.abs(saldo))}\n`;
+        resumo += "Situação: RF DEVENDO para Juliano.\n";
+      }
+
+      resumoBox.textContent = resumo;
+
+      // Depois de recalcular o acerto, atualiza os aluguéis (Lava Rápido)
+      renderTenants();
+    }
+
+    function acetClearAll() {
+      if (!confirm("Isso vai apagar TODOS os lançamentos do acerto salvos neste aparelho. Continuar?")) return;
+      localStorage.removeItem(ACET_STORAGE_KEY);
+      acetRender();
+      renderTenants();
+    }
+
+    function acetExportData() {
+      const data = acetLoadData();
+      const json = JSON.stringify(data, null, 2);
+      const area = document.getElementById("acetJsonArea");
+      area.style.display = "block";
+      area.value = json;
+      alert("JSON dos lançamentos exibido abaixo. Copie e salve se quiser backup manual.");
+    }
+
+    function acetDownloadBackup() {
+      const data = acetLoadData();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      const now = new Date();
+      const stamp = now.toISOString().replace(/[:.]/g, "-");
+      a.href = url;
+      a.download = "AcetJuli-backup-" + stamp + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function acetImportData() {
+      const area = document.getElementById("acetJsonArea");
+      area.style.display = "block";
+      if (!area.value.trim()) {
+        alert("Cole aqui o JSON exportado antes de importar.");
+        return;
+      }
+      try {
+        const arr = JSON.parse(area.value);
+        if (!Array.isArray(arr)) throw new Error("Formato inválido");
+        acetSaveData(arr);
+        alert("Dados importados com sucesso.");
+        acetRender();
+        renderTenants();
+      } catch(e) {
+        alert("Erro ao importar JSON: " + e.message);
+      }
+    }
+
+    function acetPrintPDF() {
+      window.print();
+    }
+
+    // Totais do acerto para o mês (Débitos RF = "aluguel" do Lava Rápido; Créditos Juliano = pagamentos do aluguel)
+    function getLavaRapidoDebitoCreditoMes(monthStr) {
+      if (!monthStr) return { debitos: 0, creditos: 0 };
+      const data = acetLoadData();
+      let debitos = 0;
+      let creditos = 0;
+      data.forEach(t => {
+        if (t.date && t.date.slice(0,7) === monthStr) {
+          if (t.type === "DEBITO_RF") debitos += t.value || 0;
+          if (t.type === "CREDITO_JULIANO") creditos += t.value || 0;
+        }
+      });
+      return { debitos, creditos };
+    }
+
+    // ---------- CÁLCULOS ALUGUÉIS ----------
+    function calcTenant(tData, valorKwh, extraPagos) {
+      extraPagos = extraPagos || 0;
+      const consumo = Math.max((tData.eEnd || 0) - (tData.eStart || 0), 0);
+      const energiaBruta = consumo * valorKwh;
+      const descontoValor = energiaBruta * ((tData.discount || 0) / 100);
+      const energiaLiquida = energiaBruta - descontoValor;
+      const totalMes = (tData.rent || 0) + energiaLiquida;
+
+      let totalPagos = 0;
+      if (Array.isArray(tData.payments)) {
+        tData.payments.forEach(p => {
+          totalPagos += p.value || 0;
+        });
+      }
+      totalPagos += extraPagos;
+
+      const saldo = totalMes - totalPagos;
+      let status = "ABERTO";
+      if (Math.abs(saldo) < 0.01 && totalMes > 0) {
+        status = "PAGO";
+      } else if (totalPagos > 0 && saldo > 0.01) {
+        status = "PARCIAL";
+      }
+
+      return {
+        consumo,
+        energiaBruta,
+        descontoValor,
+        energiaLiquida,
+        totalMes,
+        totalPagos,
+        saldo,
+        status,
+        extraPagos
+      };
+    }
+
+    function formatMoney(v) {
+      const val = (v || 0);
+      return "R$ " + val.toFixed(2).replace(".", ",");
+    }
+
+    function statusClass(status) {
+      if (status === "PAGO") return "status-pago";
+      if (status === "PARCIAL") return "status-parcial";
+      return "status-aberto";
+    }
+
+    // ---------- RENDERIZAÇÃO ALUGUÉIS ----------
+    function renderTenants() {
+      const container = document.getElementById("cardsContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const valorKwh = parseFloat(document.getElementById("valorKwh").value || "0") || 0;
+
+      let sumAlugueis = 0;
+      let sumEnergia = 0;
+      let sumTotalMes = 0;
+      let sumRecebido = 0;
+      let sumSaldo = 0;
+
+      const quickRows = [];
+
+      // Totais do Lava Rápido vindos do AcetJuli
+      const lavaTotals = currentMonth ? getLavaRapidoDebitoCreditoMes(currentMonth) : { debitos: 0, creditos: 0 };
+
+      tenantsDefault.forEach((nome, i) => {
+        if (!tenantsData[nome]) {
+          tenantsData[nome] = defaultTenantData();
+        }
+        const tData = tenantsData[nome];
+
+        let displayRent = tData.rent || 0;
+        let extraPagos = 0;
+
+        if (nome === "Lava Rápido") {
+          displayRent = lavaTotals.debitos;   // aluguel = tudo que a RF pagou no mês
+          extraPagos = lavaTotals.creditos;   // pagamentos = tudo que o Juliano pagou no mês
+        }
+
+        const calc = calcTenant({ ...tData, rent: displayRent }, valorKwh, extraPagos);
+
+        sumAlugueis += displayRent;
+        sumEnergia += calc.energiaLiquida;
+        sumTotalMes += calc.totalMes;
+        sumRecebido += calc.totalPagos;
+        sumSaldo += calc.saldo;
+
+        quickRows.push({
+          nome,
+          aluguel: displayRent,
+          energia: calc.energiaLiquida,
+          totalMes: calc.totalMes,
+          pago: calc.totalPagos,
+          saldo: calc.saldo,
+          status: calc.status
+        });
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = "card_" + i;
+
+        let paymentsHtml = "";
+        if (Array.isArray(tData.payments) && tData.payments.length > 0) {
+          tData.payments.forEach((p, idx) => {
+            paymentsHtml += `
+              <div class="payment-row">
+                <div>
+                  <div><strong>${formatMoney(p.value || 0)}</strong></div>
+                  <div class="payment-note">${p.date || ""} – ${p.note || ""}</div>
+                </div>
+                <div>
+                  <button class="secondary" style="padding:2px 6px;font-size:11px;"
+                          onclick="removePayment(${i}, ${idx})">
+                    x
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          paymentsHtml = `<div class="payment-note">Nenhum pagamento lançado.</div>`;
+        }
+
+        const isLava = nome === "Lava Rápido";
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${nome}</div>
+            <div class="status-tag ${statusClass(calc.status)}" id="t${i}_status">
+              ${calc.status}
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>Aluguel (R$) ${isLava ? "<br><span class='small-label'>(somatório das contas pagas pela RF no mês)</span>" : ""}</label>
+              <input type="number" step="0.01" inputmode="decimal"
+                     id="t${i}_rent" value="${displayRent || ""}"
+                     ${isLava ? "readonly" : "oninput=\"updateTenant(" + i + ")\""} />
+            </div>
+            <div>
+              <label>Desconto energia (%)</label>
+              <input type="number" step="0.01" inputmode="decimal"
+                     id="t${i}_discount" value="${tData.discount || ""}"
+                     oninput="updateTenant(${i})" />
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div>
+              <label>Leitura inicial (kWh)</label>
+              <input type="number" step="0.01" inputmode="decimal"
+                     id="t${i}_eStart" value="${tData.eStart || ""}"
+                     oninput="updateTenant(${i})" />
+            </div>
+            <div>
+              <label>Leitura final (kWh)</label>
+              <input type="number" step="0.01" inputmode="decimal"
+                     id="t${i}_eEnd" value="${tData.eEnd || ""}"
+                     oninput="updateTenant(${i})" />
+            </div>
+            <div>
+              <span class="small-label">Consumo (kWh)</span><br/>
+              <span class="small-value" id="t${i}_consumo">${calc.consumo.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:8px;">
+            <div>
+              <span class="small-label">Energia bruta</span><br/>
+              <span class="small-value" id="t${i}_eBruta">${formatMoney(calc.energiaBruta)}</span>
+            </div>
+            <div>
+              <span class="small-label">Desconto energia</span><br/>
+              <span class="small-value" id="t${i}_eDesc">${formatMoney(calc.descontoValor)}</span>
+            </div>
+            <div>
+              <span class="small-label">Energia líquida</span><br/>
+              <span class="small-value" id="t${i}_eLiq">${formatMoney(calc.energiaLiquida)}</span>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:8px;">
+            <div>
+              <span class="small-label">Total do mês</span><br/>
+              <span class="small-value" id="t${i}_totalMes">${formatMoney(calc.totalMes)}</span>
+            </div>
+            <div>
+              <span class="small-label">Total pago</span><br/>
+              <span class="small-value" id="t${i}_totalPago">${formatMoney(calc.totalPagos)}</span>
+            </div>
+          </div>
+
+          <div style="margin-top:4px;">
+            <span class="small-label">Saldo a pagar</span><br/>
+            <span class="small-value" id="t${i}_saldo">${formatMoney(calc.saldo)}</span>
+          </div>
+
+          ${isLava ? `
+          <div style="margin-top:4px;">
+            <span class="small-label">Pago via Juliano (AcetJuli - mês ${currentMonth || ""})</span><br/>
+            <span class="small-value">${formatMoney(extraPagos)}</span>
+          </div>
+          ` : ""}
+
+          <div class="payments">
+            <strong>Pagamentos diretos do mês</strong>
+            <div class="payments-list" id="t${i}_payments">
+              ${paymentsHtml}
+            </div>
+
+            <div class="grid-3" style="margin-top:6px;">
+              <div>
+                <label>Valor pago (R$)</label>
+                <input type="number" step="0.01" inputmode="decimal"
+                       id="t${i}_payValue" />
+              </div>
+              <div>
+                <label>Data</label>
+                <input type="date" id="t${i}_payDate" />
+              </div>
+              <div>
+                <label>Obs.</label>
+                <input type="text" id="t${i}_payNote" placeholder="Ex: PIX, dinheiro..." />
+              </div>
+            </div>
+            <button onclick="addPayment(${i})">Adicionar pagamento</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Atualiza resumo geral
+      const summaryBox = document.getElementById("summaryBox");
+      if (tenantsDefault.length > 0) {
+        summaryBox.style.display = "block";
+        document.getElementById("sumAlugueis").textContent = formatMoney(sumAlugueis);
+        document.getElementById("sumEnergia").textContent = formatMoney(sumEnergia);
+        document.getElementById("sumTotalMes").textContent = formatMoney(sumTotalMes);
+        document.getElementById("sumRecebido").textContent = formatMoney(sumRecebido);
+        document.getElementById("sumSaldo").textContent = formatMoney(sumSaldo);
+      } else {
+        summaryBox.style.display = "none";
+      }
+
+      // Atualiza resumo rápido por unidade
+      const summaryUnidadesBox = document.getElementById("summaryUnidadesBox");
+      const tbody = document.getElementById("summaryUnidadesBody");
+      if (quickRows.length > 0) {
+        summaryUnidadesBox.style.display = "block";
+        tbody.innerHTML = quickRows.map(r => `
+          <tr>
+            <td>${r.nome}</td>
+            <td>${formatMoney(r.aluguel)}</td>
+            <td>${formatMoney(r.energia)}</td>
+            <td>${formatMoney(r.totalMes)}</td>
+            <td>${formatMoney(r.pago)}</td>
+            <td>${formatMoney(r.saldo)}</td>
+            <td>${r.status}</td>
+          </tr>
+        `).join("");
+      } else {
+        summaryUnidadesBox.style.display = "none";
+        tbody.innerHTML = "";
+      }
+    }
+
+    // ---------- AÇÕES ALUGUÉIS ----------
+    function updateTenant(index) {
+      const nome = tenantsDefault[index];
+      const tData = tenantsData[nome] || defaultTenantData();
+
+      const rentField = document.getElementById("t" + index + "_rent");
+      let rent = tData.rent;
+      if (nome !== "Lava Rápido") {
+        rent = parseFloat(rentField.value || "0") || 0;
+      }
+
+      const eStart = parseFloat(document.getElementById("t" + index + "_eStart").value || "0") || 0;
+      const eEnd = parseFloat(document.getElementById("t" + index + "_eEnd").value || "0") || 0;
+      const discount = parseFloat(document.getElementById("t" + index + "_discount").value || "0") || 0;
+
+      tData.rent = rent;
+      tData.eStart = eStart;
+      tData.eEnd = eEnd;
+      tData.discount = discount;
+
+      tenantsData[nome] = tData;
+      saveConfig();
+      saveMonthData();
+      renderTenants();
+    }
+
+    function addPayment(index) {
+      const nome = tenantsDefault[index];
+      const tData = tenantsData[nome] || defaultTenantData();
+
+      const valueStr = document.getElementById("t" + index + "_payValue").value || "0";
+      const val = parseFloat(valueStr.replace(",", ".") || "0") || 0;
+      if (val <= 0) {
+        alert("Informe um valor de pagamento maior que zero.");
+        return;
+      }
+
+      const date = document.getElementById("t" + index + "_payDate").value || "";
+      const note = document.getElementById("t" + index + "_payNote").value || "";
+
+      tData.payments = tData.payments || [];
+      tData.payments.push({
+        value: val,
+        date: date,
+        note: note
+      });
+
+      document.getElementById("t" + index + "_payValue").value = "";
+      document.getElementById("t" + index + "_payDate").value = "";
+      document.getElementById("t" + index + "_payNote").value = "";
+
+      tenantsData[nome] = tData;
+      saveMonthData();
+      renderTenants();
+    }
+
+    function removePayment(index, payIndex) {
+      const nome = tenantsDefault[index];
+      const tData = tenantsData[nome] || defaultTenantData();
+      if (!Array.isArray(tData.payments)) {
+        return;
+      }
+      tData.payments.splice(payIndex, 1);
+      tenantsData[nome] = tData;
+      saveMonthData();
+      renderTenants();
+    }
+
+    function initMonth() {
+      const monthInput = document.getElementById("mesRef");
+      const val = monthInput.value;
+      if (!val) {
+        alert("Selecione o mês de referência.");
+        return;
+      }
+      currentMonth = val;
+      loadMonthData(currentMonth);
+      saveConfig();
+      renderTenants();
+    }
+
+    // ---------- INICIALIZAÇÃO GLOBAL ----------
+    window.addEventListener("load", () => {
+      // Config inicial alugueis
+      loadConfig();
+
+      // Define mês atual como padrão
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const mesRefInput = document.getElementById("mesRef");
+      if (mesRefInput) {
+        mesRefInput.value = `${yyyy}-${mm}`;
+      }
+      currentMonth = `${yyyy}-${mm}`;
+      loadMonthData(currentMonth);
+      renderTenants();
+
+      document.getElementById("btnCarregarMes").addEventListener("click", () => {
+        initMonth();
+        // quando muda o mês de aluguel, sincroniza mês do acerto para bater o Lava Rápido
+        const acetFilterMonth = document.getElementById("acetFilterMonth");
+        if (acetFilterMonth && currentMonth) {
+          acetFilterMonth.value = currentMonth;
+          acetRender();
+        }
+      });
+      document.getElementById("valorKwh").addEventListener("change", () => {
+        saveConfig();
+        renderTenants();
+      });
+
+      // Inicializa AcetJuli
+      const today = new Date();
+      const dateStr = today.toISOString().slice(0,10);
+      const dateInput = document.getElementById("acetDateInput");
+      if (dateInput) {
+        dateInput.value = dateStr;
+      }
+      const acetFilterMonth = document.getElementById("acetFilterMonth");
+      if (acetFilterMonth) {
+        acetFilterMonth.addEventListener("change", () => {
+          acetRender();
+        });
+        acetFilterMonth.value = `${yyyy}-${mm}`;
+      }
+      acetRender();
+    });
+  </script>
+</body>
+</html>
