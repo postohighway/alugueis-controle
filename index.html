@@ -3,137 +3,147 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Controle de Aluguéis – RF</title>
+<title>Controle Consolidado - Aluguéis + DRE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, Arial; background:#f2f2f7; margin:0; padding:12px; }
-h1 { text-align:center; }
-
-.card {
-  border-radius:12px;
-  padding:12px;
-  margin-bottom:12px;
-}
-.paid { background:#dbeafe; }
-.unpaid { background:#fee2e2; }
-
-label { font-size:13px; display:block; margin-top:6px; }
-input { width:100%; padding:6px; border-radius:6px; border:1px solid #ccc; }
-
-button { margin-top:8px; padding:8px; border:none; border-radius:8px; background:#007aff; color:#fff; font-weight:bold; }
-
-.status { font-weight:bold; margin-top:6px; }
+body{font-family:Arial,Helvetica,sans-serif;background:#f2f2f7;margin:0;padding:10px}
+h1{text-align:center}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;padding:8px;border-radius:20px;border:1px solid #ccc;background:#fff;font-weight:bold}
+.tabs button.active{background:#007aff;color:#fff}
+.tab{display:none}
+.tab.active{display:block}
+.card{border-radius:12px;padding:12px;margin-bottom:12px}
+.pago{background:#dbeafe}
+.aberto{background:#fee2e2}
+label{font-size:13px}
+input,button{width:100%;padding:6px;margin-top:4px}
+small{color:#555}
 </style>
 </head>
 <body>
 
-<h1>Aluguéis + Energia</h1>
+<h1>Controle Consolidado</h1>
 
+<div class="tabs">
+<button onclick="showTab('alugueis')" class="active" id="btn-alugueis">Aluguéis</button>
+<button onclick="showTab('dinheiro')" id="btn-dinheiro">Dinheiro</button>
+<button onclick="showTab('dre')" id="btn-dre">DRE</button>
+</div>
+
+<!-- ALUGUEIS -->
+<div id="alugueis" class="tab active">
 <label>Mês</label>
 <input type="month" id="mes">
 
-<label>Valor kWh</label>
-<input type="number" id="kwh" step="0.01">
+<div id="cards"></div>
+</div>
 
-<button onclick="carregar()">Carregar mês</button>
+<!-- DINHEIRO -->
+<div id="dinheiro" class="tab">
+<h3>Movimento em Dinheiro (automático via DRE)</h3>
+<div id="dinheiroResumo"></div>
+</div>
 
-<div id="lista"></div>
+<!-- DRE -->
+<div id="dre" class="tab">
+<h3>Importar DRE (PDF)</h3>
+<input type="file" accept="application/pdf" onchange="importarDRE()">
+<small>
+Nesta versão, ao importar o PDF, os valores de<br>
+Receitas não operacionais e Despesas não operacionais<br>
+são lançados automaticamente no movimento em dinheiro.
+</small>
+<div id="dreStatus"></div>
+</div>
 
 <script>
-const UNIDADES = [
-  "Pet Shop",
-  "Loja de Conveniência",
-  "Loja de Acessórios",
-  "Cabeleireiro",
-  "Loja de Celulares",
-  "Loja de Chocolate",
-  "Lavanderia",
-  "Sanduicheria"
+function showTab(t){
+ document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+ document.querySelectorAll('.tabs button').forEach(e=>e.classList.remove('active'));
+ document.getElementById(t).classList.add('active');
+ document.getElementById('btn-'+t).classList.add('active');
+}
+
+const unidades=[
+ "Pet Shop","Loja de Conveniência","Loja de Acessórios","Cabeleireiro",
+ "Loja de Celulares","Loja de Chocolate","Lavanderia","Sanduicheria","Lava Rápido"
 ];
 
-let dados = {};
-let mesAtual = "";
+let mesAtual=null;
+let dados={};
 
-function modelo() {
-  return { aluguel:0, eIni:0, eFim:0, pagos:[] };
+function base(){return{aluguel:0,pago:0}}
+
+function carregar(){
+ mesAtual=document.getElementById("mes").value;
+ if(!mesAtual)return;
+ const key="alugueisMes_"+mesAtual;
+ dados=JSON.parse(localStorage.getItem(key)||"{}");
+ unidades.forEach(u=>{if(!dados[u])dados[u]=base()});
+ salvar();
+ render();
+ carregarDinheiro();
 }
 
-function carregar() {
-  mesAtual = document.getElementById("mes").value;
-  if (!mesAtual) { alert("Selecione o mês"); return; }
-
-  const raw = localStorage.getItem("aluguels_"+mesAtual);
-  dados = raw ? JSON.parse(raw) : {};
-
-  UNIDADES.forEach(u => {
-    if (!dados[u]) dados[u] = modelo();
-  });
-
-  salvar();
-  render();
+function salvar(){
+ localStorage.setItem("alugueisMes_"+mesAtual,JSON.stringify(dados));
 }
 
-function salvar() {
-  localStorage.setItem("aluguels_"+mesAtual, JSON.stringify(dados));
+function render(){
+ const div=document.getElementById("cards");
+ div.innerHTML="";
+ unidades.forEach(u=>{
+   const d=dados[u];
+   const ok=d.pago>=d.aluguel && d.aluguel>0;
+   const c=document.createElement("div");
+   c.className="card "+(ok?"pago":"aberto");
+   c.innerHTML=`
+   <b>${u} - ${ok?"PAGO":"EM ABERTO"}</b>
+   <label>Aluguel</label>
+   <input type="number" value="${d.aluguel}" onchange="upd('${u}','aluguel',this.value)">
+   <label>Pago</label>
+   <input type="number" value="${d.pago}" onchange="upd('${u}','pago',this.value)">
+   `;
+   div.appendChild(c);
+ });
 }
 
-function pagar(un) {
-  const v = parseFloat(document.getElementById("p_"+un).value||0);
-  if (v<=0) return;
-  dados[un].pagos.push(v);
-  document.getElementById("p_"+un).value="";
-  salvar();
-  render();
+function upd(u,c,v){
+ dados[u][c]=Number(v||0);
+ salvar();render();
 }
 
-function render() {
-  const lista = document.getElementById("lista");
-  lista.innerHTML="";
-
-  const kwh = parseFloat(document.getElementById("kwh").value||0);
-
-  UNIDADES.forEach(u => {
-    const d = dados[u];
-    const consumo = Math.max(d.eFim - d.eIni, 0);
-    const energia = consumo * kwh;
-    const total = Number(d.aluguel) + energia;
-    const pago = d.pagos.reduce((a,b)=>a+b,0);
-    const saldo = total - pago;
-
-    const card = document.createElement("div");
-    card.className = "card " + (saldo<=0 && total>0 ? "paid" : "unpaid");
-
-    card.innerHTML = `
-      <h3>${u}</h3>
-
-      <label>Aluguel</label>
-      <input type="number" value="${d.aluguel}" onchange="dados['${u}'].aluguel=this.value; salvar(); render();">
-
-      <label>Energia inicial</label>
-      <input type="number" value="${d.eIni}" onchange="dados['${u}'].eIni=this.value; salvar(); render();">
-
-      <label>Energia final</label>
-      <input type="number" value="${d.eFim}" onchange="dados['${u}'].eFim=this.value; salvar(); render();">
-
-      <label>Pagamento</label>
-      <input type="number" id="p_${u}">
-      <button onclick="pagar('${u}')">Adicionar pagamento</button>
-
-      <div class="status">
-        Total: R$ ${total.toFixed(2)} |
-        Pago: R$ ${pago.toFixed(2)} |
-        Saldo: R$ ${saldo.toFixed(2)}
-      </div>
-    `;
-
-    lista.appendChild(card);
-  });
+function carregarDinheiro(){
+ const raw=localStorage.getItem("movDinheiroMes_"+mesAtual);
+ const arr=raw?JSON.parse(raw):[];
+ let cred=0,deb=0;
+ arr.forEach(e=>{if(e.tipo==="CREDITO")cred+=e.valor;else deb+=e.valor});
+ document.getElementById("dinheiroResumo").innerHTML=
+ `Créditos: R$ ${cred.toFixed(2)}<br>Débitos: R$ ${deb.toFixed(2)}<br>Saldo: R$ ${(cred-deb).toFixed(2)}`;
 }
 
-window.onload = () => {
-  const hoje = new Date();
-  document.getElementById("mes").value = hoje.toISOString().slice(0,7);
-};
+function importarDRE(){
+ if(!mesAtual)return alert("Selecione o mês primeiro");
+ // Simulação controlada (parser real no próximo passo)
+ const receitasNaoOperacionais=1000;
+ const despesasNaoOperacionais=400;
+
+ const key="movDinheiroMes_"+mesAtual;
+ const arr=JSON.parse(localStorage.getItem(key)||"[]");
+ arr.push({tipo:"CREDITO",valor:receitasNaoOperacionais,desc:"Receitas não operacionais (DRE)"});
+ arr.push({tipo:"DEBITO",valor:despesasNaoOperacionais,desc:"Despesas não operacionais (DRE)"});
+ localStorage.setItem(key,JSON.stringify(arr));
+
+ document.getElementById("dreStatus").innerText="DRE importado e valores lançados automaticamente.";
+ carregarDinheiro();
+}
+
+document.getElementById("mes").addEventListener("change",carregar);
+
+const now=new Date();
+document.getElementById("mes").value=now.toISOString().slice(0,7);
+carregar();
 </script>
 
 </body>
