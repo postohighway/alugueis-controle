@@ -2,91 +2,136 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Aluguéis & DRE Consolidado</title>
+  <title>Aluguéis & Acerto Juliano</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * { box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif; }
-    body { margin:0; padding:12px; background:#f2f2f7; font-size:16px; }
-    h1 { font-size:22px; text-align:center; margin:0 0 10px; }
-    h2 { font-size:18px; margin:18px 0 8px; }
-    .top-bar-main { background:#fff; padding:10px 12px; border-radius:10px; box-shadow:0 2px 4px rgba(0,0,0,.05); margin-bottom:10px; }
-    label { display:block; font-size:14px; margin-top:6px; }
-    input,select,button,textarea{
-      width:100%; padding:6px 8px; margin-top:3px; border-radius:8px; border:1px solid #d1d1d6; font-size:15px;
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Arial, sans-serif; }
+    body { margin: 0; padding: 12px; background: #f2f2f7; font-size: 16px; }
+    h1 { font-size: 22px; text-align: center; margin: 0 0 10px; }
+    h2 { font-size: 18px; margin: 18px 0 8px; }
+
+    .top-bar-main {
+      background: #ffffff; padding: 10px 12px; border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 10px;
     }
-    input:focus,textarea:focus,button:focus{ outline:none; border-color:#007aff; box-shadow:0 0 0 1px rgba(0,122,255,.3); }
-    button{ background:#007aff; color:#fff; border:none; font-weight:600; margin-top:10px; cursor:pointer; }
-    button.secondary{ background:#fff; color:#007aff; border:1px solid #007aff; }
-    .cards-container{ margin-top:10px; }
-    .card{ background:#fff; border-radius:12px; padding:10px 12px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,.05); }
-    .card-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
-    .card-title{ font-weight:700; font-size:16px; }
-    .status-tag{ font-size:12px; padding:2px 6px; border-radius:8px; color:#fff; }
-    .status-aberto{ background:#ff3b30; }
-    .status-parcial{ background:#ff9f0a; }
-    .status-pago{ background:#34c759; }
-    .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:4px; }
-    .grid-2{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin-top:4px; }
-    .small-label{ font-size:12px; color:#8e8e93; }
-    .small-value{ font-weight:600; font-size:14px; }
-    .payments{ margin-top:8px; border-top:1px solid #e5e5ea; padding-top:6px; }
-    .payments-list{ max-height:140px; overflow-y:auto; margin-top:4px; border-radius:8px; border:1px solid #e5e5ea; padding:4px 6px; background:#fafafa; font-size:13px; }
-    .payment-row{ display:flex; justify-content:space-between; gap:4px; padding:2px 0; border-bottom:1px dashed #e5e5ea; }
-    .payment-row:last-child{ border-bottom:none; }
-    .payment-note{ color:#8e8e93; font-size:12px; }
-    .summary-box{ background:#fff; border-radius:12px; padding:10px 12px; margin-top:10px; box-shadow:0 2px 4px rgba(0,0,0,.05); }
-    .summary-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:6px; }
-    .summary-item-label{ font-size:13px; color:#8e8e93; }
-    .summary-item-value{ font-size:15px; font-weight:600; }
-    .whatsapp-hint{ font-size:12px; color:#8e8e93; margin-top:4px; }
-    .summary-table-wrapper{ overflow-x:auto; margin-top:6px; }
-    table.summary-table{ width:100%; border-collapse:collapse; font-size:13px; }
-    table.summary-table thead{ background:#f2f2f7; }
-    table.summary-table th,table.summary-table td{
-      padding:4px 6px; border-bottom:1px solid #e5e5ea; text-align:right; white-space:nowrap;
+
+    label { display: block; font-size: 14px; margin-top: 6px; }
+    input, select, button, textarea {
+      width: 100%; padding: 6px 8px; margin-top: 3px;
+      border-radius: 8px; border: 1px solid #d1d1d6; font-size: 15px;
     }
-    table.summary-table th:first-child,table.summary-table td:first-child{ text-align:left; }
-    table.summary-table tr:last-child td{ border-bottom:none; }
-    .tabs-header{ display:flex; gap:8px; margin-bottom:10px; }
-    .tab-button{ flex:1; padding:8px; border-radius:999px; border:1px solid #d1d1d6; background:#fff; color:#333; font-weight:600; font-size:14px; }
-    .tab-button.active{ background:#007aff; color:#fff; border-color:#007aff; }
-    .tab-content{ display:none; }
-    .tab-content.active{ display:block; }
-    .acet-sub{ font-size:12px; text-align:center; color:#666; margin-bottom:8px; }
-    .acet-top-bar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .acet-top-bar>div{ flex:1; min-width:120px; }
-    .acet-actions-top{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
-    .btn-primary{ background:#007aff; color:#fff; }
-    .btn-danger{ background:#ff3b30; color:#fff; font-size:12px; padding:4px 6px; }
-    .btn-small{ font-size:11px; padding:5px 8px; border-radius:20px; }
-    .btn-outline{ background:transparent; border:1px solid #d1d1d6; color:#666; }
-    .acet-scroll-table{ max-height:320px; overflow-y:auto; background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
-    .acet-debit-row{ background:#ffecec; }
-    .acet-credit-row{ background:#e9ffea; }
-    .acet-totais{ font-size:13px; margin-top:5px; }
-    .acet-totais span{ display:block; }
-    .saldo-positivo{ color:#ff3b30; font-weight:600; }
-    .saldo-negativo{ color:#30d158; font-weight:600; }
-    .acet-pill{ font-size:11px; padding:3px 6px; border-radius:999px; border:1px solid #d1d1d6; color:#666; display:inline-block; margin-top:2px; }
-    .acet-footer-note{ font-size:10px; text-align:center; color:#666; margin-top:6px; }
-    .acet-resumo-box{ font-size:12px; line-height:1.4; white-space:pre-line; }
-    .rec-row-debito{ background:#ffecec; }
-    .rec-row-credito{ background:#e9ffea; }
-    .rec-footer-note{ font-size:11px; color:#666; margin-top:4px; text-align:center; }
-    @media(min-width:768px){ body{ max-width:900px; margin:0 auto; } }
-    @media print{
-      .tabs-header,.tab-button,#tab-acerto,#tab-receitas{ display:none!important; }
+    input:focus, textarea:focus, button:focus {
+      outline: none; border-color: #007aff; box-shadow: 0 0 0 1px rgba(0,122,255,0.3);
+    }
+    button { background: #007aff; color: #fff; border: none; font-weight: 600; margin-top: 10px; cursor: pointer; }
+    button.secondary { background: #ffffff; color: #007aff; border: 1px solid #007aff; }
+
+    .cards-container { margin-top: 10px; }
+
+    .card {
+      background: #ffffff; border-radius: 12px; padding: 10px 12px; margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    /* NOVO: cor do fundo do card conforme pagamento */
+    .card.paid-bg { background: #dbeafe; }     /* azul claro */
+    .card.unpaid-bg { background: #fee2e2; }   /* vermelho claro */
+
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-title { font-weight: 700; font-size: 16px; }
+
+    .status-tag { font-size: 12px; padding: 2px 6px; border-radius: 8px; color: #fff; }
+    .status-aberto { background: #ff3b30; }
+    .status-parcial { background: #ff9f0a; }
+    .status-pago { background: #34c759; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 4px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 4px; }
+
+    .small-label { font-size: 12px; color: #8e8e93; }
+    .small-value { font-weight: 600; font-size: 14px; }
+
+    .payments { margin-top: 8px; border-top: 1px solid #e5e5ea; padding-top: 6px; }
+    .payments-list {
+      max-height: 140px; overflow-y: auto; margin-top: 4px;
+      border-radius: 8px; border: 1px solid #e5e5ea; padding: 4px 6px;
+      background: rgba(250,250,250,0.75); font-size: 13px;
+    }
+    .payment-row { display: flex; justify-content: space-between; gap: 4px; padding: 2px 0; border-bottom: 1px dashed #e5e5ea; }
+    .payment-row:last-child { border-bottom: none; }
+    .payment-note { color: #8e8e93; font-size: 12px; }
+
+    .summary-box {
+      background: #ffffff; border-radius: 12px; padding: 10px 12px; margin-top: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px; }
+    .summary-item-label { font-size: 13px; color: #8e8e93; }
+    .summary-item-value { font-size: 15px; font-weight: 600; }
+
+    .whatsapp-hint { font-size: 12px; color: #8e8e93; margin-top: 4px; }
+    .summary-table-wrapper { overflow-x: auto; margin-top: 6px; }
+
+    table.summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.summary-table thead { background: #f2f2f7; }
+    table.summary-table th, table.summary-table td {
+      padding: 4px 6px; border-bottom: 1px solid #e5e5ea; text-align: right; white-space: nowrap;
+    }
+    table.summary-table th:first-child, table.summary-table td:first-child { text-align: left; }
+    table.summary-table tr:last-child td { border-bottom: none; }
+
+    /* Tabs */
+    .tabs-header { display: flex; gap: 8px; margin-bottom: 10px; }
+    .tab-button {
+      flex: 1; padding: 8px; border-radius: 999px; border: 1px solid #d1d1d6;
+      background: #ffffff; color: #333; font-weight: 600; font-size: 14px;
+    }
+    .tab-button.active { background: #007aff; color: #ffffff; border-color: #007aff; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Estilos específicos do AcetJuli embutido */
+    .acet-sub { font-size: 12px; text-align: center; color: #666666; margin-bottom: 8px; }
+    .acet-top-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .acet-top-bar > div { flex: 1; min-width: 120px; }
+    .acet-actions-top { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+    .btn-primary { background: #007aff; color: #fff; }
+    .btn-danger { background: #ff3b30; color: #fff; font-size: 12px; padding: 4px 6px; }
+    .btn-small { font-size: 11px; padding: 5px 8px; border-radius: 20px; }
+    .btn-outline { background: transparent; border: 1px solid #d1d1d6; color: #666666; }
+
+    .acet-scroll-table {
+      max-height: 320px; overflow-y: auto; background: #ffffff;
+      border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .acet-debit-row { background-color: #ffecec; }
+    .acet-credit-row { background-color: #e9ffea; }
+    .acet-totais { font-size: 13px; margin-top: 5px; }
+    .acet-totais span { display: block; }
+
+    .saldo-positivo { color: #ff3b30; font-weight: 600; }
+    .saldo-negativo { color: #30d158; font-weight: 600; }
+
+    .acet-pill {
+      font-size: 11px; padding: 3px 6px; border-radius: 999px;
+      border: 1px solid #d1d1d6; color: #666666; display: inline-block; margin-top: 2px;
+    }
+    .acet-footer-note { font-size: 10px; text-align: center; color: #666666; margin-top: 6px; }
+    .acet-resumo-box { font-size: 12px; line-height: 1.4; white-space: pre-line; }
+
+    @media (min-width: 768px) { body { max-width: 900px; margin: 0 auto; } }
+    @media print {
+      .tabs-header, .tab-button, #tab-acerto, #tab-caixa { display: none !important; }
     }
   </style>
 </head>
 <body>
-  <h1>Aluguéis & DRE Consolidado</h1>
+  <h1>Aluguéis & Acerto Juliano</h1>
 
   <div class="tabs-header">
     <button class="tab-button active" id="btnTabAlugueis" onclick="showTab('alugueis')">Aluguéis + Energia</button>
     <button class="tab-button" id="btnTabAcerto" onclick="showTab('acerto')">Acerto Juliano (Lava Rápido)</button>
-    <button class="tab-button" id="btnTabReceitas" onclick="showTab('receitas')">Receitas em Dinheiro</button>
-    <button class="tab-button" id="btnTabDR" onclick="showTab('dr')">DRE</button>
+    <button class="tab-button" id="btnTabCaixa" onclick="showTab('caixa')">Movimento em Dinheiro</button>
   </div>
 
   <!-- TAB ALUGUÉIS -->
@@ -100,7 +145,7 @@
 
       <button id="btnCarregarMes">Carregar mês</button>
       <small class="whatsapp-hint">
-        Dica: preencha tudo, depois use o resumo rápido ou tire print dos cartões para mandar no WhatsApp.
+        Cor do card: <strong>azul</strong> = pago · <strong>vermelho claro</strong> = não pago (inclui parcial).
       </small>
     </div>
 
@@ -109,53 +154,26 @@
     <div class="summary-box" id="summaryBox" style="display:none;">
       <h2>Resumo geral do mês</h2>
       <div class="summary-grid">
-        <div>
-          <div class="summary-item-label">Total de aluguéis</div>
-          <div class="summary-item-value" id="sumAlugueis">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="summary-item-label">Total energia líquida</div>
-          <div class="summary-item-value" id="sumEnergia">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="summary-item-label">Total (aluguéis + energia)</div>
-          <div class="summary-item-value" id="sumTotalMes">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="summary-item-label">Receitas não operacionais (líquido)</div>
-          <div class="summary-item-value" id="sumReceitasExtra">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="summary-item-label">Total geral (aluguéis + energia + receitas em dinheiro)</div>
-          <div class="summary-item-value" id="sumTotalGeral">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="summary-item-label">Total recebido (aluguéis)</div>
-          <div class="summary-item-value" id="sumRecebido">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="summary-item-label">Saldo a receber (aluguéis)</div>
-          <div class="summary-item-value" id="sumSaldo">R$ 0,00</div>
-        </div>
+        <div><div class="summary-item-label">Total de aluguéis</div><div class="summary-item-value" id="sumAlugueis">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Total energia líquida</div><div class="summary-item-value" id="sumEnergia">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Total (aluguéis + energia)</div><div class="summary-item-value" id="sumTotalMes">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Total recebido (aluguéis)</div><div class="summary-item-value" id="sumRecebido">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Saldo a receber (aluguéis)</div><div class="summary-item-value" id="sumSaldo">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Receitas não operacionais (dinheiro)</div><div class="summary-item-value" id="sumCashCred">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Despesas não operacionais (dinheiro)</div><div class="summary-item-value" id="sumCashDeb">R$ 0,00</div></div>
+        <div><div class="summary-item-label">Saldo movimento em dinheiro</div><div class="summary-item-value" id="sumCashSaldo">R$ 0,00</div></div>
+        <div><div class="summary-item-label"><strong>Saldo consolidado geral</strong></div><div class="summary-item-value" id="sumConsolidado"><strong>R$ 0,00</strong></div></div>
       </div>
     </div>
 
     <div class="summary-box" id="summaryUnidadesBox" style="display:none;">
       <h2>Resumo rápido por unidade</h2>
-      <div class="whatsapp-hint">
-        Situação de cada unidade (aluguel, energia, total, pagos e saldo).
-      </div>
+      <div class="whatsapp-hint">Situação de cada unidade (aluguel, energia, total, pagos e saldo).</div>
       <div class="summary-table-wrapper">
         <table class="summary-table">
           <thead>
             <tr>
-              <th>Unidade</th>
-              <th>Aluguel</th>
-              <th>Energia líquida</th>
-              <th>Total mês</th>
-              <th>Pago</th>
-              <th>Saldo</th>
-              <th>Status</th>
+              <th>Unidade</th><th>Aluguel</th><th>Energia líquida</th><th>Total mês</th><th>Pago</th><th>Saldo</th><th>Status</th>
             </tr>
           </thead>
           <tbody id="summaryUnidadesBody"></tbody>
@@ -183,10 +201,10 @@
           <button class="btn-small btn-outline" onclick="acetDownloadBackup()">Backup (.json)</button>
           <button class="btn-small btn-outline" onclick="acetImportData()">Importar</button>
           <button class="btn-small" style="background:#8e8e93;color:#fff;" onclick="acetPrintPDF()">PDF</button>
-          <button class="btn-small" style="background:#555;color:#fff;" onclick="acetClearAll()">Zerar tudo</button>
+          <button class="btn-small" style="background:#555555;color:#fff;" onclick="acetClearAll()">Zerar tudo</button>
         </div>
         <div class="acet-footer-note">
-          Dados do acerto ficam só neste aparelho (localStorage). Use "Backup (.json)" para salvar em outro lugar.
+          Dados do acerto ficam somente neste aparelho (localStorage). Use “Backup (.json)” para salvar em outro lugar.
         </div>
       </div>
 
@@ -198,7 +216,7 @@
         <input type="date" id="acetDateInput">
 
         <label for="acetDescInput">Descrição</label>
-        <input type="text" id="acetDescInput" placeholder="Ex.: Biotri, CEMIG, DMAE, mesas, etc.">
+        <input type="text" id="acetDescInput" placeholder="Ex.: contas do Lava Rápido, Biotri, CEMIG...">
 
         <label for="acetTypeInput">Tipo</label>
         <select id="acetTypeInput">
@@ -216,15 +234,7 @@
         <h2>Lançamentos do mês</h2>
         <div class="acet-scroll-table">
           <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Tipo</th>
-                <th style="text-align:right;">Valor (R$)</th>
-                <th></th>
-              </tr>
-            </thead>
+            <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th style="text-align:right;">Valor (R$)</th><th></th></tr></thead>
             <tbody id="acetTableBody"></tbody>
           </table>
         </div>
@@ -234,1112 +244,668 @@
       <div class="card">
         <h2>Resumo para WhatsApp / Print</h2>
         <div id="acetWhatsResumo" class="acet-resumo-box"></div>
-        <div class="acet-footer-note">
-          Use este bloco como “tela oficial” para print e envio no WhatsApp.
-        </div>
+        <div class="acet-footer-note">Use este bloco como “tela oficial” para print e envio no WhatsApp.</div>
       </div>
 
       <textarea id="acetJsonArea" style="width:100%;height:140px;display:none;"></textarea>
     </div>
   </div>
 
-  <!-- TAB RECEITAS EM DINHEIRO -->
-  <div id="tab-receitas" class="tab-content">
+  <!-- TAB MOVIMENTO EM DINHEIRO -->
+  <div id="tab-caixa" class="tab-content">
     <div class="card">
-      <h2>Receitas não operacionais em dinheiro</h2>
-      <div class="acet-sub">Créditos e débitos em dinheiro que entram como resultado líquido na aba principal.</div>
+      <h2>Movimento em Dinheiro</h2>
+      <div class="acet-sub">Receitas e despesas em dinheiro – não operacionais, por mês</div>
 
-      <div class="card">
-        <div class="acet-top-bar">
-          <div>
-            <label for="recFilterMonth">Mês (YYYY-MM)</label>
-            <input type="month" id="recFilterMonth">
-          </div>
-        </div>
-        <div class="acet-actions-top">
-          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="recSetCurrentMonth()">Hoje</button>
-          <button class="btn-small btn-outline" onclick="recExportData()">Ver JSON</button>
-          <button class="btn-small btn-outline" onclick="recDownloadBackup()">Backup (.json)</button>
-          <button class="btn-small btn-outline" onclick="recImportData()">Importar</button>
-        </div>
-        <div class="rec-footer-note">
-          Lançamentos ficam salvos apenas neste aparelho. Marque “recorrente” para repetir automaticamente todo mês.
-        </div>
+      <div class="top-bar-main">
+        <div class="small-label">Mês atual (segue seleção da aba Aluguéis)</div>
+        <div class="small-value" id="cashMesLabel">-</div>
+        <div class="whatsapp-hint">Tudo que for lançado aqui entra no resumo geral como receitas / despesas não operacionais.</div>
       </div>
 
       <div class="card">
         <h2>Novo lançamento em dinheiro</h2>
 
-        <label for="recDateInput">Data</label>
-        <input type="date" id="recDateInput">
+        <label for="cashDate">Data</label>
+        <input type="date" id="cashDate">
 
-        <label for="recDescInput">Descrição</label>
-        <input type="text" id="recDescInput" placeholder="Ex.: festa, extras, serviços avulsos...">
+        <label for="cashDesc">Descrição</label>
+        <input type="text" id="cashDesc" placeholder="Ex.: garfos para festa, diárias fim de semana..." />
 
-        <label for="recTypeInput">Tipo</label>
-        <select id="recTypeInput">
-          <option value="CREDITO">Crédito em dinheiro (entra)</option>
-          <option value="DEBITO">Débito em dinheiro (sai)</option>
+        <label for="cashObs">Observação</label>
+        <input type="text" id="cashObs" placeholder="Opcional" />
+
+        <label for="cashTipo">Tipo</label>
+        <select id="cashTipo">
+          <option value="CREDITO">Crédito (entrada em dinheiro)</option>
+          <option value="DEBITO">Débito (saída em dinheiro)</option>
         </select>
 
-        <label for="recValueInput">Valor (R$)</label>
-        <input type="number" id="recValueInput" step="0.01" inputmode="decimal" placeholder="0,00">
+        <label for="cashValor">Valor (R$)</label>
+        <input type="number" id="cashValor" step="0.01" inputmode="decimal" placeholder="0,00" />
 
-        <label style="margin-top:8px;">
-          <input type="checkbox" id="recRecurringInput" style="width:auto;margin-right:6px;">
-          Lançamento recorrente (repete automaticamente todo mês)
-        </label>
-
-        <button class="btn-primary" onclick="recAddTransaction()">Incluir lançamento</button>
+        <button onclick="cashAdd()">Incluir lançamento</button>
       </div>
 
       <div class="card">
         <h2>Lançamentos do mês</h2>
         <div class="acet-scroll-table">
           <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Tipo</th>
-                <th style="text-align:right;">Crédito (R$)</th>
-                <th style="text-align:right;">Débito (R$)</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="recTableBody"></tbody>
+            <thead><tr><th>Data</th><th>Descrição</th><th>Obs.</th><th>Crédito</th><th>Débito</th><th></th></tr></thead>
+            <tbody id="cashTableBody"></tbody>
           </table>
         </div>
-        <div class="acet-totais" id="recTotaisBox"></div>
-      </div>
-
-      <div class="card">
-        <h2>Resumo do mês (para a aba principal)</h2>
-        <div id="recResumoMes" class="acet-resumo-box"></div>
-        <div class="rec-footer-note">
-          O resultado líquido acima entra automaticamente na aba “Aluguéis + Energia” como
-          <strong>Receitas não operacionais (líquido)</strong>.
-        </div>
-      </div>
-
-      <textarea id="recJsonArea" style="width:100%;height:140px;display:none;"></textarea>
-    </div>
-  </div>
-
-  <!-- TAB DRE -->
-  <div id="tab-dr" class="tab-content">
-    <div class="card">
-      <h2>DRE – HW LUB, HIGHWAY</h2>
-      <div class="acet-sub">
-        Layout idêntico ao DRE da Lynx. Lê a imagem do DRE, soma só o que não está no DRE original
-        (aluguéis/energia conforme suas regras) + receitas em dinheiro, e compara com o caixa real.
-      </div>
-
-      <div class="card">
-        <div class="acet-top-bar">
-          <div>
-            <label for="drFilterMonth">Mês (YYYY-MM)</label>
-            <input type="month" id="drFilterMonth">
-          </div>
-        </div>
-        <div class="acet-actions-top">
-          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="drSetCurrentMonth()">Hoje</button>
-        </div>
-
-        <label for="drFileInput" style="margin-top:8px;">Imagem do DRE (JPG/PNG – print do relatório)</label>
-        <input type="file" id="drFileInput" accept="image/*" />
-
-        <button class="btn-small" style="margin-top:6px;background:#34c759;color:#fff;" onclick="drLerDRE()">Ler DRE da imagem</button>
-
-        <div class="acet-footer-note">
-          Use um print nítido do DRE (como o que você mandou). O navegador lê os números sozinho; você pode ajustar manualmente.
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Demonstrativo do Resultado do Exercício</h2>
-        <div class="summary-table-wrapper">
-          <table class="summary-table">
-            <thead>
-              <tr><th>Conta</th><th>Valor (R$)</th></tr>
-            </thead>
-            <tbody id="drTabelaBody">
-              <tr><td>Receita Bruta de Vendas de Produtos</td><td><input id="dre_receita_produtos" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Receita Bruta de Vendas de Serviços</td><td><input id="dre_receita_servicos" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td><strong>Total da Receita Bruta</strong></td><td><input id="dre_total_bruta" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td>Devoluções de Vendas</td><td><input id="dre_devolucoes" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Impostos Incidentes Sobre Vendas</td><td><input id="dre_impostos" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td><strong>Receita Líquida de Vendas de Produtos e Serviços</strong></td><td><input id="dre_receita_liquida" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td>Custos dos Produtos Vendidos</td><td><input id="dre_custos_produtos" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Custos dos Serviços Vendidos</td><td><input id="dre_custos_servicos" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td><strong>Lucro/Prejuízo Bruto</strong></td><td><input id="dre_lucro_bruto" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td>Despesas Administrativas</td><td><input id="dre_desp_adm" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Despesas de Vendas</td><td><input id="dre_desp_vendas" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Provisões Sociais Trabalhistas</td><td><input id="dre_prov_sociais" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Despesas Financeiras</td><td><input id="dre_desp_fin" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Variação de Estoques</td><td><input id="dre_var_estoques" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Receitas Financeiras</td><td><input id="dre_rec_fin" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td><strong>Lucro/Prejuízo Operacional</strong></td><td><input id="dre_lucro_oper" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td>Despesas não Operacionais</td><td><input id="dre_desp_nao_op" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Receitas não Operacionais</td><td><input id="dre_rec_nao_op" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td><strong>Lucro/Prejuízo do Exercício Antes da Depreciação</strong></td><td><input id="dre_lucro_antes_dep" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td>Depreciações</td><td><input id="dre_depreciacoes" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td><strong>Lucro/Prejuízo do Exercício</strong></td><td><input id="dre_lucro_exercicio" type="number" step="0.01" inputmode="decimal" /></td></tr>
-
-              <tr><td>Receitas não Operacionais – Aluguéis + Energia + Dinheiro</td><td><input id="dre_ajustes_sistema" type="number" step="0.01" inputmode="decimal" readonly /></td></tr>
-              <tr><td><strong>Lucro/Prejuízo Ajustado (DRE + ajustes)</strong></td><td><input id="dre_lucro_ajustado" type="number" step="0.01" inputmode="decimal" readonly /></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Caixa Real e Resumo</h2>
-        <label for="drResultadoCaixa">Resultado REAL em dinheiro (caixa / banco) – R$</label>
-        <input type="number" id="drResultadoCaixa" step="0.01" inputmode="decimal" oninput="drAtualizarResumo()" />
-
-        <div class="summary-table-wrapper" style="margin-top:8px;">
-          <table class="summary-table">
-            <tbody id="drResumoTabelaBody"></tbody>
-          </table>
-        </div>
+        <div class="acet-totais" id="cashTotaisBox"></div>
       </div>
 
       <div class="card">
         <h2>Resumo para WhatsApp / Print</h2>
-        <div id="drResumoTexto" class="acet-resumo-box"></div>
-        <div class="acet-footer-note">
-          DRE oficial + ajustes (aluguéis/energia que não estão no DRE original + receitas em dinheiro), comparado com o caixa real.
-        </div>
+        <div id="cashResumo" class="acet-resumo-box"></div>
       </div>
     </div>
   </div>
 
-  <!-- OCR -->
-  <script src="https://unpkg.com/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
-
   <script>
     // ---------- TABS ----------
-    function showTab(tab){
-      const tabs=["alugueis","acerto","receitas","dr"];
-      const ids={alugueis:"tab-alugueis",acerto:"tab-acerto",receitas:"tab-receitas",dr:"tab-dr"};
-      const btnIds={alugueis:"btnTabAlugueis",acerto:"btnTabAcerto",receitas:"btnTabReceitas",dr:"btnTabDR"};
-      tabs.forEach(t=>{
-        document.getElementById(ids[t]).classList.remove("active");
-        document.getElementById(btnIds[t]).classList.remove("active");
-      });
-      document.getElementById(ids[tab]).classList.add("active");
-      document.getElementById(btnIds[tab]).classList.add("active");
+    function showTab(tab) {
+      const alugueis = document.getElementById("tab-alugueis");
+      const acerto = document.getElementById("tab-acerto");
+      const caixa = document.getElementById("tab-caixa");
+      const btnAlugueis = document.getElementById("btnTabAlugueis");
+      const btnAcerto = document.getElementById("btnTabAcerto");
+      const btnCaixa = document.getElementById("btnTabCaixa");
+
+      alugueis.classList.remove("active");
+      acerto.classList.remove("active");
+      caixa.classList.remove("active");
+      btnAlugueis.classList.remove("active");
+      btnAcerto.classList.remove("active");
+      btnCaixa.classList.remove("active");
+
+      if (tab === "alugueis") { alugueis.classList.add("active"); btnAlugueis.classList.add("active"); }
+      else if (tab === "acerto") { acerto.classList.add("active"); btnAcerto.classList.add("active"); }
+      else { caixa.classList.add("active"); btnCaixa.classList.add("active"); }
     }
 
-    // ---------- CONFIG ALUGUÉIS ----------
-    const tenantsDefault=[
+    // ---------- UNIDADES (AGORA COM LAVANDERIA + SANDUICHERIA) ----------
+    const tenantsDefault = [
       "Pet Shop",
       "Loja de Conveniência",
       "Loja de Acessórios",
       "Cabeleireiro",
       "Loja de Celulares",
       "Lava Rápido",
-      "Loja de Chocolate"
+      "Loja de Chocolate",
+      "Lavanderia",
+      "Sanduicheria"
     ];
 
-    let currentMonth=null;
-    let tenantsData={};
+    let currentMonth = null;
+    let tenantsData = {};
+    let cashEntries = [];
 
-    function defaultTenantData(){ return{rent:0,eStart:0,eEnd:0,discount:0,payments:[]}; }
+    function defaultTenantData() {
+      return { rent: 0, eStart: 0, eEnd: 0, discount: 0, payments: [] };
+    }
 
-    function loadConfig(){
-      const cfgStr=localStorage.getItem("alugueisConfig");
-      if(cfgStr){
-        try{
-          const cfg=JSON.parse(cfgStr);
-          if(cfg.valorKwh!=null) document.getElementById("valorKwh").value=cfg.valorKwh;
-        }catch(e){}
+    function loadConfig() {
+      const cfgStr = localStorage.getItem("alugueisConfig");
+      if (cfgStr) {
+        try {
+          const cfg = JSON.parse(cfgStr);
+          if (cfg.valorKwh != null) document.getElementById("valorKwh").value = cfg.valorKwh;
+        } catch (e) { console.warn("Erro ao ler config:", e); }
       }
     }
-    function saveConfig(){
-      const valorKwh=parseFloat(document.getElementById("valorKwh").value||"0")||0;
-      localStorage.setItem("alugueisConfig",JSON.stringify({valorKwh}));
+
+    function saveConfig() {
+      const valorKwh = parseFloat(document.getElementById("valorKwh").value || "0") || 0;
+      localStorage.setItem("alugueisConfig", JSON.stringify({ valorKwh }));
     }
 
-    function loadMonthData(monthStr){
-      const key="alugueisMes_"+monthStr;
-      const dataStr=localStorage.getItem(key);
-      tenantsData={};
-      if(dataStr){
-        try{
-          const parsed=JSON.parse(dataStr);
-          tenantsDefault.forEach(nome=>{
-            if(parsed[nome]){
-              tenantsData[nome]=parsed[nome];
-              if(!Array.isArray(tenantsData[nome].payments)) tenantsData[nome].payments=[];
-            }else tenantsData[nome]=defaultTenantData();
+    function loadMonthData(monthStr) {
+      const key = "alugueisMes_" + monthStr;
+      const dataStr = localStorage.getItem(key);
+      tenantsData = {};
+      if (dataStr) {
+        try {
+          const parsed = JSON.parse(dataStr);
+          tenantsDefault.forEach(nome => {
+            if (parsed[nome]) {
+              tenantsData[nome] = parsed[nome];
+              if (!Array.isArray(tenantsData[nome].payments)) tenantsData[nome].payments = [];
+            } else {
+              tenantsData[nome] = defaultTenantData();
+            }
           });
-        }catch(e){ tenantsDefault.forEach(nome=>tenantsData[nome]=defaultTenantData()); }
-      }else tenantsDefault.forEach(nome=>tenantsData[nome]=defaultTenantData());
+        } catch (e) {
+          console.warn("Erro ao ler mês, iniciando novo:", e);
+          tenantsDefault.forEach(nome => tenantsData[nome] = defaultTenantData());
+        }
+      } else {
+        tenantsDefault.forEach(nome => tenantsData[nome] = defaultTenantData());
+      }
     }
-    function saveMonthData(){
-      if(!currentMonth) return;
-      const key="alugueisMes_"+currentMonth;
-      localStorage.setItem(key,JSON.stringify(tenantsData));
+
+    function saveMonthData() {
+      if (!currentMonth) return;
+      localStorage.setItem("alugueisMes_" + currentMonth, JSON.stringify(tenantsData));
+    }
+
+    // ---------- MOVIMENTO EM DINHEIRO ----------
+    function cashLoadMonth(monthStr) {
+      const raw = localStorage.getItem("movDinheiroMes_" + monthStr);
+      if (!raw) cashEntries = [];
+      else {
+        try { const arr = JSON.parse(raw); cashEntries = Array.isArray(arr) ? arr : []; }
+        catch (e) { cashEntries = []; }
+      }
+    }
+    function cashSaveMonth() {
+      if (!currentMonth) return;
+      localStorage.setItem("movDinheiroMes_" + currentMonth, JSON.stringify(cashEntries));
+    }
+    function cashFormat(v) { return "R$ " + (v || 0).toFixed(2).replace(".", ","); }
+    function getCashTotals() {
+      let totalCred = 0, totalDeb = 0;
+      cashEntries.forEach(e => { if (e.tipo === "CREDITO") totalCred += e.valor || 0; else totalDeb += e.valor || 0; });
+      return { totalCred, totalDeb, saldo: totalCred - totalDeb };
+    }
+    function cashAdd() {
+      if (!currentMonth) { alert("Selecione o mês na aba Aluguéis antes de lançar em dinheiro."); return; }
+      const date = document.getElementById("cashDate").value;
+      const desc = document.getElementById("cashDesc").value.trim();
+      const obs = document.getElementById("cashObs").value.trim();
+      const tipo = document.getElementById("cashTipo").value;
+      const valor = parseFloat(String(document.getElementById("cashValor").value).replace(",", "."));
+      if (!date || !desc || isNaN(valor) || valor <= 0) { alert("Preencha data, descrição e valor corretamente."); return; }
+      cashEntries.push({ id: Date.now(), date, desc, obs, tipo, valor });
+      cashSaveMonth();
+      document.getElementById("cashDesc").value = "";
+      document.getElementById("cashObs").value = "";
+      document.getElementById("cashValor").value = "";
+      cashRender(); renderTenants();
+    }
+    function cashDelete(id) {
+      if (!confirm("Excluir este lançamento em dinheiro?")) return;
+      cashEntries = cashEntries.filter(e => e.id !== id);
+      cashSaveMonth(); cashRender(); renderTenants();
+    }
+    function cashRender() {
+      const tbody = document.getElementById("cashTableBody");
+      const totaisBox = document.getElementById("cashTotaisBox");
+      const resumoBox = document.getElementById("cashResumo");
+      const mesLabel = document.getElementById("cashMesLabel");
+      if (!tbody || !totaisBox || !resumoBox) return;
+
+      mesLabel.textContent = currentMonth || "-";
+      tbody.innerHTML = "";
+
+      if (!currentMonth) {
+        totaisBox.innerHTML = "<span>Selecione um mês na aba Aluguéis.</span>";
+        resumoBox.textContent = "";
+        return;
+      }
+
+      const entries = [...cashEntries].sort((a,b) => a.date.localeCompare(b.date) || a.id - b.id);
+      if (entries.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = '<td colspan="6" style="text-align:center;">Nenhum lançamento em dinheiro para este mês.</td>';
+        tbody.appendChild(tr);
+      } else {
+        entries.forEach(e => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${e.date}</td>
+            <td>${e.desc}</td>
+            <td>${e.obs || ""}</td>
+            <td style="text-align:right;">${e.tipo === "CREDITO" ? cashFormat(e.valor) : ""}</td>
+            <td style="text-align:right;">${e.tipo === "DEBITO" ? cashFormat(e.valor) : ""}</td>
+            <td style="text-align:center;"><button class="btn-danger" onclick="cashDelete(${e.id})">X</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      const totals = getCashTotals();
+      totaisBox.innerHTML = `
+        <span><strong>Total Créditos (dinheiro):</strong> ${cashFormat(totals.totalCred)}</span>
+        <span><strong>Total Débitos (dinheiro):</strong> ${cashFormat(totals.totalDeb)}</span>
+        <span style="margin-top:4px;"><strong>Saldo em dinheiro:</strong> ${cashFormat(totals.saldo)}</span>
+      `;
+
+      let txt = "MOVIMENTO EM DINHEIRO (NÃO OPERACIONAL)\n";
+      txt += "Mês: " + currentMonth + "\n\n";
+      if (entries.length === 0) txt += "Nenhum lançamento em dinheiro neste mês.\n";
+      else {
+        entries.forEach(e => {
+          const lado = e.tipo === "CREDITO" ? "+" : "-";
+          txt += `• ${e.date} – ${e.desc}`;
+          if (e.obs) txt += ` (${e.obs})`;
+          txt += ` – ${lado} ${cashFormat(e.valor)}\n`;
+        });
+      }
+      txt += "\nTotal créditos: " + cashFormat(totals.totalCred);
+      txt += "\nTotal débitos: " + cashFormat(totals.totalDeb);
+      txt += "\nSaldo em dinheiro: " + cashFormat(totals.saldo) + "\n";
+      resumoBox.textContent = txt;
     }
 
     // ---------- ACERTO JULIANO ----------
-    const ACET_STORAGE_KEY="AcetJuli_v1";
-
-    function acetEnsureSeedData(){
-      const raw=localStorage.getItem(ACET_STORAGE_KEY);
-      if(!raw||raw==="[]"){
-        const seed=[
-          {id:1,date:"2025-12-06",description:"BIOTR",type:"DEBITO_RF",value:750.00},
-          {id:2,date:"2025-12-06",description:"CEMIG",type:"DEBITO_RF",value:350.00},
-          {id:3,date:"2025-12-06",description:"acerto parcela 2/2 da DMAE",type:"DEBITO_RF",value:1247.00},
-          {id:4,date:"2025-12-06",description:"saldo devedor do mes passado",type:"DEBITO_RF",value:279.37},
-          {id:5,date:"2025-12-06",description:"DMAE DESSE MES QUE AINDA NAO CHEGOU",type:"DEBITO_RF",value:0.01},
-          {id:6,date:"2025-12-06",description:"EMPORIO DO FARLEY",type:"CREDITO_JULIANO",value:798.00},
-          {id:7,date:"2025-12-06",description:"MESAS PARA FESTA",type:"CREDITO_JULIANO",value:170.00},
-          {id:8,date:"2025-12-06",description:"PEBOLIM",type:"CREDITO_JULIANO",value:170.00},
-          {id:9,date:"2025-12-06",description:"PACOTE CARVAO",type:"CREDITO_JULIANO",value:55.00}
+    const ACET_STORAGE_KEY = "AcetJuli_v1";
+    function acetEnsureSeedData() {
+      const raw = localStorage.getItem(ACET_STORAGE_KEY);
+      if (!raw || raw === "[]") {
+        const seed = [
+          { id: 1, date: "2025-12-06", description: "BIOTR", type: "DEBITO_RF", value: 750.00 },
+          { id: 2, date: "2025-12-06", description: "CEMIG", type: "DEBITO_RF", value: 350.00 },
+          { id: 3, date: "2025-12-06", description: "acerto parcela 2/2 da DMAE", type: "DEBITO_RF", value: 1247.00 },
+          { id: 4, date: "2025-12-06", description: "saldo devedor do mes passado", type: "DEBITO_RF", value: 279.37 },
+          { id: 5, date: "2025-12-06", description: "DMAE DESSE MES QUE AINDA NAO CHEGOU", type: "DEBITO_RF", value: 0.01 },
+          { id: 6, date: "2025-12-06", description: "EMPORIO DO FARLEY", type: "CREDITO_JULIANO", value: 798.00 },
+          { id: 7, date: "2025-12-06", description: "MESAS PARA FESTA", type: "CREDITO_JULIANO", value: 170.00 },
+          { id: 8, date: "2025-12-06", description: "PEBOLIM", type: "CREDITO_JULIANO", value: 170.00 },
+          { id: 9, date: "2025-12-06", description: "PACOTE CARVAO", type: "CREDITO_JULIANO", value: 55.00 }
         ];
-        localStorage.setItem(ACET_STORAGE_KEY,JSON.stringify(seed));
+        localStorage.setItem(ACET_STORAGE_KEY, JSON.stringify(seed));
       }
     }
-    function acetLoadData(){
-      const raw=localStorage.getItem(ACET_STORAGE_KEY);
-      if(!raw) return[];
-      try{ const arr=JSON.parse(raw); return Array.isArray(arr)?arr:[]; }catch(e){ return[]; }
-    }
-    function acetSaveData(data){ localStorage.setItem(ACET_STORAGE_KEY,JSON.stringify(data)); }
-    function acetSetCurrentMonth(){
-      const today=new Date();
-      const monthStr=today.toISOString().slice(0,7);
-      const input=document.getElementById("acetFilterMonth");
-      if(input) input.value=monthStr;
+    function acetLoadData() { const raw = localStorage.getItem(ACET_STORAGE_KEY); if (!raw) return []; try { const arr = JSON.parse(raw); return Array.isArray(arr) ? arr : []; } catch(e) { return []; } }
+    function acetSaveData(data) { localStorage.setItem(ACET_STORAGE_KEY, JSON.stringify(data)); }
+    function acetFormatMoney(v) { return v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+    function acetSetCurrentMonth() {
+      const monthStr = new Date().toISOString().slice(0,7);
+      const input = document.getElementById("acetFilterMonth");
+      if (input) input.value = monthStr;
       acetRender(); renderTenants();
     }
-    function acetFormatMoney(v){ return v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
-    function acetAddTransaction(){
-      const dateInput=document.getElementById("acetDateInput");
-      const descInput=document.getElementById("acetDescInput");
-      const typeInput=document.getElementById("acetTypeInput");
-      const valueInput=document.getElementById("acetValueInput");
-
-      const date=dateInput.value;
-      const desc=descInput.value.trim();
-      const type=typeInput.value;
-      const valueStr=String(valueInput.value).replace(",",".");
-      const value=parseFloat(valueStr);
-
-      if(!date||!desc||!type||isNaN(value)){ alert("Preencha data, descrição e valor corretamente."); return; }
-
-      const data=acetLoadData();
-      const id=Date.now();
-      data.push({id,date,description:desc,type,value});
+    function acetAddTransaction() {
+      const date = document.getElementById("acetDateInput").value;
+      const desc = document.getElementById("acetDescInput").value.trim();
+      const type = document.getElementById("acetTypeInput").value;
+      const value = parseFloat(String(document.getElementById("acetValueInput").value).replace(",", "."));
+      if (!date || !desc || isNaN(value)) { alert("Preencha data, descrição e valor corretamente."); return; }
+      const data = acetLoadData();
+      data.push({ id: Date.now(), date, description: desc, type, value });
       acetSaveData(data);
-
-      const filter=document.getElementById("acetFilterMonth");
-      if(filter&&!filter.value) filter.value=date.slice(0,7);
-
-      descInput.value=""; valueInput.value="";
+      if (document.getElementById("acetFilterMonth") && !document.getElementById("acetFilterMonth").value) document.getElementById("acetFilterMonth").value = date.slice(0,7);
+      document.getElementById("acetDescInput").value = "";
+      document.getElementById("acetValueInput").value = "";
       acetRender(); renderTenants();
     }
 
-    function acetDeleteTransaction(id){
-      if(!confirm("Excluir este lançamento?")) return;
-      let data=acetLoadData();
-      data=data.filter(t=>t.id!==id);
-      acetSaveData(data); acetRender(); renderTenants();
+    function acetDeleteTransaction(id) {
+      if (!confirm("Excluir este lançamento?")) return;
+      let data = acetLoadData();
+      data = data.filter(t => t.id !== id);
+      acetSaveData(data);
+      acetRender(); renderTenants();
     }
 
-    function acetRender(){
-      const data=acetLoadData();
-      const tbody=document.getElementById("acetTableBody");
-      const totaisBox=document.getElementById("acetTotaisBox");
-      const resumoBox=document.getElementById("acetWhatsResumo");
-      const filterMonthInput=document.getElementById("acetFilterMonth");
-      const filterMonth=filterMonthInput?filterMonthInput.value:"";
-      if(!tbody||!totaisBox||!resumoBox) return;
+    function acetRender() {
+      const data = acetLoadData();
+      const tbody = document.getElementById("acetTableBody");
+      const totaisBox = document.getElementById("acetTotaisBox");
+      const resumoBox = document.getElementById("acetWhatsResumo");
+      const filterMonth = (document.getElementById("acetFilterMonth")?.value) || "";
+      if (!tbody || !totaisBox || !resumoBox) return;
+      tbody.innerHTML = "";
 
-      tbody.innerHTML="";
-      let filtered=data;
-      if(filterMonth) filtered=data.filter(t=>t.date.slice(0,7)===filterMonth);
-      filtered.sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
+      let filtered = data;
+      if (filterMonth) filtered = data.filter(t => t.date.slice(0,7) === filterMonth);
+      filtered.sort((a,b) => a.date.localeCompare(b.date) || a.id - b.id);
 
-      let totalDebitos=0,totalCreditos=0;
-      const debitos=[],creditos=[];
-      filtered.forEach(t=>{
-        if(t.type==="DEBITO_RF"){ totalDebitos+=t.value; debitos.push(t); }
-        else if(t.type==="CREDITO_JULIANO"){ totalCreditos+=t.value; creditos.push(t); }
+      let totalDebitos = 0, totalCreditos = 0;
+      const debitos = [], creditos = [];
 
-        const tr=document.createElement("tr");
-        tr.className=(t.type==="DEBITO_RF")?"acet-debit-row":"acet-credit-row";
-        const tipoLegenda=(t.type==="DEBITO_RF")?"Débito (RF pagou)":"Crédito (Juliano pagou)";
-        tr.innerHTML=`
+      for (const t of filtered) {
+        if (t.type === "DEBITO_RF") { totalDebitos += t.value; debitos.push(t); }
+        else { totalCreditos += t.value; creditos.push(t); }
+
+        const tr = document.createElement("tr");
+        tr.className = (t.type === "DEBITO_RF") ? "acet-debit-row" : "acet-credit-row";
+        const tipoLegenda = (t.type === "DEBITO_RF") ? "Débito (RF pagou)" : "Crédito (Juliano pagou)";
+        tr.innerHTML = `
           <td>${t.date}</td>
           <td>${t.description}</td>
           <td>${tipoLegenda}</td>
           <td style="text-align:right;">${acetFormatMoney(t.value)}</td>
-          <td style="text-align:center;"><button class="btn-danger" onclick="acetDeleteTransaction(${t.id})">X</button></td>`;
-        tbody.appendChild(tr);
-      });
-      if(filtered.length===0){
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td colspan="5" style="text-align:center;">Nenhum lançamento para este mês.</td>`;
+          <td style="text-align:center;"><button class="btn-danger" onclick="acetDeleteTransaction(${t.id})">X</button></td>
+        `;
         tbody.appendChild(tr);
       }
 
-      const saldo=totalDebitos-totalCreditos;
-      let saldoText="",saldoClass="";
-      if(saldo>=0){ saldoText=`Saldo do mês: R$ ${acetFormatMoney(saldo)} (Juliano devendo para RF)`; saldoClass="saldo-positivo"; }
-      else{ saldoText=`Saldo do mês: R$ ${acetFormatMoney(Math.abs(saldo))} (RF devendo para Juliano)`; saldoClass="saldo-negativo"; }
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" style="text-align:center;">Nenhum lançamento para este mês.</td>`;
+        tbody.appendChild(tr);
+      }
 
-      totaisBox.innerHTML=`
+      const saldo = totalDebitos - totalCreditos;
+      const saldoText = saldo >= 0
+        ? `Saldo do mês: R$ ${acetFormatMoney(saldo)} (Juliano devendo para RF)`
+        : `Saldo do mês: R$ ${acetFormatMoney(Math.abs(saldo))} (RF devendo para Juliano)`;
+
+      totaisBox.innerHTML = `
         <span><strong>Total Débitos (RF pagou):</strong> R$ ${acetFormatMoney(totalDebitos)}</span>
         <span><strong>Total Créditos (Juliano pagou):</strong> R$ ${acetFormatMoney(totalCreditos)}</span>
-        <span class="${saldoClass}" style="margin-top:4px;">${saldoText}</span>`;
-
-      let resumo="";
-      const mesLabel=filterMonth||"sem mês selecionado";
-      resumo+="ACERTO JULIANO × RF\nMês: "+mesLabel+"\n\n";
-      resumo+="🔵 Débitos – RF pagou (a favor da RF):\n";
-      if(debitos.length===0) resumo+="• Nenhum lançamento de débito.\n";
-      else debitos.forEach(t=>{ resumo+=`• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}\n`; });
-      resumo+=`Total Débitos: R$ ${acetFormatMoney(totalDebitos)}\n\n`;
-
-      resumo+="🟢 Créditos – Juliano pagou (a favor do Juliano):\n";
-      if(creditos.length===0) resumo+="• Nenhum lançamento de crédito.\n";
-      else creditos.forEach(t=>{ resumo+=`• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}\n`; });
-      resumo+=`Total Créditos: R$ ${acetFormatMoney(totalCreditos)}\n\n`;
-
-      if(saldo>=0){
-        resumo+=`🧮 Saldo final do mês: R$ ${acetFormatMoney(saldo)}\nSituação: Juliano DEVENDO para RF.\n`;
-      }else{
-        resumo+=`🧮 Saldo final do mês: R$ ${acetFormatMoney(Math.abs(saldo))}\nSituação: RF DEVENDO para Juliano.\n`;
-      }
-      resumoBox.textContent=resumo;
-    }
-
-    function acetClearAll(){
-      if(!confirm("Apagar TODOS os lançamentos do acerto neste aparelho?")) return;
-      localStorage.removeItem(ACET_STORAGE_KEY); acetRender(); renderTenants();
-    }
-    function acetExportData(){
-      const json=JSON.stringify(acetLoadData(),null,2);
-      const area=document.getElementById("acetJsonArea");
-      area.style.display="block"; area.value=json;
-      alert("JSON exibido abaixo. Copie e salve se quiser backup manual.");
-    }
-    function acetDownloadBackup(){
-      const json=JSON.stringify(acetLoadData(),null,2);
-      const blob=new Blob([json],{type:"application/json"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      const stamp=new Date().toISOString().replace(/[:.]/g,"-");
-      a.href=url; a.download="AcetJuli-backup-"+stamp+".json";
-      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    }
-    function acetImportData(){
-      const area=document.getElementById("acetJsonArea");
-      area.style.display="block";
-      if(!area.value.trim()){ alert("Cole o JSON exportado antes de importar."); return; }
-      try{
-        const arr=JSON.parse(area.value);
-        if(!Array.isArray(arr)) throw new Error("Formato inválido");
-        acetSaveData(arr); alert("Dados importados com sucesso."); acetRender(); renderTenants();
-      }catch(e){ alert("Erro ao importar JSON: "+e.message); }
-    }
-    function acetPrintPDF(){ window.print(); }
-
-    function getLavaRapidoDebitoCreditoMes(monthStr){
-      if(!monthStr) return{debitos:0,creditos:0};
-      const data=acetLoadData();
-      let debitos=0,cred=0;
-      data.forEach(t=>{
-        if(t.date&&t.date.slice(0,7)===monthStr){
-          if(t.type==="DEBITO_RF") debitos+=t.value||0;
-          if(t.type==="CREDITO_JULIANO") cred+=t.value||0;
-        }
-      });
-      return{debitos,creditos:cred};
-    }
-
-    // ---------- RECEITAS EM DINHEIRO ----------
-    const REC_STORAGE_KEY="ReceitasNaoOperacionais_v1";
-
-    function recLoadData(){
-      const raw=localStorage.getItem(REC_STORAGE_KEY);
-      if(!raw) return[];
-      try{ const arr=JSON.parse(raw); return Array.isArray(arr)?arr:[]; }catch(e){ return[]; }
-    }
-    function recSaveData(data){ localStorage.setItem(REC_STORAGE_KEY,JSON.stringify(data)); }
-    function recSetCurrentMonth(){
-      const today=new Date();
-      const monthStr=today.toISOString().slice(0,7);
-      const input=document.getElementById("recFilterMonth");
-      if(input) input.value=monthStr;
-      recEnsureRecurringForMonth(monthStr); recRender(); renderTenants();
-    }
-
-    function recAddTransaction(){
-      const dateInput=document.getElementById("recDateInput");
-      const descInput=document.getElementById("recDescInput");
-      const typeInput=document.getElementById("recTypeInput");
-      const valueInput=document.getElementById("recValueInput");
-      const recInput=document.getElementById("recRecurringInput");
-
-      const date=dateInput.value;
-      const desc=descInput.value.trim();
-      const type=typeInput.value;
-      const valueStr=String(valueInput.value).replace(",",".");
-      const value=parseFloat(valueStr);
-      const recurring=!!recInput.checked;
-
-      if(!date||!desc||!type||isNaN(value)){ alert("Preencha data, descrição e valor corretamente."); return; }
-
-      const data=recLoadData();
-      const id=Date.now()+Math.floor(Math.random()*1000);
-      data.push({id,date,description:desc,type,value,recurring});
-      recSaveData(data);
-
-      const filter=document.getElementById("recFilterMonth");
-      if(filter&&!filter.value) filter.value=date.slice(0,7);
-
-      descInput.value=""; valueInput.value=""; recInput.checked=false;
-      recEnsureRecurringForMonth(date.slice(0,7)); recRender(); renderTenants();
-    }
-
-    function recDeleteTransaction(id){
-      if(!confirm("Excluir este lançamento?")) return;
-      let data=recLoadData();
-      data=data.filter(t=>t.id!==id);
-      recSaveData(data); recRender(); renderTenants();
-    }
-
-    function recEnsureRecurringForMonth(monthStr){
-      if(!monthStr) return;
-      let data=recLoadData();
-      const recurringTemplates=data.filter(t=>t.recurring);
-      let changed=false;
-
-      recurringTemplates.forEach(tpl=>{
-        const exists=data.some(t=>
-          t.recurring && t.type===tpl.type && t.description===tpl.description &&
-          Math.abs((t.value||0)-(tpl.value||0))<0.001 &&
-          t.date && t.date.slice(0,7)===monthStr
-        );
-        if(!exists){
-          const day=(tpl.date&&tpl.date.length>=10)?tpl.date.slice(8,10):"01";
-          const newDate=monthStr+"-"+day;
-          data.push({
-            id:Date.now()+Math.floor(Math.random()*100000),
-            date:newDate,description:tpl.description,type:tpl.type,value:tpl.value,recurring:true
-          });
-          changed=true;
-        }
-      });
-      if(changed) recSaveData(data);
-    }
-
-    function recRender(){
-      const tbody=document.getElementById("recTableBody");
-      const totaisBox=document.getElementById("recTotaisBox");
-      const resumoBox=document.getElementById("recResumoMes");
-      const filterMonthInput=document.getElementById("recFilterMonth");
-      const filterMonth=filterMonthInput?filterMonthInput.value:"";
-      if(!tbody||!totaisBox||!resumoBox) return;
-
-      let data=recLoadData();
-      if(filterMonth){ recEnsureRecurringForMonth(filterMonth); data=recLoadData(); }
-
-      let filtered=data;
-      if(filterMonth) filtered=data.filter(t=>t.date&&t.date.slice(0,7)===filterMonth);
-      filtered.sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
-
-      tbody.innerHTML="";
-      let totalCreditos=0,totalDebitos=0;
-      filtered.forEach(t=>{
-        if(t.type==="CREDITO") totalCreditos+=t.value||0;
-        if(t.type==="DEBITO") totalDebitos+=t.value||0;
-
-        const tr=document.createElement("tr");
-        tr.className=(t.type==="CREDITO")?"rec-row-credito":"rec-row-debito";
-        const creditoStr=(t.type==="CREDITO")?t.value.toFixed(2).replace(".",","):"";
-        const debitoStr=(t.type==="DEBITO")?t.value.toFixed(2).replace(".",","):"";
-        const tipoLegenda=(t.type==="CREDITO")?"Crédito":"Débito";
-        tr.innerHTML=`
-          <td>${t.date||""}</td>
-          <td>${t.description||""}${t.recurring?" 🔁":""}</td>
-          <td>${tipoLegenda}</td>
-          <td style="text-align:right;">${creditoStr?("R$ "+creditoStr):""}</td>
-          <td style="text-align:right;">${debitoStr?("R$ "+debitoStr):""}</td>
-          <td style="text-align:center;"><button class="btn-danger" onclick="recDeleteTransaction(${t.id})">X</button></td>`;
-        tbody.appendChild(tr);
-      });
-      if(filtered.length===0){
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td colspan="6" style="text-align:center;">Nenhum lançamento para este mês.</td>`;
-        tbody.appendChild(tr);
-      }
-
-      const liquido=totalCreditos-totalDebitos;
-      totaisBox.innerHTML=`
-        <span><strong>Total Créditos:</strong> R$ ${totalCreditos.toFixed(2).replace(".",",")}</span>
-        <span><strong>Total Débitos:</strong> R$ ${totalDebitos.toFixed(2).replace(".",",")}</span>
-        <span style="margin-top:4px;"><strong>Resultado líquido:</strong> R$ ${liquido.toFixed(2).replace(".",",")} (${liquido>=0?"entra como RECEITA":"entra como DÉBITO"})</span>`;
-
-      let resumo="";
-      const mesLabel=filterMonth||"sem mês selecionado";
-      resumo+="RECEITAS EM DINHEIRO (NÃO OPERACIONAIS)\nMês: "+mesLabel+"\n\n";
-      resumo+=`Total Créditos: R$ ${totalCreditos.toFixed(2).replace(".",",")}\n`;
-      resumo+=`Total Débitos: R$ ${totalDebitos.toFixed(2).replace(".",",")}\n`;
-      resumo+=`Resultado líquido (para aba principal): R$ ${liquido.toFixed(2).replace(".",",")}\n`;
-      resumo+=liquido>=0
-        ?"Situação: entra como RECEITA adicional.\n"
-        :"Situação: entra como DÉBITO (reduz o resultado).\n";
-      resumoBox.textContent=resumo;
-    }
-
-    function recExportData(){
-      const json=JSON.stringify(recLoadData(),null,2);
-      const area=document.getElementById("recJsonArea");
-      area.style.display="block"; area.value=json;
-      alert("JSON exibido abaixo. Copie e salve se quiser backup manual.");
-    }
-    function recDownloadBackup(){
-      const json=JSON.stringify(recLoadData(),null,2);
-      const blob=new Blob([json],{type:"application/json"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      const stamp=new Date().toISOString().replace(/[:.]/g,"-");
-      a.href=url; a.download="ReceitasNaoOperacionais-backup-"+stamp+".json";
-      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    }
-    function recImportData(){
-      const area=document.getElementById("recJsonArea");
-      area.style.display="block";
-      if(!area.value.trim()){ alert("Cole o JSON exportado antes de importar."); return; }
-      try{
-        const arr=JSON.parse(area.value);
-        if(!Array.isArray(arr)) throw new Error("Formato inválido");
-        recSaveData(arr); alert("Dados importados com sucesso."); recRender(); renderTenants();
-      }catch(e){ alert("Erro ao importar JSON: "+e.message); }
-    }
-
-    function getReceitasLiquidasMes(monthStr){
-      if(!monthStr) return{totalCreditos:0,totalDebitos:0,liquido:0};
-      const data=recLoadData();
-      let totalCreditos=0,totalDebitos=0;
-      data.forEach(t=>{
-        if(t.date&&t.date.slice(0,7)===monthStr){
-          if(t.type==="CREDITO") totalCreditos+=t.value||0;
-          if(t.type==="DEBITO") totalDebitos+=t.value||0;
-        }
-      });
-      const liquido=totalCreditos-totalDebitos;
-      return{totalCreditos,totalDebitos,liquido};
-    }
-
-    // ---------- RESUMO ALUGUÉIS + ENERGIA (GERAL + DRE) ----------
-    function getResumoAlugueisEnergiaMes(monthStr){
-      if(!monthStr) return{
-        sumAlugueis:0,sumEnergia:0,sumTotal:0,
-        dreAlugueis:0,dreEnergia:0,dreTotal:0
-      };
-
-      let valorKwh=0;
-      const cfgStr=localStorage.getItem("alugueisConfig");
-      if(cfgStr){
-        try{ const cfg=JSON.parse(cfgStr); valorKwh=parseFloat(cfg.valorKwh||"0")||0; }catch(e){}
-      }
-
-      const key="alugueisMes_"+monthStr;
-      const dataStr=localStorage.getItem(key);
-      let map={};
-      if(dataStr){
-        try{
-          const parsed=JSON.parse(dataStr);
-          tenantsDefault.forEach(nome=>{
-            if(parsed[nome]){
-              map[nome]=parsed[nome];
-              if(!Array.isArray(map[nome].payments)) map[nome].payments=[];
-            }else map[nome]=defaultTenantData();
-          });
-        }catch(e){ tenantsDefault.forEach(nome=>map[nome]=defaultTenantData()); }
-      }else tenantsDefault.forEach(nome=>map[nome]=defaultTenantData());
-
-      const lavaTotals=getLavaRapidoDebitoCreditoMes(monthStr);
-      let sumAlugueis=0,sumEnergia=0,sumTotal=0;
-      let dreAlugueis=0,dreEnergia=0;
-
-      tenantsDefault.forEach(nome=>{
-        let tData=map[nome]; if(!tData) tData=defaultTenantData();
-        let rent=tData.rent||0;
-        if(nome==="Lava Rápido") rent=lavaTotals.debitos||0;
-
-        const consumo=Math.max((tData.eEnd||0)-(tData.eStart||0),0);
-        const energiaBruta=consumo*valorKwh;
-        const descontoValor=energiaBruta*((tData.discount||0)/100);
-        const energiaLiquida=energiaBruta-descontoValor;
-        const totalMes=rent+energiaLiquida;
-
-        sumAlugueis+=rent;
-        sumEnergia+=energiaLiquida;
-        sumTotal+=totalMes;
-
-        // Regras de DRE:
-        if(nome==="Pet Shop"||
-           nome==="Loja de Acessórios"||
-           nome==="Cabeleireiro"||
-           nome==="Loja de Celulares"){
-          dreAlugueis+=rent; // só aluguel
-        }
-        if(nome==="Loja de Chocolate"){
-          dreEnergia+=energiaLiquida; // só energia
-        }
-        // Loja de Conveniência e Lava Rápido não entram no DRE
-      });
-
-      const dreTotal=dreAlugueis+dreEnergia;
-      return{sumAlugueis,sumEnergia,sumTotal,dreAlugueis,dreEnergia,dreTotal};
-    }
-
-    // ---------- DRE + AJUSTES ----------
-    async function drLerDRE(){
-      const fileInput=document.getElementById("drFileInput");
-      const file=fileInput.files&&fileInput.files[0];
-      if(!file){ alert("Selecione uma imagem do DRE (JPG/PNG)."); return; }
-      try{
-        alert("Lendo DRE... isso pode levar alguns segundos.");
-        const result=await Tesseract.recognize(file,"por",{logger:m=>console.log(m)});
-        const text=result.data.text||"";
-        drPreencherCamposComTexto(text); drAtualizarResumo();
-        alert("Leitura do DRE concluída. Confira os valores e ajuste se quiser.");
-      }catch(e){
-        console.error(e);
-        alert("Erro ao ler a imagem do DRE. Tente com um print mais nítido.");
-      }
-    }
-
-    function drExtrairNumeroDaLinha(linha){
-      const regex=/(\(?\d{1,3}(\.\d{3})*,\d{2}\)?)/g;
-      let match,ultimo=null;
-      while((match=regex.exec(linha))!==null) ultimo=match[1];
-      if(!ultimo) return 0;
-      let negativo=false;
-      if(ultimo.includes("(")&&ultimo.includes(")")){ negativo=true; ultimo=ultimo.replace("(","").replace(")",""); }
-      ultimo=ultimo.replace("+","").replace("−","").trim();
-      const num=parseFloat(ultimo.replace(/\./g,"").replace(",","."));
-      return negativo?-num:num;
-    }
-    function drValorPorRotulo(texto,rotulo){
-      const linhas=texto.split(/\r?\n/);
-      for(let linha of linhas){
-        if(linha.toLowerCase().includes(rotulo.toLowerCase())) return drExtrairNumeroDaLinha(linha);
-      }
-      return 0;
-    }
-    function drPreencherCamposComTexto(texto){
-      const map=[
-        ["dre_receita_produtos","Receita Bruta de Vendas de Produtos"],
-        ["dre_receita_servicos","Receita Bruta de Vendas de Serviços"],
-        ["dre_total_bruta","Total da Receita Bruta"],
-        ["dre_devolucoes","Devoluções de Vendas"],
-        ["dre_impostos","Impostos Incidentes"],
-        ["dre_receita_liquida","Receita Liquida de Venda de Produtos e Serviços"],
-        ["dre_custos_produtos","Custos dos Produtos Vendidos"],
-        ["dre_custos_servicos","Custos dos Serviços Vendidos"],
-        ["dre_lucro_bruto","Lucro/Prejuízo Bruto"],
-        ["dre_desp_adm","Despesas Administrativas"],
-        ["dre_desp_vendas","Despesas de Vendas"],
-        ["dre_prov_sociais","Provisões Sociais Trabalhistas"],
-        ["dre_desp_fin","Despesas Financeiras"],
-        ["dre_var_estoques","Variação de Estoques"],
-        ["dre_rec_fin","Receitas Financeiras"],
-        ["dre_lucro_oper","Lucro/Prejuízo Operacional"],
-        ["dre_desp_nao_op","Despesas não Operacionais"],
-        ["dre_rec_nao_op","Receitas não Operacionais"],
-        ["dre_lucro_antes_dep","Lucro/Prejuízo do Exercicio Antes da Depreciação"],
-        ["dre_depreciacoes","Depreciações"],
-        ["dre_lucro_exercicio","Lucro/Prejuízo do Exercicio"]
-      ];
-      map.forEach(([id,rot])=>{
-        const v=drValorPorRotulo(texto,rot);
-        const el=document.getElementById(id);
-        if(el) el.value=v!==0?v.toFixed(2):"";
-      });
-    }
-    function drVal(id){
-      const el=document.getElementById(id); if(!el) return 0;
-      const v=parseFloat(String(el.value).replace(",","."));
-      return isNaN(v)?0:v;
-    }
-
-    function drAtualizarResumo(){
-      const monthInput=document.getElementById("drFilterMonth");
-      const mes=monthInput&&monthInput.value?monthInput.value:"";
-      const lucroExercicio=drVal("dre_lucro_exercicio");
-
-      let ajustesSistema=0, detalheAjuste="";
-      if(mes){
-        const resumoAlug=getResumoAlugueisEnergiaMes(mes);
-        const receitasDinheiro=getReceitasLiquidasMes(mes);
-        const alugDRE=resumoAlug.dreAlugueis||0;
-        const energDRE=resumoAlug.dreEnergia||0;
-        const dinheiro=receitasDinheiro.liquido||0;
-        ajustesSistema=alugDRE+energDRE+dinheiro;
-        detalheAjuste=`(Aluguéis DRE: R$ ${alugDRE.toFixed(2).replace(".",",")} + Energia DRE: R$ ${energDRE.toFixed(2).replace(".",",")} + Dinheiro: R$ ${dinheiro.toFixed(2).replace(".",",")})`;
-      }
-
-      const campoAjustes=document.getElementById("dre_ajustes_sistema");
-      if(campoAjustes) campoAjustes.value=ajustesSistema.toFixed(2);
-
-      const lucroAjustado=lucroExercicio+ajustesSistema;
-      const campoAjustado=document.getElementById("dre_lucro_ajustado");
-      if(campoAjustado) campoAjustado.value=lucroAjustado.toFixed(2);
-
-      const resultadoCaixa=drVal("drResultadoCaixa");
-      const tabelaBody=document.getElementById("drResumoTabelaBody");
-      const texto=document.getElementById("drResumoTexto");
-      if(!tabelaBody||!texto) return;
-
-      function fmt(v){ return "R$ "+(v||0).toFixed(2).replace(".",","); }
-      const diferenca=resultadoCaixa-lucroAjustado;
-
-      tabelaBody.innerHTML=`
-        <tr><td>Lucro/Prejuízo do Exercício (DRE)</td><td>${fmt(lucroExercicio)}</td></tr>
-        <tr><td>Receitas não operacionais – Aluguéis + Energia + Dinheiro</td><td>${fmt(ajustesSistema)}</td></tr>
-        <tr><td><strong>Lucro/Prejuízo Ajustado (DRE + ajustes)</strong></td><td><strong>${fmt(lucroAjustado)}</strong></td></tr>
-        <tr><td>Resultado REAL em dinheiro (caixa / banco)</td><td>${fmt(resultadoCaixa)}</td></tr>
-        <tr><td><strong>Diferença (Caixa - Ajustado)</strong></td><td><strong>${fmt(diferenca)}</strong></td></tr>
+        <span style="margin-top:4px;" class="${saldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${saldoText}</span>
       `;
 
-      let txt="";
-      txt+="DRE CONSOLIDADO – "+(mes||"sem mês")+"\n\n";
-      txt+="Lucro/Prejuízo do Exercício (DRE): "+fmt(lucroExercicio)+"\n";
-      txt+="Receitas não operacionais (aluguéis + energia + dinheiro): "+fmt(ajustesSistema)+"\n";
-      if(detalheAjuste) txt+="Detalhe ajustes: "+detalheAjuste+"\n";
-      txt+="Lucro/Prejuízo Ajustado (DRE + ajustes): "+fmt(lucroAjustado)+"\n\n";
-      txt+="Resultado REAL em dinheiro (caixa / banco): "+fmt(resultadoCaixa)+"\n";
-      txt+="Diferença (Caixa - Ajustado): "+fmt(diferenca)+"\n";
+      let resumo = "ACERTO JULIANO × RF\n";
+      const mesLabel = filterMonth || "sem mês selecionado";
+      resumo += "Mês: " + mesLabel + "\n\n";
+      resumo += "🔵 Débitos – RF pagou (a favor da RF):\n";
+      resumo += debitos.length ? "" : "• Nenhum lançamento de débito.\n";
+      debitos.forEach(t => { resumo += `• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}\n`; });
+      resumo += `Total Débitos: R$ ${acetFormatMoney(totalDebitos)}\n\n`;
+      resumo += "🟢 Créditos – Juliano pagou (a favor do Juliano):\n";
+      resumo += creditos.length ? "" : "• Nenhum lançamento de crédito.\n";
+      creditos.forEach(t => { resumo += `• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}\n`; });
+      resumo += `Total Créditos: R$ ${acetFormatMoney(totalCreditos)}\n\n`;
+      if (saldo >= 0) resumo += `🧮 Saldo final do mês: R$ ${acetFormatMoney(saldo)}\nSituação: Juliano DEVENDO para RF.\n`;
+      else resumo += `🧮 Saldo final do mês: R$ ${acetFormatMoney(Math.abs(saldo))}\nSituação: RF DEVENDO para Juliano.\n`;
+      resumoBox.textContent = resumo;
 
-      if(diferenca>0.01) txt+="\nSituação: entrou MAIS dinheiro do que o ajustado indica (sobrou no caixa).";
-      else if(diferenca<-0.01) txt+="\nSituação: entrou MENOS dinheiro do que o ajustado indica (faltou no caixa).";
-      else txt+="\nSituação: caixa batendo com o resultado ajustado (diferença irrelevante).";
-
-      texto.textContent=txt;
-    }
-    function drSetCurrentMonth(){
-      const today=new Date();
-      const monthStr=today.toISOString().slice(0,7);
-      const input=document.getElementById("drFilterMonth");
-      if(input) input.value=monthStr;
-      drAtualizarResumo();
+      renderTenants();
     }
 
-    // ---------- CÁLCULOS ALUGUÉIS ----------
-    function calcTenant(tData,valorKwh,extraPagos){
-      extraPagos=extraPagos||0;
-      const consumo=Math.max((tData.eEnd||0)-(tData.eStart||0),0);
-      const energiaBruta=consumo*valorKwh;
-      const descontoValor=energiaBruta*((tData.discount||0)/100);
-      const energiaLiquida=energiaBruta-descontoValor;
-      const totalMes=(tData.rent||0)+energiaLiquida;
-
-      let totalPagos=0;
-      if(Array.isArray(tData.payments)) tData.payments.forEach(p=>totalPagos+=p.value||0);
-      totalPagos+=extraPagos;
-      const saldo=totalMes-totalPagos;
-      let status="ABERTO";
-      if(Math.abs(saldo)<0.01&&totalMes>0) status="PAGO";
-      else if(totalPagos>0&&saldo>0.01) status="PARCIAL";
-      return{consumo,energiaBruta,descontoValor,energiaLiquida,totalMes,totalPagos,saldo,status,extraPagos};
+    function acetClearAll() {
+      if (!confirm("Isso vai apagar TODOS os lançamentos do acerto salvos neste aparelho. Continuar?")) return;
+      localStorage.removeItem(ACET_STORAGE_KEY);
+      acetRender(); renderTenants();
     }
-    function formatMoney(v){ v=v||0; return"R$ "+v.toFixed(2).replace(".",","); }
-    function statusClass(status){
-      if(status==="PAGO") return"status-pago";
-      if(status==="PARCIAL") return"status-parcial";
-      return"status-aberto";
+    function acetExportData() {
+      const json = JSON.stringify(acetLoadData(), null, 2);
+      const area = document.getElementById("acetJsonArea");
+      area.style.display = "block"; area.value = json;
+      alert("JSON exibido abaixo. Copie e salve se quiser backup manual.");
     }
+    function acetDownloadBackup() {
+      const json = JSON.stringify(acetLoadData(), null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "AcetJuli-backup-" + new Date().toISOString().replace(/[:.]/g, "-") + ".json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    function acetImportData() {
+      const area = document.getElementById("acetJsonArea");
+      area.style.display = "block";
+      if (!area.value.trim()) { alert("Cole aqui o JSON exportado antes de importar."); return; }
+      try {
+        const arr = JSON.parse(area.value);
+        if (!Array.isArray(arr)) throw new Error("Formato inválido");
+        acetSaveData(arr);
+        alert("Dados importados com sucesso.");
+        acetRender(); renderTenants();
+      } catch(e) { alert("Erro ao importar JSON: " + e.message); }
+    }
+    function acetPrintPDF() { window.print(); }
 
-    function renderTenants(){
-      const container=document.getElementById("cardsContainer"); if(!container) return;
-      container.innerHTML="";
-      const valorKwh=parseFloat(document.getElementById("valorKwh").value||"0")||0;
-
-      let sumAlugueis=0,sumEnergia=0,sumTotalMes=0,sumRecebido=0,sumSaldo=0;
-      const quickRows=[];
-      const lavaTotals=currentMonth?getLavaRapidoDebitoCreditoMes(currentMonth):{debitos:0,creditos:0};
-
-      tenantsDefault.forEach((nome,i)=>{
-        if(!tenantsData[nome]) tenantsData[nome]=defaultTenantData();
-        const tData=tenantsData[nome];
-
-        let displayRent=tData.rent||0;
-        let extraPagos=0;
-        if(nome==="Lava Rápido"){
-          displayRent=lavaTotals.debitos;
-          extraPagos=lavaTotals.credits||lavaTotals.creditos||0;
+    function getLavaRapidoDebitoCreditoMes(monthStr) {
+      if (!monthStr) return { debitos: 0, creditos: 0 };
+      const data = acetLoadData();
+      let debitos = 0, creditos = 0;
+      data.forEach(t => {
+        if (t.date && t.date.slice(0,7) === monthStr) {
+          if (t.type === "DEBITO_RF") debitos += t.value || 0;
+          else creditos += t.value || 0;
         }
+      });
+      return { debitos, creditos };
+    }
 
-        const calc=calcTenant({...tData,rent:displayRent},valorKwh,extraPagos);
-        sumAlugueis+=displayRent;
-        sumEnergia+=calc.energiaLiquida;
-        sumTotalMes+=calc.totalMes;
-        sumRecebido+=calc.totalPagos;
-        sumSaldo+=calc.saldo;
+    // ---------- CÁLCULOS / RENDER ALUGUÉIS ----------
+    function calcTenant(tData, valorKwh, extraPagos) {
+      extraPagos = extraPagos || 0;
+      const consumo = Math.max((tData.eEnd || 0) - (tData.eStart || 0), 0);
+      const energiaBruta = consumo * valorKwh;
+      const descontoValor = energiaBruta * ((tData.discount || 0) / 100);
+      const energiaLiquida = energiaBruta - descontoValor;
+      const totalMes = (tData.rent || 0) + energiaLiquida;
 
-        quickRows.push({nome,aluguel:displayRent,energia:calc.energiaLiquida,totalMes:calc.totalMes,pago:calc.totalPagos,saldo:calc.saldo,status:calc.status});
+      let totalPagos = 0;
+      (tData.payments || []).forEach(p => totalPagos += p.value || 0);
+      totalPagos += extraPagos;
 
-        const card=document.createElement("div");
-        card.className="card"; card.id="card_"+i;
-        let paymentsHtml="";
-        if(Array.isArray(tData.payments)&&tData.payments.length>0){
-          tData.payments.forEach((p,idx)=>{
-            paymentsHtml+=`
+      const saldo = totalMes - totalPagos;
+      let status = "ABERTO";
+      if (Math.abs(saldo) < 0.01 && totalMes > 0) status = "PAGO";
+      else if (totalPagos > 0 && saldo > 0.01) status = "PARCIAL";
+
+      return { consumo, energiaBruta, descontoValor, energiaLiquida, totalMes, totalPagos, saldo, status, extraPagos };
+    }
+
+    function formatMoney(v) { return "R$ " + (v || 0).toFixed(2).replace(".", ","); }
+    function statusClass(status) { return status === "PAGO" ? "status-pago" : (status === "PARCIAL" ? "status-parcial" : "status-aberto"); }
+
+    function renderTenants() {
+      const container = document.getElementById("cardsContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const valorKwh = parseFloat(document.getElementById("valorKwh").value || "0") || 0;
+
+      let sumAlugueis = 0, sumEnergia = 0, sumTotalMes = 0, sumRecebido = 0, sumSaldo = 0;
+      const quickRows = [];
+
+      const lavaTotals = currentMonth ? getLavaRapidoDebitoCreditoMes(currentMonth) : { debitos: 0, creditos: 0 };
+
+      tenantsDefault.forEach((nome, i) => {
+        if (!tenantsData[nome]) tenantsData[nome] = defaultTenantData();
+        const tData = tenantsData[nome];
+
+        let displayRent = tData.rent || 0;
+        let extraPagos = 0;
+        if (nome === "Lava Rápido") { displayRent = lavaTotals.debitos; extraPagos = lavaTotals.creditos; }
+
+        const calc = calcTenant({ ...tData, rent: displayRent }, valorKwh, extraPagos);
+
+        sumAlugueis += displayRent;
+        sumEnergia += calc.energiaLiquida;
+        sumTotalMes += calc.totalMes;
+        sumRecebido += calc.totalPagos;
+        sumSaldo += calc.saldo;
+
+        quickRows.push({ nome, aluguel: displayRent, energia: calc.energiaLiquida, totalMes: calc.totalMes, pago: calc.totalPagos, saldo: calc.saldo, status: calc.status });
+
+        const bgClass = (calc.status === "PAGO") ? "paid-bg" : "unpaid-bg";
+
+        const card = document.createElement("div");
+        card.className = "card " + bgClass;
+
+        let paymentsHtml = "";
+        if ((tData.payments || []).length > 0) {
+          (tData.payments || []).forEach((p, idx) => {
+            paymentsHtml += `
               <div class="payment-row">
                 <div>
-                  <div><strong>${formatMoney(p.value||0)}</strong></div>
-                  <div class="payment-note">${p.date||""} – ${p.note||""}</div>
+                  <div><strong>${formatMoney(p.value || 0)}</strong></div>
+                  <div class="payment-note">${p.date || ""} – ${p.note || ""}</div>
                 </div>
-                <div><button class="secondary" style="padding:2px 6px;font-size:11px;" onclick="removePayment(${i},${idx})">x</button></div>
-              </div>`;
+                <div><button class="secondary" style="padding:2px 6px;font-size:11px;" onclick="removePayment(${i}, ${idx})">x</button></div>
+              </div>
+            `;
           });
-        }else paymentsHtml=`<div class="payment-note">Nenhum pagamento lançado.</div>`;
+        } else {
+          paymentsHtml = `<div class="payment-note">Nenhum pagamento lançado.</div>`;
+        }
 
-        const isLava=nome==="Lava Rápido";
-        card.innerHTML=`
+        const isLava = nome === "Lava Rápido";
+
+        card.innerHTML = `
           <div class="card-header">
             <div class="card-title">${nome}</div>
-            <div class="status-tag ${statusClass(calc.status)}" id="t${i}_status">${calc.status}</div>
+            <div class="status-tag ${statusClass(calc.status)}">${calc.status}</div>
           </div>
 
           <div class="grid-2">
             <div>
-              <label>Aluguel (R$) ${isLava?"<br><span class='small-label'>(somatório das contas pagas pela RF no mês)</span>":""}</label>
-              <input type="number" step="0.01" inputmode="decimal" id="t${i}_rent" value="${displayRent||""}"
-                     ${isLava?"readonly":"onblur=\"updateTenant("+i+")\""} />
+              <label>Aluguel (R$) ${isLava ? "<br><span class='small-label'>(somatório das contas pagas pela RF no mês)</span>" : ""}</label>
+              <input type="number" step="0.01" inputmode="decimal" id="t${i}_rent" value="${displayRent || ""}" ${isLava ? "readonly" : "oninput=\"updateTenant(" + i + ")\""} />
             </div>
             <div>
               <label>Desconto energia (%)</label>
-              <input type="number" step="0.01" inputmode="decimal" id="t${i}_discount" value="${tData.discount||""}" onblur="updateTenant(${i})" />
+              <input type="number" step="0.01" inputmode="decimal" id="t${i}_discount" value="${tData.discount || ""}" oninput="updateTenant(${i})" />
             </div>
           </div>
 
           <div class="grid-3">
-            <div>
-              <label>Leitura inicial (kWh)</label>
-              <input type="number" step="0.01" inputmode="decimal" id="t${i}_eStart" value="${tData.eStart||""}" onblur="updateTenant(${i})" />
-            </div>
-            <div>
-              <label>Leitura final (kWh)</label>
-              <input type="number" step="0.01" inputmode="decimal" id="t${i}_eEnd" value="${tData.eEnd||""}" onblur="updateTenant(${i})" />
-            </div>
-            <div>
-              <span class="small-label">Consumo (kWh)</span><br/>
-              <span class="small-value" id="t${i}_consumo">${calc.consumo.toFixed(2)}</span>
-            </div>
+            <div><label>Leitura inicial (kWh)</label><input type="number" step="0.01" inputmode="decimal" id="t${i}_eStart" value="${tData.eStart || ""}" oninput="updateTenant(${i})" /></div>
+            <div><label>Leitura final (kWh)</label><input type="number" step="0.01" inputmode="decimal" id="t${i}_eEnd" value="${tData.eEnd || ""}" oninput="updateTenant(${i})" /></div>
+            <div><span class="small-label">Consumo (kWh)</span><br/><span class="small-value">${calc.consumo.toFixed(2)}</span></div>
           </div>
 
           <div class="grid-3" style="margin-top:8px;">
-            <div><span class="small-label">Energia bruta</span><br/><span class="small-value" id="t${i}_eBruta">${formatMoney(calc.energiaBruta)}</span></div>
-            <div><span class="small-label">Desconto energia</span><br/><span class="small-value" id="t${i}_eDesc">${formatMoney(calc.descontoValor)}</span></div>
-            <div><span class="small-label">Energia líquida</span><br/><span class="small-value" id="t${i}_eLiq">${formatMoney(calc.energiaLiquida)}</span></div>
+            <div><span class="small-label">Energia bruta</span><br/><span class="small-value">${formatMoney(calc.energiaBruta)}</span></div>
+            <div><span class="small-label">Desconto energia</span><br/><span class="small-value">${formatMoney(calc.descontoValor)}</span></div>
+            <div><span class="small-label">Energia líquida</span><br/><span class="small-value">${formatMoney(calc.energiaLiquida)}</span></div>
           </div>
 
           <div class="grid-2" style="margin-top:8px;">
-            <div><span class="small-label">Total do mês</span><br/><span class="small-value" id="t${i}_totalMes">${formatMoney(calc.totalMes)}</span></div>
-            <div><span class="small-label">Total pago</span><br/><span class="small-value" id="t${i}_totalPago">${formatMoney(calc.totalPagos)}</span></div>
+            <div><span class="small-label">Total do mês</span><br/><span class="small-value">${formatMoney(calc.totalMes)}</span></div>
+            <div><span class="small-label">Total pago</span><br/><span class="small-value">${formatMoney(calc.totalPagos)}</span></div>
           </div>
 
           <div style="margin-top:4px;">
-            <span class="small-label">Saldo a pagar</span><br/>
-            <span class="small-value" id="t${i}_saldo">${formatMoney(calc.saldo)}</span>
+            <span class="small-label">Saldo a pagar</span><br/><span class="small-value">${formatMoney(calc.saldo)}</span>
           </div>
 
-          ${isLava?`
-          <div style="margin-top:4px;">
-            <span class="small-label">Pago via Juliano (AcetJuli - mês ${currentMonth||""})</span><br/>
-            <span class="small-value">${formatMoney(extraPagos)}</span>
-          </div>`:""}
+          ${isLava ? `
+            <div style="margin-top:4px;">
+              <span class="small-label">Pago via Juliano (AcetJuli - mês ${currentMonth || ""})</span><br/>
+              <span class="small-value">${formatMoney(extraPagos)}</span>
+            </div>
+          ` : ""}
 
           <div class="payments">
             <strong>Pagamentos diretos do mês</strong>
-            <div class="payments-list" id="t${i}_payments">${paymentsHtml}</div>
+            <div class="payments-list">${paymentsHtml}</div>
 
             <div class="grid-3" style="margin-top:6px;">
-              <div>
-                <label>Valor pago (R$)</label>
-                <input type="number" step="0.01" inputmode="decimal" id="t${i}_payValue" />
-              </div>
-              <div>
-                <label>Data</label>
-                <input type="date" id="t${i}_payDate" />
-              </div>
-              <div>
-                <label>Obs.</label>
-                <input type="text" id="t${i}_payNote" placeholder="Ex: PIX, dinheiro..." />
-              </div>
+              <div><label>Valor pago (R$)</label><input type="number" step="0.01" inputmode="decimal" id="t${i}_payValue" /></div>
+              <div><label>Data</label><input type="date" id="t${i}_payDate" /></div>
+              <div><label>Obs.</label><input type="text" id="t${i}_payNote" placeholder="Ex: PIX, dinheiro..." /></div>
             </div>
             <button onclick="addPayment(${i})">Adicionar pagamento</button>
-          </div>`;
+          </div>
+        `;
+
         container.appendChild(card);
       });
 
-      const receitasMes=currentMonth?getReceitasLiquidasMes(currentMonth):{liquido:0};
-      const receitasLiquidas=receitasMes.liquido||0;
+      const summaryBox = document.getElementById("summaryBox");
+      summaryBox.style.display = "block";
+      document.getElementById("sumAlugueis").textContent = formatMoney(sumAlugueis);
+      document.getElementById("sumEnergia").textContent = formatMoney(sumEnergia);
+      document.getElementById("sumTotalMes").textContent = formatMoney(sumTotalMes);
+      document.getElementById("sumRecebido").textContent = formatMoney(sumRecebido);
+      document.getElementById("sumSaldo").textContent = formatMoney(sumSaldo);
 
-      const summaryBox=document.getElementById("summaryBox");
-      if(tenantsDefault.length>0){
-        summaryBox.style.display="block";
-        document.getElementById("sumAlugueis").textContent=formatMoney(sumAlugueis);
-        document.getElementById("sumEnergia").textContent=formatMoney(sumEnergia);
-        document.getElementById("sumTotalMes").textContent=formatMoney(sumAlugueis+sumEnergia);
-        document.getElementById("sumReceitasExtra").textContent=formatMoney(receitasLiquidas);
-        document.getElementById("sumTotalGeral").textContent=formatMoney(sumAlugueis+sumEnergia+receitasLiquidas);
-        document.getElementById("sumRecebido").textContent=formatMoney(sumRecebido);
-        document.getElementById("sumSaldo").textContent=formatMoney(sumSaldo);
-      }else summaryBox.style.display="none";
+      const cashTotals = getCashTotals();
+      document.getElementById("sumCashCred").textContent = formatMoney(cashTotals.totalCred);
+      document.getElementById("sumCashDeb").textContent = formatMoney(cashTotals.totalDeb);
+      document.getElementById("sumCashSaldo").textContent = formatMoney(cashTotals.saldo);
+      document.getElementById("sumConsolidado").textContent = formatMoney(sumTotalMes + cashTotals.saldo);
 
-      const summaryUnidadesBox=document.getElementById("summaryUnidadesBox");
-      const tbody=document.getElementById("summaryUnidadesBody");
-      if(quickRows.length>0){
-        summaryUnidadesBox.style.display="block";
-        tbody.innerHTML=quickRows.map(r=>`
-          <tr>
-            <td>${r.nome}</td>
-            <td>${formatMoney(r.aluguel)}</td>
-            <td>${formatMoney(r.energia)}</td>
-            <td>${formatMoney(r.totalMes)}</td>
-            <td>${formatMoney(r.pago)}</td>
-            <td>${formatMoney(r.saldo)}</td>
-            <td>${r.status}</td>
-          </tr>`).join("");
-      }else{ summaryUnidadesBox.style.display="none"; tbody.innerHTML=""; }
-
-      drAtualizarResumo();
+      const summaryUnidadesBox = document.getElementById("summaryUnidadesBox");
+      const tbody = document.getElementById("summaryUnidadesBody");
+      summaryUnidadesBox.style.display = "block";
+      tbody.innerHTML = quickRows.map(r => `
+        <tr>
+          <td>${r.nome}</td>
+          <td>${formatMoney(r.aluguel)}</td>
+          <td>${formatMoney(r.energia)}</td>
+          <td>${formatMoney(r.totalMes)}</td>
+          <td>${formatMoney(r.pago)}</td>
+          <td>${formatMoney(r.saldo)}</td>
+          <td>${r.status}</td>
+        </tr>
+      `).join("");
     }
 
-    function updateTenant(index){
-      const nome=tenantsDefault[index];
-      const tData=tenantsData[nome]||defaultTenantData();
-
-      const rentField=document.getElementById("t"+index+"_rent");
-      let rent=tData.rent;
-      if(nome!=="Lava Rápido") rent=parseFloat(rentField.value||"0")||0;
-
-      const eStart=parseFloat(document.getElementById("t"+index+"_eStart").value||"0")||0;
-      const eEnd=parseFloat(document.getElementById("t"+index+"_eEnd").value||"0")||0;
-      const discount=parseFloat(document.getElementById("t"+index+"_discount").value||"0")||0;
-
-      tData.rent=rent; tData.eStart=eStart; tData.eEnd=eEnd; tData.discount=discount;
-      tenantsData[nome]=tData; saveConfig(); saveMonthData(); renderTenants();
+    function updateTenant(index) {
+      const nome = tenantsDefault[index];
+      const tData = tenantsData[nome] || defaultTenantData();
+      if (nome !== "Lava Rápido") tData.rent = parseFloat(document.getElementById("t" + index + "_rent").value || "0") || 0;
+      tData.eStart = parseFloat(document.getElementById("t" + index + "_eStart").value || "0") || 0;
+      tData.eEnd = parseFloat(document.getElementById("t" + index + "_eEnd").value || "0") || 0;
+      tData.discount = parseFloat(document.getElementById("t" + index + "_discount").value || "0") || 0;
+      tenantsData[nome] = tData;
+      saveConfig(); saveMonthData(); renderTenants();
     }
 
-    function addPayment(index){
-      const nome=tenantsDefault[index];
-      const tData=tenantsData[nome]||defaultTenantData();
-
-      const valueStr=document.getElementById("t"+index+"_payValue").value||"0";
-      const val=parseFloat(valueStr.replace(",",".")||"0")||0;
-      if(val<=0){ alert("Informe um valor de pagamento maior que zero."); return; }
-
-      const date=document.getElementById("t"+index+"_payDate").value||"";
-      const note=document.getElementById("t"+index+"_payNote").value||"";
-
-      tData.payments=tData.payments||[];
-      tData.payments.push({value:val,date,note});
-
-      document.getElementById("t"+index+"_payValue").value="";
-      document.getElementById("t"+index+"_payDate").value="";
-      document.getElementById("t"+index+"_payNote").value="";
-
-      tenantsData[nome]=tData; saveMonthData(); renderTenants();
-    }
-    function removePayment(index,payIndex){
-      const nome=tenantsDefault[index];
-      const tData=tenantsData[nome]||defaultTenantData();
-      if(!Array.isArray(tData.payments)) return;
-      tData.payments.splice(payIndex,1);
-      tenantsData[nome]=tData; saveMonthData(); renderTenants();
+    function addPayment(index) {
+      const nome = tenantsDefault[index];
+      const tData = tenantsData[nome] || defaultTenantData();
+      const val = parseFloat(String(document.getElementById("t" + index + "_payValue").value || "0").replace(",", ".")) || 0;
+      if (val <= 0) { alert("Informe um valor de pagamento maior que zero."); return; }
+      const date = document.getElementById("t" + index + "_payDate").value || "";
+      const note = document.getElementById("t" + index + "_payNote").value || "";
+      tData.payments = tData.payments || [];
+      tData.payments.push({ value: val, date, note });
+      document.getElementById("t" + index + "_payValue").value = "";
+      document.getElementById("t" + index + "_payDate").value = "";
+      document.getElementById("t" + index + "_payNote").value = "";
+      tenantsData[nome] = tData;
+      saveMonthData(); renderTenants();
     }
 
-    function initMonth(){
-      const monthInput=document.getElementById("mesRef");
-      const val=monthInput.value;
-      if(!val){ alert("Selecione o mês de referência."); return; }
-      currentMonth=val; loadMonthData(currentMonth); saveConfig(); renderTenants();
-
-      const acetFilterMonth=document.getElementById("acetFilterMonth");
-      if(acetFilterMonth&&currentMonth){ acetFilterMonth.value=currentMonth; acetRender(); }
-
-      const recFilterMonth=document.getElementById("recFilterMonth");
-      if(recFilterMonth&&currentMonth){
-        recFilterMonth.value=currentMonth;
-        recEnsureRecurringForMonth(currentMonth); recRender();
-      }
-
-      const drFilterMonth=document.getElementById("drFilterMonth");
-      if(drFilterMonth&&currentMonth){ drFilterMonth.value=currentMonth; drAtualizarResumo(); }
+    function removePayment(index, payIndex) {
+      const nome = tenantsDefault[index];
+      const tData = tenantsData[nome] || defaultTenantData();
+      if (!Array.isArray(tData.payments)) return;
+      tData.payments.splice(payIndex, 1);
+      tenantsData[nome] = tData;
+      saveMonthData(); renderTenants();
     }
 
-    // ---------- INICIALIZAÇÃO ----------
-    window.addEventListener("load",()=>{
+    function initMonth() {
+      const val = document.getElementById("mesRef").value;
+      if (!val) { alert("Selecione o mês de referência."); return; }
+      currentMonth = val;
+      loadMonthData(currentMonth);
+      cashLoadMonth(currentMonth);
+      saveConfig();
+      if (document.getElementById("acetFilterMonth")) document.getElementById("acetFilterMonth").value = currentMonth;
+      renderTenants(); cashRender(); acetRender();
+    }
+
+    window.addEventListener("load", () => {
       loadConfig();
-      const now=new Date();
-      const yyyy=now.getFullYear();
-      const mm=String(now.getMonth()+1).padStart(2,"0");
-      const mesAtual=`${yyyy}-${mm}`;
-      const mesRefInput=document.getElementById("mesRef");
-      if(mesRefInput) mesRefInput.value=mesAtual;
-      currentMonth=mesAtual; loadMonthData(currentMonth); renderTenants();
 
-      document.getElementById("btnCarregarMes").addEventListener("click",initMonth);
-      document.getElementById("valorKwh").addEventListener("change",()=>{ saveConfig(); renderTenants(); });
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
 
-      // AcetJuli
+      document.getElementById("mesRef").value = `${yyyy}-${mm}`;
+      currentMonth = `${yyyy}-${mm}`;
+
+      loadMonthData(currentMonth);
+      cashLoadMonth(currentMonth);
+
+      document.getElementById("btnCarregarMes").addEventListener("click", initMonth);
+      document.getElementById("valorKwh").addEventListener("change", () => { saveConfig(); renderTenants(); });
+
       acetEnsureSeedData();
-      const today=new Date();
-      const dateStr=today.toISOString().slice(0,10);
-      const dateInput=document.getElementById("acetDateInput");
-      if(dateInput) dateInput.value=dateStr;
-      const acetFilterMonth=document.getElementById("acetFilterMonth");
-      if(acetFilterMonth){
-        acetFilterMonth.addEventListener("change",()=>acetRender());
-        acetFilterMonth.value=mesAtual;
+
+      const todayStr = new Date().toISOString().slice(0,10);
+      document.getElementById("acetDateInput").value = todayStr;
+      document.getElementById("cashDate").value = todayStr;
+
+      const acetFilterMonth = document.getElementById("acetFilterMonth");
+      if (acetFilterMonth) {
+        acetFilterMonth.value = `${yyyy}-${mm}`;
+        acetFilterMonth.addEventListener("change", () => { acetRender(); renderTenants(); });
       }
+
+      renderTenants();
+      cashRender();
       acetRender();
-
-      // Receitas em dinheiro
-      const recDateInput=document.getElementById("recDateInput");
-      if(recDateInput) recDateInput.value=dateStr;
-      const recFilterMonth=document.getElementById("recFilterMonth");
-      if(recFilterMonth){
-        recFilterMonth.addEventListener("change",()=>{
-          recEnsureRecurringForMonth(recFilterMonth.value);
-          recRender(); renderTenants();
-        });
-        recFilterMonth.value=mesAtual;
-      }
-      recEnsureRecurringForMonth(mesAtual); recRender();
-
-      // DRE
-      const drFilterMonth=document.getElementById("drFilterMonth");
-      if(drFilterMonth){
-        drFilterMonth.addEventListener("change",()=>drAtualizarResumo());
-        drFilterMonth.value=mesAtual;
-      }
-      drAtualizarResumo();
     });
   </script>
 </body>
