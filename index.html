@@ -400,6 +400,10 @@
       }
     }
   </style>
+
+  <!-- SheetJS (XLS/XLSX) para leitura automática do DRE (Excel) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 </head>
 <body>
   <h1>Aluguéis & DRE Consolidado</h1>
@@ -673,6 +677,21 @@
         </div>
 
         <label for="drFileInput" style="margin-top:8px;">Imagem do DRE (JPG/PNG – print do relatório)</label>
+        
+        <div class="divider"></div>
+        <h3 style="margin:10px 0 6px 0;">Leitura automática do DRE (Excel)</h3>
+        <div class="row" style="gap:10px; align-items:flex-end;">
+          <div class="col">
+            <label for="drXlsInput">Arquivo do DRE (XLS/XLSX)</label>
+            <input type="file" id="drXlsInput"
+              accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+          </div>
+          <div class="col" style="min-width:220px;">
+            <button class="btn" type="button" onclick="drLerDREExcel()">Ler DRE do Excel</button>
+          </div>
+        </div>
+        <div id="drXlsStatus" class="acet-sub" style="margin-top:8px;"></div>
+
         <input type="file" id="drFileInput" accept="image/*" />
 
         <button class="btn-small" style="margin-top:6px;background:#34c759;color:#fff;" onclick="drLerDRE()">Ler DRE da imagem</button>
@@ -796,7 +815,9 @@
       "Cabeleireiro",
       "Loja de Celulares",
       "Lava Rápido",
-      "Loja de Chocolate"
+      "Loja de Chocolate",
+      "Sanduicheria",
+      "Lavanderia"
     ];
 
     let currentMonth = null;
@@ -1984,6 +2005,125 @@
       }
       drAtualizarResumo();
     });
-  </script>
+  
+
+    // ---------- DRE: LEITURA DO EXCEL (XLS/XLSX) ----------
+    function __dreNorm(s) {
+      try {
+        return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+      } catch (e) {
+        return String(s||"").toLowerCase().replace(/\s+/g," ").trim();
+      }
+    }
+
+    function __dreParseMoney(v) {
+      if (v === null || v === undefined) return null;
+      if (typeof v === "number") return isNaN(v) ? null : v;
+      let s = String(v).trim();
+      if (!s) return null;
+      s = s.replace(/R\$\s*/g,"").replace(/\s+/g,"");
+      if (s.includes(",") && s.includes(".")) s = s.replace(/\./g,"").replace(",",".");
+      else if (s.includes(",") && !s.includes(".")) s = s.replace(",",".");
+      s = s.replace(/[^0-9\-\.]/g,"");
+      const n = parseFloat(s);
+      return isNaN(n) ? null : n;
+    }
+
+    function __dreFill(id, val) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = (typeof val === "number" && !isNaN(val)) ? val.toFixed(2) : "";
+      el.dispatchEvent(new Event("input", { bubbles:true }));
+      el.dispatchEvent(new Event("change", { bubbles:true }));
+    }
+
+    async function drLerDREExcel() {
+      const st = document.getElementById("drXlsStatus");
+      const inp = document.getElementById("drXlsInput");
+      if (!inp || !inp.files || !inp.files[0]) {
+        alert("Selecione o arquivo do DRE (XLS/XLSX).");
+        return;
+      }
+      if (!window.XLSX) {
+        alert("A biblioteca XLSX não carregou. Verifique sua conexão com internet (CDN).");
+        return;
+      }
+
+      st.textContent = "Lendo Excel...";
+
+      try {
+        const buf = await inp.files[0].arrayBuffer();
+        const wb = XLSX.read(buf, { type:"array" });
+        // tenta achar a aba mais provável
+        const sheetName = wb.SheetNames[0];
+        const ws = wb.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:"" });
+
+        // Monta candidatos: label + valor (último número na linha)
+        const cand = [];
+        for (const r of rows) {
+          if (!r || !r.length) continue;
+          const labelCell = r.find(c => typeof c === "string" && c.trim().length > 2) ?? r[0];
+          const label = String(labelCell||"").trim();
+          if (!label) continue;
+
+          let val = null;
+          for (let i=r.length-1; i>=0; i--) {
+            const parsed = __dreParseMoney(r[i]);
+            if (parsed !== null) { val = parsed; break; }
+          }
+          if (val === null) continue;
+
+          cand.push({ label, n: __dreNorm(label), val });
+        }
+
+        const DRE_XLS_MAP = [
+      ["dre_receita_produtos", ["Receita Bruta de Vendas de Produtos", "Receita Bruta de Produtos"]],
+      ["dre_receita_servicos", ["Receita Bruta de Vendas de Serviços", "Receita Bruta de Serviços"]],
+      ["dre_total_bruta", ["Total da Receita Bruta", "Total Receita Bruta"]],
+      ["dre_devolucoes", ["Devoluções de Vendas", "Devolucoes de Vendas"]],
+      ["dre_impostos", ["Impostos Incidentes Sobre Vendas de Produtos e Serviços", "Impostos Incidentes Sobre Vendas"]],
+      ["dre_receita_liquida", ["Receita Líquida de Venda de Produtos e Serviços", "Receita Liquida de Venda de Produtos e Serviços", "Receita Líquida"]],
+      ["dre_custos_produtos", ["Custos dos Produtos Vendidos", "Custo dos Produtos Vendidos"]],
+      ["dre_custos_servicos", ["Custos dos Serviços Prestados", "Custos dos Serviços Vendidos", "Custo dos Serviços Prestados"]],
+      ["dre_lucro_bruto", ["Lucro/Prejuízo Bruto", "Lucro Bruto"]],
+      ["dre_desp_adm", ["Despesas Administrativas", "Despesa Administrativa"]],
+      ["dre_desp_vendas", ["Despesas de Vendas", "Despesa de Vendas"]],
+      ["dre_prov_sociais", ["Provisões Sociais Trabalhistas", "Provisoes Sociais Trabalhistas"]],
+      ["dre_desp_fin", ["Despesas Financeiras", "Despesa Financeira"]],
+      ["dre_var_estoques", ["Variação de Estoques", "Variacao de Estoques"]],
+      ["dre_rec_fin", ["Receitas Financeiras", "Receita Financeira"]],
+      ["dre_lucro_oper", ["Lucro/Prejuízo Operacional", "Lucro Operacional"]],
+      ["dre_desp_nao_op", ["Despesas não Operacionais", "Despesas nao Operacionais"]],
+      ["dre_rec_nao_op", ["Receitas não Operacionais", "Receitas nao Operacionais"]],
+      ["dre_lucro_antes_dep", ["Lucro/Prejuízo do Exercício Antes da Depreciação", "Lucro do Exercício Antes da Depreciação", "Lucro Antes da Depreciação"]],
+      ["dre_depreciacoes", ["Depreciações", "Depreciacoes"]],
+      ["dre_lucro_exercicio", ["Lucro/Prejuízo do Exercício", "Lucro do Exercício"]],
+    ];
+
+        let filled = 0;
+        let missing = 0;
+
+        for (const [id, aliases] of DRE_XLS_MAP) {
+          const found = cand.find(c => aliases.some(a => c.n.includes(__dreNorm(a))));
+          if (found) {
+            __dreFill(id, found.val);
+            filled++;
+          } else {
+            missing++;
+          }
+        }
+
+        if (typeof drAtualizarResumo === "function") drAtualizarResumo();
+
+        st.textContent = `Excel lido. Campos preenchidos: ${filled}${missing ? " | Não encontrados: " + missing : ""}.`;
+      } catch (e) {
+        console.error(e);
+        st.textContent = "Erro ao ler Excel: " + (e && e.message ? e.message : String(e));
+        alert("Erro ao ler o Excel.");
+      }
+    }
+
+</script>
 </body>
 </html>
