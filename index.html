@@ -2131,25 +2131,51 @@
         const ws = wb.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:"" });
 
-        // Monta candidatos: label + valor (último número na linha)
+        // Monta candidatos: label + valor (preferindo o "valor do mês")
+        // Problema comum: algumas planilhas têm mais de uma coluna numérica (mês / acumulado / %),
+        // e "pegar o último número da linha" pode capturar o acumulado (positivo) quando o mês está negativo (em parênteses).
         const cand = [];
         for (const r of rows) {
           if (!r || !r.length) continue;
-          const labelCell = r.find(c => typeof c === "string" && c.trim().length > 2) ?? r[0];
+
+          // acha a célula de rótulo (texto) e sua posição
+          let labelIdx = 0;
+          let labelCell = "";
+          for (let i=0; i<r.length; i++) {
+            if (typeof r[i] === "string" && String(r[i]).trim().length > 2) {
+              labelIdx = i;
+              labelCell = r[i];
+              break;
+            }
+          }
+          if (!labelCell) labelCell = r[0];
+
           const label = String(labelCell||"").trim();
           if (!label) continue;
 
-          let val = null;
-          for (let i=r.length-1; i>=0; i--) {
-            const parsed = __dreParseMoney(r[i]);
-            if (parsed !== null) { val = parsed; break; }
+          // coleta todos os números após o rótulo
+          const nums = [];
+          for (let i=labelIdx+1; i<r.length; i++) {
+            const raw = r[i];
+            const parsed = __dreParseMoney(raw);
+            if (parsed !== null) {
+              const rawStr = String(raw||"");
+              const hasParen = rawStr.includes("(") && rawStr.includes(")");
+              const hasMinus = rawStr.trim().startsWith("-") || rawStr.includes("−");
+              nums.push({ v: parsed, hasParen, hasMinus, idx: i, raw: rawStr });
+            }
           }
-          if (val === null) continue;
+          if (!nums.length) continue;
 
-          cand.push({ label, n: __dreNorm(label), val });
+          // regra de escolha:
+          // 1) se existir valor com parênteses ou sinal negativo explícito, usa esse (é o "mês" com prejuízo/lucro)
+          // 2) senão, usa o PRIMEIRO número após o rótulo (normalmente é o valor do mês)
+          let chosen = nums.find(x => x.hasParen || x.hasMinus);
+          if (!chosen) chosen = nums[0];
+
+          cand.push({ label, n: __dreNorm(label), val: chosen.v });
         }
-
-        const DRE_XLS_MAP = [
+const DRE_XLS_MAP = [
       ["dre_receita_produtos", ["Receita Bruta de Vendas de Produtos", "Receita Bruta de Produtos"]],
       ["dre_receita_servicos", ["Receita Bruta de Vendas de Serviços", "Receita Bruta de Serviços"]],
       ["dre_total_bruta", ["Total da Receita Bruta", "Total Receita Bruta"]],
