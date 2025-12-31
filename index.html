@@ -2069,18 +2069,46 @@
 
     function __dreParseMoney(v) {
       if (v === null || v === undefined) return null;
+
+      // Se vier como número, pode estar "cru" (raw) e perder o parêntese do formato contábil.
+      // Por isso usamos raw:false no sheet_to_json; ainda assim, mantemos este fallback.
       if (typeof v === "number") return isNaN(v) ? null : v;
 
       let s = String(v).trim();
       if (!s) return null;
 
-      // Excel/Relatórios costumam representar negativo assim: (1.234,56)
-      // ou com sinal no fim/início. Aqui tratamos corretamente.
       let negative = false;
+
+      // negativo contábil: (1.234,56)
       if (s.includes("(") && s.includes(")")) {
         negative = true;
         s = s.replace(/[()]/g, "");
       }
+
+      // negativo com sinal no fim: 1.234,56-
+      if (s.endsWith("-")) {
+        negative = true;
+        s = s.slice(0, -1);
+      }
+
+      s = s.replace(/R\$\s*/gi, "").replace(/\s+/g, "");
+
+      // trata "1.234,56" -> "1234.56" e "1234,56" -> "1234.56"
+      if (s.includes(",") && s.includes(".")) s = s.replace(/\./g, "").replace(",", ".");
+      else if (s.includes(",") && !s.includes(".")) s = s.replace(",", ".");
+
+      // mantém apenas dígitos, ponto e sinal
+      s = s.replace(/[^0-9\.-]/g, "");
+
+      // se vier com "-" explícito, respeita
+      if (s.startsWith("-")) negative = true;
+
+      const n = parseFloat(s);
+      if (isNaN(n)) return null;
+
+      const val = Math.abs(n);
+      return negative ? -val : val;
+    }
 
       s = s.replace(/R\$\s*/gi, "").replace(/\s+/g, "");
 
@@ -2129,7 +2157,7 @@
         // tenta achar a aba mais provável
         const sheetName = wb.SheetNames[0];
         const ws = wb.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:"" });
+        const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:"" });
 
         // Monta candidatos: label + valor (preferindo o "valor do mês")
         // Problema comum: algumas planilhas têm mais de uma coluna numérica (mês / acumulado / %),
