@@ -2070,14 +2070,35 @@
     function __dreParseMoney(v) {
       if (v === null || v === undefined) return null;
       if (typeof v === "number") return isNaN(v) ? null : v;
+
       let s = String(v).trim();
       if (!s) return null;
-      s = s.replace(/R\$\s*/g,"").replace(/\s+/g,"");
-      if (s.includes(",") && s.includes(".")) s = s.replace(/\./g,"").replace(",",".");
-      else if (s.includes(",") && !s.includes(".")) s = s.replace(",",".");
-      s = s.replace(/[^0-9\-\.]/g,"");
+
+      // Excel/Relatórios costumam representar negativo assim: (1.234,56)
+      // ou com sinal no fim/início. Aqui tratamos corretamente.
+      let negative = false;
+      if (s.includes("(") && s.includes(")")) {
+        negative = true;
+        s = s.replace(/[()]/g, "");
+      }
+
+      s = s.replace(/R\$\s*/gi, "").replace(/\s+/g, "");
+
+      // trata "1.234,56" -> "1234.56" e "1234,56" -> "1234.56"
+      if (s.includes(",") && s.includes(".")) s = s.replace(/\./g, "").replace(",", ".");
+      else if (s.includes(",") && !s.includes(".")) s = s.replace(",", ".");
+
+      // mantém apenas dígitos, ponto e sinal
+      s = s.replace(/[^0-9\.\-]/g, "");
+
+      // se vier com "-" já explícito, respeita
+      if (s.startsWith("-")) negative = true;
+
       const n = parseFloat(s);
-      return isNaN(n) ? null : n;
+      if (isNaN(n)) return null;
+
+      const val = Math.abs(n);
+      return negative ? -val : val;
     }
 
     function __dreFill(id, val) {
