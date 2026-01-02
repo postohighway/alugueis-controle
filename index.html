@@ -4,67 +4,60 @@
   <meta charset="UTF-8" />
   <title>Aluguéis & DRE Consolidado</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif}
     body{margin:0;padding:12px;background:#f2f2f7;font-size:16px}
     h1{font-size:22px;text-align:center;margin:0 0 10px}
-    h2{font-size:18px;margin:18px 0 8px}
+    h2{font-size:18px;margin:14px 0 8px}
+    h3{font-size:15px;margin:12px 0 6px}
     label{display:block;font-size:14px;margin-top:6px}
-    input,select,button,textarea{width:100%;padding:6px 8px;margin-top:3px;border-radius:8px;border:1px solid #d1d1d6;font-size:15px}
-    input:focus,textarea:focus,button:focus{outline:none;border-color:#007aff;box-shadow:0 0 0 1px rgba(0,122,255,.3)}
-    button{background:#007aff;color:#fff;border:none;font-weight:600;margin-top:10px;cursor:pointer}
+    input,select,button,textarea{width:100%;padding:8px 10px;margin-top:4px;border-radius:10px;border:1px solid #d1d1d6;font-size:15px}
+    input:focus,textarea:focus,button:focus{outline:none;border-color:#007aff;box-shadow:0 0 0 1px rgba(0,122,255,.25)}
+    button{background:#007aff;color:#fff;border:none;font-weight:700;margin-top:10px;cursor:pointer}
     button.secondary{background:#fff;color:#007aff;border:1px solid #007aff}
-    .top-bar-main{background:#fff;padding:10px 12px;border-radius:10px;box-shadow:0 2px 4px rgba(0,0,0,.05);margin-bottom:10px}
+    .card{background:#fff;border-radius:14px;padding:12px 12px;margin-bottom:10px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
+    .muted{font-size:12px;color:#8e8e93;margin-top:4px}
     .tabs-header{display:flex;gap:8px;margin-bottom:10px}
-    .tab-button{flex:1;padding:8px;border-radius:999px;border:1px solid #d1d1d6;background:#fff;color:#333;font-weight:600;font-size:14px}
+    .tab-button{flex:1;padding:10px;border-radius:999px;border:1px solid #d1d1d6;background:#fff;color:#333;font-weight:800;font-size:14px}
     .tab-button.active{background:#007aff;color:#fff;border-color:#007aff}
-    .tab-content{display:none}.tab-content.active{display:block}
-    .cards-container{margin-top:10px}
-    .card{background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:10px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
-    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-    .card-title{font-weight:700;font-size:16px}
-    .status-tag{font-size:12px;padding:2px 6px;border-radius:8px;color:#fff}
-    .status-aberto{background:#ff3b30}.status-parcial{background:#ff9f0a}.status-pago{background:#34c759}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
-    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:4px}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
     .small-label{font-size:12px;color:#8e8e93}
-    .small-value{font-weight:600;font-size:14px}
-    .payments{margin-top:8px;border-top:1px solid #e5e5ea;padding-top:6px}
-    .payments-list{max-height:140px;overflow-y:auto;margin-top:4px;border-radius:8px;border:1px solid #e5e5ea;padding:4px 6px;background:#fafafa;font-size:13px}
-    .payment-row{display:flex;justify-content:space-between;gap:4px;padding:2px 0;border-bottom:1px dashed #e5e5ea}
+    .small-value{font-size:14px;font-weight:800}
+    .status-tag{font-size:12px;padding:3px 8px;border-radius:999px;color:#fff;font-weight:800}
+    .status-aberto{background:#ff3b30}
+    .status-parcial{background:#ff9f0a}
+    .status-pago{background:#34c759}
+    .payments{margin-top:10px;border-top:1px solid #e5e5ea;padding-top:8px}
+    .payments-list{max-height:140px;overflow:auto;margin-top:6px;border-radius:10px;border:1px solid #e5e5ea;padding:6px 8px;background:#fafafa;font-size:13px}
+    .payment-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed #e5e5ea}
     .payment-row:last-child{border-bottom:none}
-    .payment-note{color:#8e8e93;font-size:12px}
-    .summary-box{background:#fff;border-radius:12px;padding:10px 12px;margin-top:10px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
-    .summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
+    .summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
     .summary-item-label{font-size:13px;color:#8e8e93}
-    .summary-item-value{font-size:15px;font-weight:600}
-    .whatsapp-hint{font-size:12px;color:#8e8e93;margin-top:4px}
-    .summary-table-wrapper{overflow-x:auto;margin-top:6px}
-    table.summary-table{width:100%;border-collapse:collapse;font-size:13px}
-    table.summary-table thead{background:#f2f2f7}
-    table.summary-table th,table.summary-table td{padding:4px 6px;border-bottom:1px solid #e5e5ea;text-align:right;white-space:nowrap}
-    table.summary-table th:first-child,table.summary-table td:first-child{text-align:left}
-    table.summary-table tr:last-child td{border-bottom:none}
-    .acet-sub{font-size:12px;text-align:center;color:#666;margin-bottom:8px}
-    .acet-top-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .acet-top-bar>div{flex:1;min-width:120px}
-    .acet-actions-top{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-    .btn-small{font-size:11px;padding:5px 8px;border-radius:20px}
-    .btn-outline{background:transparent;border:1px solid #d1d1d6;color:#666}
-    .btn-danger{background:#ff3b30;color:#fff;font-size:12px;padding:4px 6px;border:none;border-radius:10px;cursor:pointer}
-    .acet-scroll-table{max-height:320px;overflow-y:auto;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-    .acet-debit-row{background-color:#ffecec}
-    .acet-credit-row{background-color:#e9ffea}
-    .acet-totais{font-size:13px;margin-top:5px}
-    .saldo-positivo{color:#ff3b30;font-weight:600}
-    .saldo-negativo{color:#30d158;font-weight:600}
-    .acet-pill{font-size:11px;padding:3px 6px;border-radius:999px;border:1px solid #d1d1d6;color:#666;display:inline-block;margin-top:2px}
-    .acet-resumo-box{font-size:12px;line-height:1.4;white-space:pre-line}
-    @media(min-width:768px){body{max-width:900px;margin:0 auto}}
-    @media print{.tabs-header,#tab-acerto,#tab-receitas{display:none!important}}
+    .summary-item-value{font-size:15px;font-weight:900}
+    .summary-table-wrapper{overflow-x:auto;margin-top:8px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead{background:#f2f2f7}
+    th,td{padding:6px 8px;border-bottom:1px solid #e5e5ea;text-align:right;white-space:nowrap}
+    th:first-child,td:first-child{text-align:left}
+    .btn-danger{background:#ff3b30;color:#fff;border:none;border-radius:999px;font-size:12px;padding:6px 10px}
+    .btn-outline{background:transparent;border:1px solid #d1d1d6;color:#666;font-weight:800}
+    .btn-small{font-size:12px;padding:8px 10px;border-radius:999px}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .col{flex:1;min-width:220px}
+    @media (min-width: 820px){body{max-width:980px;margin:0 auto}}
+    @media print{.tabs-header{display:none!important}}
   </style>
+
+  <!-- SheetJS (XLS/XLSX) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- OCR (imagem) -->
+  <script src="https://unpkg.com/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
 </head>
+
 <body>
   <h1>Aluguéis & DRE Consolidado</h1>
 
@@ -75,35 +68,73 @@
     <button class="tab-button" id="btnTabDR" onclick="showTab('dr')">DRE</button>
   </div>
 
+  <!-- TAB: ALUGUEIS -->
   <div id="tab-alugueis" class="tab-content active">
-    <div class="top-bar-main">
+    <div class="card">
       <label for="valorKwh">Valor do kWh (Cemig) – R$</label>
-      <input type="number" id="valorKwh" step="0.0001" inputmode="decimal" placeholder="Ex: 0.95" />
-      <label for="mesRef">Mês de referência (YYYY-MM)</label>
+      <input type="number" id="valorKwh" step="0.0001" inputmode="decimal" placeholder="Ex: 0,95" />
+
+      <label for="mesRef">Mês de referência</label>
       <input type="month" id="mesRef" />
+
       <button id="btnCarregarMes">Carregar mês</button>
-      <small class="whatsapp-hint">Regras: Lava Rápido = ACERTO (não entra como receita). Loja de Conveniência = já está no DRE contábil (não entra no ajuste do DRE).</small>
+      <div class="muted">Dica: preencha tudo e use o resumo para conferência com o DRE.</div>
     </div>
 
-    <div class="cards-container" id="cardsContainer"></div>
+    <div id="cardsContainer"></div>
 
-    <div class="summary-box" id="summaryBox" style="display:none;">
-      <h2>Resumo geral do mês (ajuste do DRE)</h2>
+    <div class="card" id="summaryBox" style="display:none;">
+      <h2>Resumo geral do mês (Receita de aluguéis + energia)</h2>
       <div class="summary-grid">
-        <div><div class="summary-item-label">Total de aluguéis (receita extra)</div><div class="summary-item-value" id="sumAlugueis">R$ 0,00</div></div>
-        <div><div class="summary-item-label">Total energia líquida (receita extra)</div><div class="summary-item-value" id="sumEnergia">R$ 0,00</div></div>
-        <div><div class="summary-item-label">Total (aluguéis + energia) (receita extra)</div><div class="summary-item-value" id="sumTotalMes">R$ 0,00</div></div>
-        <div><div class="summary-item-label">Receitas não operacionais (dinheiro) – líquido</div><div class="summary-item-value" id="sumReceitasExtra">R$ 0,00</div></div>
-        <div><div class="summary-item-label">Total geral (para ajuste do DRE)</div><div class="summary-item-value" id="sumTotalGeral">R$ 0,00</div></div>
+        <div>
+          <div class="summary-item-label">Total de aluguéis</div>
+          <div class="summary-item-value" id="sumAlugueis">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total energia líquida</div>
+          <div class="summary-item-value" id="sumEnergia">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total (aluguéis + energia)</div>
+          <div class="summary-item-value" id="sumTotalMes">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Receitas não operacionais (dinheiro) – líquido</div>
+          <div class="summary-item-value" id="sumReceitasExtra">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total geral (aluguéis + energia + dinheiro)</div>
+          <div class="summary-item-value" id="sumTotalGeral">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Total recebido (aluguéis/energia)</div>
+          <div class="summary-item-value" id="sumRecebido">R$ 0,00</div>
+        </div>
+        <div>
+          <div class="summary-item-label">Saldo a receber (aluguéis/energia)</div>
+          <div class="summary-item-value" id="sumSaldo">R$ 0,00</div>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:8px;">
+        * Lava Rápido NÃO entra aqui (é troca de favores + acerto do Juliano).
       </div>
     </div>
 
-    <div class="summary-box" id="summaryUnidadesBox" style="display:none;">
+    <div class="card" id="summaryUnidadesBox" style="display:none;">
       <h2>Resumo rápido por unidade</h2>
+      <div class="muted">Situação de cada unidade (aluguel, energia, total, pagos e saldo).</div>
       <div class="summary-table-wrapper">
-        <table class="summary-table">
+        <table>
           <thead>
-            <tr><th>Unidade</th><th>Aluguel</th><th>Energia líquida</th><th>Total mês</th><th>Pago</th><th>Saldo</th><th>Status</th></tr>
+            <tr>
+              <th>Unidade</th>
+              <th>Aluguel</th>
+              <th>Energia líquida</th>
+              <th>Total mês</th>
+              <th>Pago</th>
+              <th>Saldo</th>
+              <th>Status</th>
+            </tr>
           </thead>
           <tbody id="summaryUnidadesBody"></tbody>
         </table>
@@ -111,600 +142,1232 @@
     </div>
   </div>
 
+  <!-- TAB: ACERTO JULIANO -->
   <div id="tab-acerto" class="tab-content">
     <div class="card">
-      <h2>AcetJuli</h2>
-      <div class="acet-sub">Débito = RF pagou / Crédito = Juliano pagou (controle de acerto do Lava Rápido).</div>
-
-      <div class="card">
-        <div class="acet-top-bar">
-          <div><label for="acetFilterMonth">Mês (YYYY-MM)</label><input type="month" id="acetFilterMonth"></div>
-        </div>
-        <div class="acet-actions-top">
-          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="acetSetCurrentMonth()">Hoje</button>
-          <button class="btn-small btn-outline" onclick="acetDownloadBackup()">Backup (.json)</button>
-          <button class="btn-small btn-outline" onclick="acetImportData()">Importar (colar JSON)</button>
-          <button class="btn-small" style="background:#555;color:#fff;" onclick="acetClearAll()">Zerar tudo</button>
-        </div>
-        <textarea id="acetJsonArea" style="width:100%;height:120px;display:none;margin-top:8px;" placeholder="Cole aqui o JSON do backup e clique em Importar"></textarea>
+      <h2>Acerto Juliano × RF (Lava Rápido)</h2>
+      <div class="muted">
+        Débito = RF pagou (adiantou conta) • Crédito = Juliano pagou.
+        <br/>O Lava Rápido NÃO entra como receita no DRE (troca de favores).
       </div>
 
       <div class="card">
-        <h2>Novo lançamento</h2>
-        <span class="acet-pill">Débito = RF pagou · Crédito = Juliano pagou</span>
-        <label for="acetDateInput">Data</label><input type="date" id="acetDateInput">
-        <label for="acetDescInput">Descrição</label><input type="text" id="acetDescInput" placeholder="Ex.: Biotri, CEMIG, DMAE...">
+        <div class="grid-2">
+          <div>
+            <label for="acetFilterMonth">Mês (YYYY-MM)</label>
+            <input type="month" id="acetFilterMonth" />
+          </div>
+          <div>
+            <button class="btn-small" style="margin-top:28px;background:#007aff" onclick="acetSetCurrentMonth()">Hoje</button>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <button class="btn-small btn-outline" onclick="acetExportData()">Ver JSON</button>
+          <button class="btn-small btn-outline" onclick="acetDownloadBackup()">Backup (.json)</button>
+          <button class="btn-small btn-outline" onclick="acetImportData()">Importar</button>
+          <button class="btn-small" style="background:#8e8e93" onclick="acetPrintPDF()">PDF</button>
+          <button class="btn-small" style="background:#555" onclick="acetClearAll()">Zerar tudo</button>
+        </div>
+        <div class="muted">Dados ficam neste aparelho (localStorage). Faça backup.</div>
+      </div>
+
+      <div class="card">
+        <h3>Novo lançamento</h3>
+
+        <label for="acetDateInput">Data</label>
+        <input type="date" id="acetDateInput" />
+
+        <label for="acetDescInput">Descrição</label>
+        <input type="text" id="acetDescInput" placeholder="Ex.: CEMIG, DMAE, BIOTRI, etc." />
+
         <label for="acetTypeInput">Tipo</label>
         <select id="acetTypeInput">
-          <option value="DEBITO_RF">Débito - RF pagou</option>
-          <option value="CREDITO_JULIANO">Crédito - Juliano pagou</option>
+          <option value="DEBITO_RF">Débito - RF pagou (a favor da RF)</option>
+          <option value="CREDITO_JULIANO">Crédito - Juliano pagou (a favor do Juliano)</option>
         </select>
-        <label for="acetValueInput">Valor (R$)</label><input type="number" id="acetValueInput" step="0.01" inputmode="decimal" placeholder="0,00">
+
+        <label for="acetValueInput">Valor (R$)</label>
+        <input type="number" id="acetValueInput" step="0.01" inputmode="decimal" placeholder="0,00" />
+
         <button onclick="acetAddTransaction()">Incluir lançamento</button>
       </div>
 
       <div class="card">
-        <h2>Lançamentos do mês</h2>
-        <div class="acet-scroll-table">
-          <table style="width:100%;border-collapse:collapse;font-size:13px;">
-            <thead style="background:#f2f2f7;">
-              <tr><th style="text-align:left;padding:6px;">Data</th><th style="text-align:left;padding:6px;">Descrição</th><th style="text-align:left;padding:6px;">Tipo</th><th style="text-align:right;padding:6px;">Valor</th><th style="text-align:center;padding:6px;"></th></tr>
+        <h3>Lançamentos do mês</h3>
+        <div class="summary-table-wrapper" style="max-height:340px;overflow:auto;border:1px solid #e5e5ea;border-radius:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Tipo</th>
+                <th>Valor (R$)</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody id="acetTableBody"></tbody>
           </table>
         </div>
-        <div class="acet-totais" id="acetTotaisBox"></div>
+        <div id="acetTotaisBox" style="margin-top:8px;font-size:13px;"></div>
       </div>
 
       <div class="card">
-        <h2>Resumo para WhatsApp / Print</h2>
-        <div id="acetWhatsResumo" class="acet-resumo-box"></div>
+        <h3>Resumo para WhatsApp / Print</h3>
+        <pre id="acetWhatsResumo" style="white-space:pre-wrap;margin:0;font-size:12px;line-height:1.4;"></pre>
       </div>
+
+      <textarea id="acetJsonArea" style="width:100%;height:160px;display:none;"></textarea>
     </div>
   </div>
 
+  <!-- TAB: RECEITAS EM DINHEIRO -->
   <div id="tab-receitas" class="tab-content">
     <div class="card">
       <h2>Receitas não operacionais em dinheiro</h2>
-      <div class="acet-sub">Resultado líquido entra no ajuste do DRE (créditos - débitos).</div>
+      <div class="muted">Créditos e débitos em dinheiro (resultado líquido entra no ajuste do DRE).</div>
 
       <div class="card">
-        <div class="acet-top-bar">
-          <div><label for="recFilterMonth">Mês (YYYY-MM)</label><input type="month" id="recFilterMonth"></div>
+        <div class="grid-2">
+          <div>
+            <label for="recFilterMonth">Mês (YYYY-MM)</label>
+            <input type="month" id="recFilterMonth" />
+          </div>
+          <div>
+            <button class="btn-small" style="margin-top:28px;background:#007aff" onclick="recSetCurrentMonth()">Hoje</button>
+          </div>
         </div>
-        <div class="acet-actions-top">
-          <button class="btn-small" style="background:#007aff;color:#fff;" onclick="recSetCurrentMonth()">Hoje</button>
+
+        <div class="row" style="margin-top:8px;">
+          <button class="btn-small btn-outline" onclick="recExportData()">Ver JSON</button>
           <button class="btn-small btn-outline" onclick="recDownloadBackup()">Backup (.json)</button>
-          <button class="btn-small btn-outline" onclick="recImportData()">Importar (colar JSON)</button>
+          <button class="btn-small btn-outline" onclick="recImportData()">Importar</button>
         </div>
-        <textarea id="recJsonArea" style="width:100%;height:120px;display:none;margin-top:8px;" placeholder="Cole aqui o JSON do backup e clique em Importar"></textarea>
       </div>
 
       <div class="card">
-        <h2>Novo lançamento em dinheiro</h2>
-        <label for="recDateInput">Data</label><input type="date" id="recDateInput">
-        <label for="recDescInput">Descrição</label><input type="text" id="recDescInput" placeholder="Ex.: extras, serviços avulsos...">
+        <h3>Novo lançamento</h3>
+
+        <label for="recDateInput">Data</label>
+        <input type="date" id="recDateInput" />
+
+        <label for="recDescInput">Descrição</label>
+        <input type="text" id="recDescInput" placeholder="Ex.: extras, serviços avulsos..." />
+
         <label for="recTypeInput">Tipo</label>
         <select id="recTypeInput">
           <option value="CREDITO">Crédito (entra)</option>
           <option value="DEBITO">Débito (sai)</option>
         </select>
-        <label for="recValueInput">Valor (R$)</label><input type="number" id="recValueInput" step="0.01" inputmode="decimal" placeholder="0,00">
-        <label style="margin-top:8px;"><input type="checkbox" id="recRecurringInput" style="width:auto;margin-right:6px;">Recorrente (repete todo mês)</label>
+
+        <label for="recValueInput">Valor (R$)</label>
+        <input type="number" id="recValueInput" step="0.01" inputmode="decimal" />
+
+        <label style="margin-top:8px;">
+          <input type="checkbox" id="recRecurringInput" style="width:auto;margin-right:8px;" />
+          Lançamento recorrente (repete todo mês)
+        </label>
+
         <button onclick="recAddTransaction()">Incluir lançamento</button>
       </div>
 
       <div class="card">
-        <h2>Lançamentos do mês</h2>
-        <div class="acet-scroll-table">
-          <table style="width:100%;border-collapse:collapse;font-size:13px;">
-            <thead style="background:#f2f2f7;">
-              <tr><th style="text-align:left;padding:6px;">Data</th><th style="text-align:left;padding:6px;">Descrição</th><th style="text-align:left;padding:6px;">Tipo</th><th style="text-align:right;padding:6px;">Crédito</th><th style="text-align:right;padding:6px;">Débito</th><th style="text-align:center;padding:6px;"></th></tr>
+        <h3>Lançamentos do mês</h3>
+        <div class="summary-table-wrapper" style="max-height:340px;overflow:auto;border:1px solid #e5e5ea;border-radius:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Tipo</th>
+                <th>Crédito</th>
+                <th>Débito</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody id="recTableBody"></tbody>
           </table>
         </div>
-        <div class="acet-totais" id="recTotaisBox"></div>
+        <div id="recTotaisBox" style="margin-top:8px;font-size:13px;"></div>
       </div>
 
       <div class="card">
-        <h2>Resumo do mês</h2>
-        <div id="recResumoMes" class="acet-resumo-box"></div>
+        <h3>Resumo do mês (entra no ajuste do DRE)</h3>
+        <pre id="recResumoMes" style="white-space:pre-wrap;margin:0;font-size:12px;line-height:1.4;"></pre>
       </div>
+
+      <textarea id="recJsonArea" style="width:100%;height:160px;display:none;"></textarea>
     </div>
   </div>
 
+  <!-- TAB: DRE -->
   <div id="tab-dr" class="tab-content">
     <div class="card">
-      <h2>DRE – Consolidação</h2>
-      <div class="acet-sub">Leitura do Excel respeita (parênteses) como NEGATIVO.</div>
-
-      <div class="card">
-        <div class="acet-top-bar">
-          <div><label for="drFilterMonth">Mês (YYYY-MM)</label><input type="month" id="drFilterMonth"></div>
-        </div>
-
-        <label for="drXlsInput">Arquivo do DRE (XLS/XLSX)</label>
-        <input type="file" id="drXlsInput" accept=".xls,.xlsx" />
-        <button type="button" onclick="drLerDREExcel()">Ler DRE do Excel</button>
-        <div id="drXlsStatus" class="acet-sub" style="margin-top:8px;"></div>
+      <h2>DRE – HW LUB, HIGHWAY</h2>
+      <div class="muted">
+        A leitura do Excel respeita negativo contábil (ex: <b>(1.234,56)</b> vira <b>-1234,56</b>).
+        <br/>O ajuste do sistema soma: <b>aluguéis+energia (exceto Lava)</b> + <b>dinheiro líquido</b>.
       </div>
 
       <div class="card">
-        <h2>Campos do DRE</h2>
+        <div class="grid-2">
+          <div>
+            <label for="drFilterMonth">Mês (YYYY-MM)</label>
+            <input type="month" id="drFilterMonth" />
+          </div>
+          <div>
+            <button class="btn-small" style="margin-top:28px;background:#007aff" onclick="drSetCurrentMonth()">Hoje</button>
+          </div>
+        </div>
+
+        <h3 style="margin-top:10px;">Leitura do DRE por Excel</h3>
+        <div class="row" style="align-items:flex-end;">
+          <div class="col">
+            <label for="drXlsInput">Arquivo do DRE (XLS/XLSX)</label>
+            <input type="file" id="drXlsInput"
+              accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+          </div>
+          <div class="col" style="min-width:220px;">
+            <button type="button" onclick="drLerDREExcel()">Ler DRE do Excel</button>
+          </div>
+        </div>
+        <div id="drXlsStatus" class="muted" style="margin-top:6px;"></div>
+
+        <h3 style="margin-top:12px;">Leitura do DRE por imagem (OCR)</h3>
+        <label for="drImgInput">Imagem do DRE (print JPG/PNG)</label>
+        <input type="file" id="drImgInput" accept="image/*" />
+        <button class="secondary" onclick="drLerDREImagem()">Ler DRE da imagem (OCR)</button>
+        <div class="muted">Use OCR só se precisar — o Excel é mais confiável.</div>
+      </div>
+
+      <div class="card">
+        <h2>Demonstrativo do Resultado do Exercício</h2>
         <div class="summary-table-wrapper">
-          <table class="summary-table">
-            <thead><tr><th>Conta</th><th>Valor (R$)</th></tr></thead>
+          <table>
+            <thead>
+              <tr><th>Conta</th><th>Valor (R$)</th></tr>
+            </thead>
             <tbody>
-              <tr><td>Lucro/Prejuízo do Exercício</td><td><input id="dre_lucro_exercicio" type="number" step="0.01" inputmode="decimal" /></td></tr>
-              <tr><td>Receitas não operacionais (ajuste do sistema)</td><td><input id="dre_ajustes_sistema" type="number" step="0.01" inputmode="decimal" readonly /></td></tr>
-              <tr><td><strong>Lucro/Prejuízo Ajustado</strong></td><td><input id="dre_lucro_ajustado" type="number" step="0.01" inputmode="decimal" readonly /></td></tr>
+              <tr><td>Receita Bruta de Vendas de Produtos</td><td><input id="dre_receita_produtos" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Receita Bruta de Vendas de Serviços</td><td><input id="dre_receita_servicos" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td><b>Total da Receita Bruta</b></td><td><input id="dre_total_bruta" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td>Devoluções de Vendas</td><td><input id="dre_devolucoes" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Impostos Incidentes Sobre Vendas</td><td><input id="dre_impostos" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td><b>Receita Líquida de Vendas</b></td><td><input id="dre_receita_liquida" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td>Custos dos Produtos Vendidos</td><td><input id="dre_custos_produtos" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Custos dos Serviços Vendidos</td><td><input id="dre_custos_servicos" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td><b>Lucro/Prejuízo Bruto</b></td><td><input id="dre_lucro_bruto" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td>Despesas Administrativas</td><td><input id="dre_desp_adm" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Despesas de Vendas</td><td><input id="dre_desp_vendas" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Provisões Sociais Trabalhistas</td><td><input id="dre_prov_sociais" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Despesas Financeiras</td><td><input id="dre_desp_fin" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Variação de Estoques</td><td><input id="dre_var_estoques" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Receitas Financeiras</td><td><input id="dre_rec_fin" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td><b>Lucro/Prejuízo Operacional</b></td><td><input id="dre_lucro_oper" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td>Despesas não Operacionais</td><td><input id="dre_desp_nao_op" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Receitas não Operacionais</td><td><input id="dre_rec_nao_op" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td>Lucro/Prejuízo Antes da Depreciação</td><td><input id="dre_lucro_antes_dep" type="number" step="0.01" inputmode="decimal"></td></tr>
+              <tr><td>Depreciações</td><td><input id="dre_depreciacoes" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td><b>Lucro/Prejuízo do Exercício</b></td><td><input id="dre_lucro_exercicio" type="number" step="0.01" inputmode="decimal"></td></tr>
+
+              <tr><td>Aj. Sistema (aluguéis+energia + dinheiro)</td><td><input id="dre_ajustes_sistema" type="number" step="0.01" inputmode="decimal" readonly></td></tr>
+              <tr><td><b>Lucro/Prejuízo Ajustado</b></td><td><input id="dre_lucro_ajustado" type="number" step="0.01" inputmode="decimal" readonly></td></tr>
             </tbody>
           </table>
         </div>
-        <small class="whatsapp-hint">O ajuste do sistema soma: (aluguéis + energia extra, exceto Conveniência e Lava) + (dinheiro líquido). Lava Rápido é acerto.</small>
       </div>
 
       <div class="card">
-        <h2>Resumo para WhatsApp / Print</h2>
-        <div id="drResumoTexto" class="acet-resumo-box"></div>
+        <h2>Caixa Real e Resumo</h2>
+        <label for="drResultadoCaixa">Resultado REAL em dinheiro (caixa / banco) – R$</label>
+        <input type="number" id="drResultadoCaixa" step="0.01" inputmode="decimal" oninput="drAtualizarResumo()">
+
+        <div class="summary-table-wrapper" style="margin-top:10px;">
+          <table><tbody id="drResumoTabelaBody"></tbody></table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Resumo (para print)</h2>
+        <pre id="drResumoTexto" style="white-space:pre-wrap;margin:0;font-size:12px;line-height:1.4;"></pre>
       </div>
     </div>
   </div>
 
 <script>
-/* TABS */
-function showTab(tab){
-  const tabs=["alugueis","acerto","receitas","dr"];
-  tabs.forEach(t=>{
-    document.getElementById("tab-"+t).classList.toggle("active", t===tab);
-    document.getElementById("btnTab"+(t==="dr"?"DR":t.charAt(0).toUpperCase()+t.slice(1))).classList.toggle("active", t===tab);
-  });
-}
+  // ----------------- TABS -----------------
+  function showTab(tab){
+    const tabs = ["alugueis","acerto","receitas","dr"];
+    tabs.forEach(t=>{
+      document.getElementById("tab-"+t).classList.toggle("active", t===tab);
+      document.getElementById("btnTab"+(t==="alugueis"?"Alugueis":t==="acerto"?"Acerto":t==="receitas"?"Receitas":"DR"))
+        .classList.toggle("active", t===tab);
+    });
+  }
 
-/* UNIDADES */
-const tenantsDefault=["Pet Shop","Loja de Conveniência","Loja de Acessórios","Cabeleireiro","Loja de Celulares","Lava Rápido","Loja de Chocolate","Sanduicheria","Lavanderia"];
-const UNIDADES_NAO_ENTRAM_NO_AJUSTE_DRE=new Set(["Loja de Conveniência","Lava Rápido"]);
-let currentMonth=null;
-let tenantsData={};
-function defaultTenantData(){return {rent:0,eStart:0,eEnd:0,discount:0,payments:[]};}
-function loadConfig(){
-  try{const cfg=JSON.parse(localStorage.getItem("alugueisConfig")||"{}"); if(cfg.valorKwh!=null) document.getElementById("valorKwh").value=cfg.valorKwh;}catch(e){}
-}
-function saveConfig(){
-  const valorKwh=parseFloat(document.getElementById("valorKwh").value||"0")||0;
-  localStorage.setItem("alugueisConfig",JSON.stringify({valorKwh}));
-}
-function loadMonthData(monthStr){
-  const dataStr=localStorage.getItem("alugueisMes_"+monthStr);
-  tenantsData={};
-  if(dataStr){
+  // ----------------- CONFIG / STORAGE -----------------
+  const tenantsDefault = [
+    "Pet Shop","Loja de Conveniência","Loja de Acessórios","Cabeleireiro","Loja de Celulares",
+    "Lava Rápido","Loja de Chocolate","Sanduicheria","Lavanderia"
+  ];
+
+  let currentMonth = null;
+  let tenantsData = {};
+
+  function defaultTenantData(){
+    return { rent:0, eStart:0, eEnd:0, discount:0, payments:[] };
+  }
+
+  function formatMoney(v){
+    const val = Number(v||0);
+    return "R$ " + val.toFixed(2).replace(".", ",");
+  }
+
+  function statusClass(status){
+    if(status==="PAGO") return "status-pago";
+    if(status==="PARCIAL") return "status-parcial";
+    return "status-aberto";
+  }
+
+  function loadConfig(){
+    const cfgStr = localStorage.getItem("alugueisConfig");
+    if(!cfgStr) return;
     try{
-      const parsed=JSON.parse(dataStr);
-      tenantsDefault.forEach(n=>{
-        tenantsData[n]=parsed[n]?parsed[n]:defaultTenantData();
-        if(!Array.isArray(tenantsData[n].payments)) tenantsData[n].payments=[];
-      });
-    }catch(e){ tenantsDefault.forEach(n=>tenantsData[n]=defaultTenantData()); }
-  }else tenantsDefault.forEach(n=>tenantsData[n]=defaultTenantData());
-}
-function saveMonthData(){ if(currentMonth) localStorage.setItem("alugueisMes_"+currentMonth, JSON.stringify(tenantsData)); }
+      const cfg = JSON.parse(cfgStr);
+      if(cfg.valorKwh!=null) document.getElementById("valorKwh").value = cfg.valorKwh;
+    }catch(e){}
+  }
 
-/* ACERTO JULIANO */
-const ACET_STORAGE_KEY="AcetJuli_v1";
-function acetLoadData(){ try{const a=JSON.parse(localStorage.getItem(ACET_STORAGE_KEY)||"[]"); return Array.isArray(a)?a:[];}catch(e){return [];} }
-function acetSaveData(d){ localStorage.setItem(ACET_STORAGE_KEY, JSON.stringify(d)); }
-function acetFormatMoney(v){ return (v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function acetSetCurrentMonth(){ const m=new Date().toISOString().slice(0,7); document.getElementById("acetFilterMonth").value=m; acetRender(); renderTenants(); }
-function acetAddTransaction(){
-  const date=document.getElementById("acetDateInput").value;
-  const desc=document.getElementById("acetDescInput").value.trim();
-  const type=document.getElementById("acetTypeInput").value;
-  const value=parseFloat(String(document.getElementById("acetValueInput").value).replace(",","."));
-  if(!date||!desc||isNaN(value)){alert("Preencha data, descrição e valor.");return;}
-  const data=acetLoadData();
-  data.push({id:Date.now()+Math.floor(Math.random()*1000),date,description:desc,type,value});
-  acetSaveData(data);
-  if(!document.getElementById("acetFilterMonth").value) document.getElementById("acetFilterMonth").value=date.slice(0,7);
-  document.getElementById("acetDescInput").value=""; document.getElementById("acetValueInput").value="";
-  acetRender(); renderTenants();
-}
-function acetDeleteTransaction(id){ if(!confirm("Excluir?"))return; acetSaveData(acetLoadData().filter(t=>t.id!==id)); acetRender(); renderTenants(); }
-function acetClearAll(){ if(!confirm("Apagar tudo?"))return; localStorage.removeItem(ACET_STORAGE_KEY); acetSaveData([]); acetRender(); renderTenants(); }
-function acetDownloadBackup(){
-  const blob=new Blob([JSON.stringify(acetLoadData(),null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob); const a=document.createElement("a");
-  a.href=url; a.download="AcetJuli-backup-"+new Date().toISOString().replace(/[:.]/g,"-")+".json";
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-}
-function acetImportData(){
-  const area=document.getElementById("acetJsonArea"); area.style.display="block";
-  if(!area.value.trim()){ alert("Cole o JSON no campo e clique de novo."); return; }
-  try{ const arr=JSON.parse(area.value); if(!Array.isArray(arr)) throw new Error("JSON inválido"); acetSaveData(arr); alert("Importado."); acetRender(); renderTenants(); }
-  catch(e){ alert("Erro: "+e.message); }
-}
-function getLavaRapidoDebitoCreditoMes(monthStr){
-  const data=acetLoadData(); let deb=0, cred=0;
-  data.forEach(t=>{ if(t.date&&t.date.slice(0,7)===monthStr){ if(t.type==="DEBITO_RF") deb+=(t.value||0); else if(t.type==="CREDITO_JULIANO") cred+=(t.value||0);} });
-  return {debitos:deb,creditos:cred};
-}
-function acetRender(){
-  const m=document.getElementById("acetFilterMonth").value;
-  const data=acetLoadData().filter(t=>!m || t.date.slice(0,7)===m).sort((a,b)=>a.date.localeCompare(b.date));
-  const tbody=document.getElementById("acetTableBody"); tbody.innerHTML="";
-  let deb=0, cred=0;
-  data.forEach(t=>{
-    if(t.type==="DEBITO_RF") deb+=t.value||0; else cred+=t.value||0;
-    const tr=document.createElement("tr");
-    tr.className=(t.type==="DEBITO_RF")?"acet-debit-row":"acet-credit-row";
-    tr.innerHTML=`<td style="padding:6px;">${t.date}</td><td style="padding:6px;">${t.description}</td><td style="padding:6px;">${t.type==="DEBITO_RF"?"Débito (RF)":"Crédito (Juliano)"}</td><td style="padding:6px;text-align:right;">R$ ${acetFormatMoney(t.value)}</td><td style="padding:6px;text-align:center;"><button class="btn-danger" onclick="acetDeleteTransaction(${t.id})">X</button></td>`;
-    tbody.appendChild(tr);
-  });
-  if(!data.length){ const tr=document.createElement("tr"); tr.innerHTML=`<td colspan="5" style="padding:10px;text-align:center;">Sem lançamentos.</td>`; tbody.appendChild(tr); }
-  const saldo=deb-cred;
-  document.getElementById("acetTotaisBox").innerHTML = `
-    <div><strong>Total Débitos:</strong> R$ ${acetFormatMoney(deb)}</div>
-    <div><strong>Total Créditos:</strong> R$ ${acetFormatMoney(cred)}</div>
-    <div class="${saldo>=0?"saldo-positivo":"saldo-negativo"}" style="margin-top:4px;"><strong>Saldo:</strong> R$ ${acetFormatMoney(Math.abs(saldo))} (${saldo>=0?"Juliano devendo":"RF devendo"})</div>
-  `;
-  let resumo=`ACERTO JULIANO × RF\nMês: ${m||"sem mês"}\n\nTotal Débitos (RF): R$ ${acetFormatMoney(deb)}\nTotal Créditos (Juliano): R$ ${acetFormatMoney(cred)}\nSaldo: R$ ${acetFormatMoney(Math.abs(saldo))} (${saldo>=0?"Juliano DEVENDO":"RF DEVENDO"})`;
-  document.getElementById("acetWhatsResumo").textContent=resumo;
-}
+  function saveConfig(){
+    const valorKwh = parseFloat((document.getElementById("valorKwh").value||"0").replace(",", ".")) || 0;
+    localStorage.setItem("alugueisConfig", JSON.stringify({valorKwh}));
+  }
 
-/* RECEITAS DINHEIRO */
-const REC_STORAGE_KEY="ReceitasNaoOperacionais_v1";
-function recLoadData(){ try{const a=JSON.parse(localStorage.getItem(REC_STORAGE_KEY)||"[]"); return Array.isArray(a)?a:[];}catch(e){return [];} }
-function recSaveData(d){ localStorage.setItem(REC_STORAGE_KEY, JSON.stringify(d)); }
-function recSetCurrentMonth(){ const m=new Date().toISOString().slice(0,7); document.getElementById("recFilterMonth").value=m; recRender(); renderTenants(); }
-function recAddTransaction(){
-  const date=document.getElementById("recDateInput").value;
-  const desc=document.getElementById("recDescInput").value.trim();
-  const type=document.getElementById("recTypeInput").value;
-  const value=parseFloat(String(document.getElementById("recValueInput").value).replace(",","."));
-  const recurring=!!document.getElementById("recRecurringInput").checked;
-  if(!date||!desc||isNaN(value)){alert("Preencha data, descrição e valor.");return;}
-  const data=recLoadData();
-  data.push({id:Date.now()+Math.floor(Math.random()*1000),date,description:desc,type,value,recurring});
-  recSaveData(data);
-  if(!document.getElementById("recFilterMonth").value) document.getElementById("recFilterMonth").value=date.slice(0,7);
-  document.getElementById("recDescInput").value=""; document.getElementById("recValueInput").value=""; document.getElementById("recRecurringInput").checked=false;
-  recRender(); renderTenants();
-}
-function recDeleteTransaction(id){ if(!confirm("Excluir?"))return; recSaveData(recLoadData().filter(t=>t.id!==id)); recRender(); renderTenants(); }
-function recDownloadBackup(){
-  const blob=new Blob([JSON.stringify(recLoadData(),null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob); const a=document.createElement("a");
-  a.href=url; a.download="ReceitasNaoOperacionais-backup-"+new Date().toISOString().replace(/[:.]/g,"-")+".json";
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-}
-function recImportData(){
-  const area=document.getElementById("recJsonArea"); area.style.display="block";
-  if(!area.value.trim()){ alert("Cole o JSON no campo e clique de novo."); return; }
-  try{ const arr=JSON.parse(area.value); if(!Array.isArray(arr)) throw new Error("JSON inválido"); recSaveData(arr); alert("Importado."); recRender(); renderTenants(); }
-  catch(e){ alert("Erro: "+e.message); }
-}
-function getReceitasLiquidasMes(monthStr){
-  const data=recLoadData(); let cred=0, deb=0;
-  data.forEach(t=>{ if(t.date&&t.date.slice(0,7)===monthStr){ if(t.type==="CREDITO") cred+=t.value||0; else deb+=t.value||0; }});
-  return {liquido:cred-deb, totalCreditos:cred, totalDebitos:deb};
-}
-function recRender(){
-  const m=document.getElementById("recFilterMonth").value;
-  const data=recLoadData().filter(t=>!m || t.date.slice(0,7)===m).sort((a,b)=>a.date.localeCompare(b.date));
-  const tbody=document.getElementById("recTableBody"); tbody.innerHTML="";
-  let cred=0, deb=0;
-  data.forEach(t=>{
-    if(t.type==="CREDITO") cred+=t.value||0; else deb+=t.value||0;
-    const tr=document.createElement("tr");
-    tr.style.background = t.type==="CREDITO" ? "#e9ffea" : "#ffecec";
-    tr.innerHTML=`<td style="padding:6px;">${t.date}</td><td style="padding:6px;">${t.description}${t.recurring?" 🔁":""}</td><td style="padding:6px;">${t.type}</td>
-                  <td style="padding:6px;text-align:right;">${t.type==="CREDITO"?"R$ "+acetFormatMoney(t.value):""}</td>
-                  <td style="padding:6px;text-align:right;">${t.type==="DEBITO"?"R$ "+acetFormatMoney(t.value):""}</td>
-                  <td style="padding:6px;text-align:center;"><button class="btn-danger" onclick="recDeleteTransaction(${t.id})">X</button></td>`;
-    tbody.appendChild(tr);
-  });
-  if(!data.length){ const tr=document.createElement("tr"); tr.innerHTML=`<td colspan="6" style="padding:10px;text-align:center;">Sem lançamentos.</td>`; tbody.appendChild(tr); }
-  const liq=cred-deb;
-  document.getElementById("recTotaisBox").innerHTML = `<div><strong>Total Créditos:</strong> R$ ${acetFormatMoney(cred)}</div><div><strong>Total Débitos:</strong> R$ ${acetFormatMoney(deb)}</div><div><strong>Líquido:</strong> R$ ${acetFormatMoney(liq)} (${liq>=0?"entra":"reduz"})</div>`;
-  document.getElementById("recResumoMes").textContent = `RECEITAS EM DINHEIRO\nMês: ${m||"sem mês"}\n\nTotal Créditos: R$ ${acetFormatMoney(cred)}\nTotal Débitos: R$ ${acetFormatMoney(deb)}\nLíquido (ajuste DRE): R$ ${acetFormatMoney(liq)}`;
-}
+  function loadMonthData(monthStr){
+    const key = "alugueisMes_" + monthStr;
+    const raw = localStorage.getItem(key);
+    tenantsData = {};
+    if(raw){
+      try{
+        const parsed = JSON.parse(raw);
+        tenantsDefault.forEach(n=>{
+          tenantsData[n] = parsed[n] ? parsed[n] : defaultTenantData();
+          if(!Array.isArray(tenantsData[n].payments)) tenantsData[n].payments = [];
+        });
+        return;
+      }catch(e){}
+    }
+    tenantsDefault.forEach(n=> tenantsData[n] = defaultTenantData());
+  }
 
-/* CÁLCULOS */
-function calcTenantReceita(tData, valorKwh){
-  const consumo=Math.max((tData.eEnd||0)-(tData.eStart||0),0);
-  const energiaBruta=consumo*valorKwh;
-  const descontoValor=energiaBruta*((tData.discount||0)/100);
-  const energiaLiquida=energiaBruta-descontoValor;
-  const totalMes=(tData.rent||0)+energiaLiquida;
-  let pagos=0; (tData.payments||[]).forEach(p=>pagos+=(p.value||0));
-  const saldo=totalMes-pagos;
-  let status="ABERTO";
-  if(Math.abs(saldo)<0.01 && totalMes>0) status="PAGO"; else if(pagos>0 && saldo>0.01) status="PARCIAL";
-  return {consumo,energiaBruta,descontoValor,energiaLiquida,totalMes,pagos,saldo,status};
-}
-function formatMoney(v){ return "R$ "+(v||0).toFixed(2).replace(".",","); }
-function statusClass(s){ return s==="PAGO"?"status-pago":(s==="PARCIAL"?"status-parcial":"status-aberto"); }
+  function saveMonthData(){
+    if(!currentMonth) return;
+    localStorage.setItem("alugueisMes_"+currentMonth, JSON.stringify(tenantsData));
+  }
 
-function renderTenants(){
-  const container=document.getElementById("cardsContainer");
-  container.innerHTML="";
-  const valorKwh=parseFloat(document.getElementById("valorKwh").value||"0")||0;
+  // ----------------- ACERTO JULIANO -----------------
+  const ACET_KEY = "AcetJuli_v1";
 
-  let sumAlug=0, sumEner=0;
-  const quickRows=[];
-  const lava = currentMonth ? getLavaRapidoDebitoCreditoMes(currentMonth) : {debitos:0,creditos:0};
+  function acetEnsureSeed(){
+    const raw = localStorage.getItem(ACET_KEY);
+    if(raw && raw !== "[]") return;
+    const seed = [
+      { id: 1, date: "2025-12-06", description: "BIOTRI", type: "DEBITO_RF", value: 750.00 },
+      { id: 2, date: "2025-12-06", description: "CEMIG", type: "DEBITO_RF", value: 350.00 }
+    ];
+    localStorage.setItem(ACET_KEY, JSON.stringify(seed));
+  }
 
-  tenantsDefault.forEach((nome,i)=>{
-    tenantsData[nome]=tenantsData[nome]||defaultTenantData();
-    const tData=tenantsData[nome];
-    const isLava = nome==="Lava Rápido";
-    const naoEntra = UNIDADES_NAO_ENTRAM_NO_AJUSTE_DRE.has(nome);
+  function acetLoad(){ try{ return JSON.parse(localStorage.getItem(ACET_KEY)||"[]"); }catch(e){ return []; } }
+  function acetSave(arr){ localStorage.setItem(ACET_KEY, JSON.stringify(arr)); }
 
-    let calc;
-    if(!isLava){
-      calc=calcTenantReceita(tData, valorKwh);
-      if(!naoEntra){ sumAlug+=(tData.rent||0); sumEner+=calc.energiaLiquida; }
-      quickRows.push({nome,aluguel:(tData.rent||0),energia:calc.energiaLiquida,total:calc.totalMes,pago:calc.pagos,saldo:calc.saldo,status:calc.status});
-    }else{
-      const consumo=Math.max((tData.eEnd||0)-(tData.eStart||0),0);
-      const energiaBruta=consumo*valorKwh;
-      const descontoValor=energiaBruta*((tData.discount||0)/100);
-      const energiaLiquida=energiaBruta-descontoValor;
-      const totalCobrar=(lava.debitos||0)+energiaLiquida;
-      const pagos=(lava.creditos||0);
-      const saldo=totalCobrar-pagos;
-      let status="ABERTO"; if(Math.abs(saldo)<0.01 && totalCobrar>0) status="PAGO"; else if(pagos>0 && saldo>0.01) status="PARCIAL";
-      calc={consumo,energiaBruta,descontoValor,energiaLiquida,totalMes:totalCobrar,pagos,saldo,status};
-      quickRows.push({nome,aluguel:0,energia:energiaLiquida,total:totalCobrar,pago:pagos,saldo,status:"ACERTO-"+status});
+  function acetSetCurrentMonth(){
+    const m = new Date().toISOString().slice(0,7);
+    document.getElementById("acetFilterMonth").value = m;
+    acetRender();
+    renderTenants();
+  }
+
+  function getLavaDebCred(monthStr){
+    if(!monthStr) return {debitos:0, creditos:0};
+    const data = acetLoad();
+    let deb=0, cred=0;
+    data.forEach(t=>{
+      if((t.date||"").slice(0,7)===monthStr){
+        if(t.type==="DEBITO_RF") deb += Number(t.value||0);
+        if(t.type==="CREDITO_JULIANO") cred += Number(t.value||0);
+      }
+    });
+    return {debitos:deb, creditos:cred};
+  }
+
+  function acetAddTransaction(){
+    const date = document.getElementById("acetDateInput").value;
+    const desc = (document.getElementById("acetDescInput").value||"").trim();
+    const type = document.getElementById("acetTypeInput").value;
+    const value = parseFloat(String(document.getElementById("acetValueInput").value||"").replace(",", "."));
+    if(!date || !desc || !type || isNaN(value)){ alert("Preencha data, descrição e valor."); return; }
+    const arr = acetLoad();
+    arr.push({id:Date.now(), date, description:desc, type, value});
+    acetSave(arr);
+    if(!document.getElementById("acetFilterMonth").value) document.getElementById("acetFilterMonth").value = date.slice(0,7);
+    document.getElementById("acetDescInput").value="";
+    document.getElementById("acetValueInput").value="";
+    acetRender(); renderTenants();
+  }
+
+  function acetDeleteTransaction(id){
+    if(!confirm("Excluir este lançamento?")) return;
+    acetSave(acetLoad().filter(t=>t.id!==id));
+    acetRender(); renderTenants();
+  }
+
+  function acetClearAll(){
+    if(!confirm("Apagar TODOS os lançamentos do acerto neste aparelho?")) return;
+    localStorage.removeItem(ACET_KEY);
+    acetRender(); renderTenants();
+  }
+
+  function acetExportData(){
+    const area = document.getElementById("acetJsonArea");
+    area.style.display="block";
+    area.value = JSON.stringify(acetLoad(), null, 2);
+    alert("JSON exibido abaixo.");
+  }
+
+  function acetDownloadBackup(){
+    const blob = new Blob([JSON.stringify(acetLoad(), null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href=url;
+    a.download="AcetJuli-backup-"+new Date().toISOString().replace(/[:.]/g,"-")+".json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function acetImportData(){
+    const area = document.getElementById("acetJsonArea");
+    area.style.display="block";
+    if(!area.value.trim()){ alert("Cole o JSON antes de importar."); return; }
+    try{
+      const arr = JSON.parse(area.value);
+      if(!Array.isArray(arr)) throw new Error("Formato inválido");
+      acetSave(arr);
+      alert("Importado com sucesso.");
+      acetRender(); renderTenants();
+    }catch(e){ alert("Erro: "+e.message); }
+  }
+
+  function acetPrintPDF(){ window.print(); }
+
+  function acetFormatMoney(v){
+    return Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+
+  function acetRender(){
+    const month = document.getElementById("acetFilterMonth").value || "";
+    const data = acetLoad().filter(t=> !month || (t.date||"").slice(0,7)===month )
+      .sort((a,b)=>(a.date||"").localeCompare(b.date||"") || (a.id-b.id));
+
+    const tbody = document.getElementById("acetTableBody");
+    const totais = document.getElementById("acetTotaisBox");
+    const resumo = document.getElementById("acetWhatsResumo");
+    tbody.innerHTML="";
+
+    let deb=0, cred=0;
+    const debList=[], credList=[];
+    data.forEach(t=>{
+      const tipo = (t.type==="DEBITO_RF") ? "Débito (RF pagou)" : "Crédito (Juliano pagou)";
+      if(t.type==="DEBITO_RF"){ deb += Number(t.value||0); debList.push(t); }
+      if(t.type==="CREDITO_JULIANO"){ cred += Number(t.value||0); credList.push(t); }
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="text-align:left">${t.date||""}</td>
+        <td style="text-align:left">${t.description||""}</td>
+        <td style="text-align:left">${tipo}</td>
+        <td>${acetFormatMoney(t.value)}</td>
+        <td><button class="btn-danger" onclick="acetDeleteTransaction(${t.id})">X</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if(!data.length){
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td colspan="5" style="text-align:center">Nenhum lançamento</td>`;
+      tbody.appendChild(tr);
     }
 
-    const badge = naoEntra ? "não entra no ajuste do DRE" : "entra no ajuste do DRE";
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
-      <div class="card-header">
-        <div class="card-title">${nome} <span class="acet-pill" style="margin-left:6px;">${badge}</span></div>
-        <div class="status-tag ${statusClass(calc.status)}">${isLava?"ACERTO":" "+calc.status}</div>
-      </div>
-      <div class="grid-2">
-        <div>
-          <label>Aluguel (R$)</label>
-          <input type="number" step="0.01" id="t${i}_rent" ${isLava?"readonly":""} value="${isLava?0:(tData.rent||"")}" onblur="updateTenant(${i})"/>
-        </div>
-        <div>
-          <label>Desconto energia (%)</label>
-          <input type="number" step="0.01" id="t${i}_discount" value="${tData.discount||""}" onblur="updateTenant(${i})"/>
-        </div>
-      </div>
-      <div class="grid-3">
-        <div><label>Leitura inicial (kWh)</label><input type="number" step="0.01" id="t${i}_eStart" value="${tData.eStart||""}" onblur="updateTenant(${i})"/></div>
-        <div><label>Leitura final (kWh)</label><input type="number" step="0.01" id="t${i}_eEnd" value="${tData.eEnd||""}" onblur="updateTenant(${i})"/></div>
-        <div><span class="small-label">Consumo</span><br/><span class="small-value">${calc.consumo.toFixed(2)}</span></div>
-      </div>
-      <div class="grid-3" style="margin-top:8px;">
-        <div><span class="small-label">Energia bruta</span><br/><span class="small-value">${formatMoney(calc.energiaBruta)}</span></div>
-        <div><span class="small-label">Desconto</span><br/><span class="small-value">${formatMoney(calc.descontoValor)}</span></div>
-        <div><span class="small-label">Energia líquida</span><br/><span class="small-value">${formatMoney(calc.energiaLiquida)}</span></div>
-      </div>
-      <div class="grid-2" style="margin-top:8px;">
-        <div><span class="small-label">${isLava?"Total a cobrar no acerto":"Total do mês"}</span><br/><span class="small-value">${formatMoney(calc.totalMes)}</span></div>
-        <div><span class="small-label">${isLava?"Pago pelo Juliano (mês)":"Total pago"}</span><br/><span class="small-value">${formatMoney(calc.pagos)}</span></div>
-      </div>
-      <div style="margin-top:4px;"><span class="small-label">${isLava?"Saldo do acerto":"Saldo a receber"}</span><br/><span class="small-value">${formatMoney(calc.saldo)}</span></div>
-      ${isLava?`<div style="margin-top:8px;border-top:1px solid #e5e5ea;padding-top:6px;">
-        <span class="small-label">Detalhe do acerto (mês ${currentMonth||""})</span><br/>
-        <span class="small-value">Débitos RF: ${formatMoney(lava.debitos||0)}</span><br/>
-        <span class="small-value">Créditos Juliano: ${formatMoney(lava.creditos||0)}</span>
-      </div>`:""}
-      <div class="payments">
-        <strong>${isLava?"Pagamentos ficam na aba Acerto":"Pagamentos diretos"}</strong>
-        <div class="payments-list" id="plist_${i}"></div>
-        ${isLava?"":`
-        <div class="grid-3" style="margin-top:6px;">
-          <div><label>Valor pago</label><input type="number" step="0.01" id="t${i}_payValue"/></div>
-          <div><label>Data</label><input type="date" id="t${i}_payDate"/></div>
-          <div><label>Obs.</label><input type="text" id="t${i}_payNote" placeholder="PIX, dinheiro..."/></div>
-        </div>
-        <button onclick="addPayment(${i})">Adicionar pagamento</button>`}
+    const saldo = deb - cred;
+    totais.innerHTML = `
+      <div><b>Total Débitos (RF pagou):</b> R$ ${acetFormatMoney(deb)}</div>
+      <div><b>Total Créditos (Juliano pagou):</b> R$ ${acetFormatMoney(cred)}</div>
+      <div style="margin-top:6px;font-weight:900;color:${saldo>=0?"#ff3b30":"#30d158"}">
+        ${saldo>=0
+          ? `Saldo do mês: R$ ${acetFormatMoney(saldo)} (Juliano devendo para RF)`
+          : `Saldo do mês: R$ ${acetFormatMoney(Math.abs(saldo))} (RF devendo para Juliano)`}
       </div>
     `;
-    container.appendChild(card);
 
-    const plist=document.getElementById("plist_"+i);
-    const pays=tData.payments||[];
-    if(isLava) plist.innerHTML=`<div class="payment-note">Lava Rápido é acerto.</div>`;
-    else if(!pays.length) plist.innerHTML=`<div class="payment-note">Nenhum pagamento lançado.</div>`;
-    else plist.innerHTML=pays.map((p,idx)=>`
-      <div class="payment-row">
-        <div><div><strong>${formatMoney(p.value||0)}</strong></div><div class="payment-note">${p.date||""} – ${p.note||""}</div></div>
-        <div><button class="secondary" style="padding:2px 6px;font-size:11px;" onclick="removePayment(${i},${idx})">x</button></div>
-      </div>`).join("");
-  });
-
-  const receitas = currentMonth ? getReceitasLiquidasMes(currentMonth).liquido : 0;
-  const totalMes = sumAlug + sumEner;
-  const totalGeral = totalMes + (receitas||0);
-
-  document.getElementById("summaryBox").style.display="block";
-  document.getElementById("sumAlugueis").textContent=formatMoney(sumAlug);
-  document.getElementById("sumEnergia").textContent=formatMoney(sumEner);
-  document.getElementById("sumTotalMes").textContent=formatMoney(totalMes);
-  document.getElementById("sumReceitasExtra").textContent=formatMoney(receitas||0);
-  document.getElementById("sumTotalGeral").textContent=formatMoney(totalGeral);
-
-  document.getElementById("summaryUnidadesBox").style.display="block";
-  document.getElementById("summaryUnidadesBody").innerHTML = quickRows.map(r=>`
-    <tr><td>${r.nome}</td><td>${formatMoney(r.aluguel)}</td><td>${formatMoney(r.energia)}</td><td>${formatMoney(r.total)}</td><td>${formatMoney(r.pago)}</td><td>${formatMoney(r.saldo)}</td><td>${r.status}</td></tr>
-  `).join("");
-
-  drAtualizarResumo();
-}
-
-function updateTenant(index){
-  const nome=tenantsDefault[index];
-  const tData=tenantsData[nome]||defaultTenantData();
-  if(nome!=="Lava Rápido") tData.rent=parseFloat(document.getElementById("t"+index+"_rent").value||"0")||0;
-  else tData.rent=0;
-  tData.discount=parseFloat(document.getElementById("t"+index+"_discount").value||"0")||0;
-  tData.eStart=parseFloat(document.getElementById("t"+index+"_eStart").value||"0")||0;
-  tData.eEnd=parseFloat(document.getElementById("t"+index+"_eEnd").value||"0")||0;
-  tenantsData[nome]=tData;
-  saveConfig(); saveMonthData(); renderTenants();
-}
-function addPayment(index){
-  const nome=tenantsDefault[index];
-  if(nome==="Lava Rápido"){alert("Lava é acerto.");return;}
-  const val=parseFloat(String(document.getElementById("t"+index+"_payValue").value||"0").replace(",","."));
-  if(!(val>0)){alert("Valor inválido.");return;}
-  const date=document.getElementById("t"+index+"_payDate").value||"";
-  const note=document.getElementById("t"+index+"_payNote").value||"";
-  const tData=tenantsData[nome]||defaultTenantData();
-  tData.payments=tData.payments||[];
-  tData.payments.push({value:val,date,note});
-  tenantsData[nome]=tData;
-  saveMonthData(); renderTenants();
-}
-function removePayment(index,idx){
-  const nome=tenantsDefault[index];
-  const tData=tenantsData[nome]||defaultTenantData();
-  (tData.payments||[]).splice(idx,1);
-  tenantsData[nome]=tData;
-  saveMonthData(); renderTenants();
-}
-
-function initMonth(){
-  const m=document.getElementById("mesRef").value;
-  if(!m){alert("Selecione o mês.");return;}
-  currentMonth=m;
-  loadMonthData(currentMonth);
-  saveConfig();
-  renderTenants();
-  document.getElementById("acetFilterMonth").value=currentMonth; acetRender();
-  document.getElementById("recFilterMonth").value=currentMonth; recRender();
-  document.getElementById("drFilterMonth").value=currentMonth; drAtualizarResumo();
-}
-
-function getResumoAjusteAlugueisEnergiaMes(monthStr){
-  let valorKwh=0;
-  try{const cfg=JSON.parse(localStorage.getItem("alugueisConfig")||"{}"); valorKwh=parseFloat(cfg.valorKwh||"0")||0;}catch(e){}
-  let map={}; try{map=JSON.parse(localStorage.getItem("alugueisMes_"+monthStr)||"{}");}catch(e){map={};}
-  let sum=0;
-  tenantsDefault.forEach(nome=>{
-    if(UNIDADES_NAO_ENTRAM_NO_AJUSTE_DRE.has(nome)) return;
-    const t=map[nome]||defaultTenantData();
-    const consumo=Math.max((t.eEnd||0)-(t.eStart||0),0);
-    const energiaBruta=consumo*valorKwh;
-    const energiaLiquida=energiaBruta - energiaBruta*((t.discount||0)/100);
-    sum += (t.rent||0) + energiaLiquida;
-  });
-  return sum;
-}
-
-/* DRE */
-function drVal(id){ const el=document.getElementById(id); const v=parseFloat(String(el.value||"").replace(",","."));
-  return isNaN(v)?0:v;
-}
-function drAtualizarResumo(){
-  const mes=document.getElementById("drFilterMonth").value||"";
-  const lucro=drVal("dre_lucro_exercicio");
-  let ajustes=0;
-  if(mes){
-    ajustes = getResumoAjusteAlugueisEnergiaMes(mes) + (getReceitasLiquidasMes(mes).liquido||0);
+    let txt = "ACERTO JULIANO × RF\n";
+    txt += "Mês: "+(month||"sem mês")+"\n\n";
+    txt += "🔵 Débitos – RF pagou:\n";
+    txt += debList.length ? debList.map(t=>`• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}`).join("\n") : "• Nenhum";
+    txt += `\nTotal Débitos: R$ ${acetFormatMoney(deb)}\n\n`;
+    txt += "🟢 Créditos – Juliano pagou:\n";
+    txt += credList.length ? credList.map(t=>`• ${t.date} – ${t.description} – R$ ${acetFormatMoney(t.value)}`).join("\n") : "• Nenhum";
+    txt += `\nTotal Créditos: R$ ${acetFormatMoney(cred)}\n\n`;
+    txt += `🧮 Saldo final: ${saldo>=0 ? "Juliano devendo" : "RF devendo"} – R$ ${acetFormatMoney(Math.abs(saldo))}\n`;
+    resumo.textContent = txt;
   }
-  document.getElementById("dre_ajustes_sistema").value=ajustes.toFixed(2);
-  const ajustado=lucro+ajustes;
-  document.getElementById("dre_lucro_ajustado").value=ajustado.toFixed(2);
-  const fmt=v=>"R$ "+(v||0).toFixed(2).replace(".",",");
-  document.getElementById("drResumoTexto").textContent =
-    `DRE CONSOLIDADO – ${mes||"sem mês"}\n\n`+
-    `Lucro/Prejuízo do Exercício (DRE): ${fmt(lucro)}\n`+
-    `Ajuste do sistema (aluguéis/energia extra + dinheiro): ${fmt(ajustes)}\n`+
-    `Lucro/Prejuízo Ajustado: ${fmt(ajustado)}\n`;
-}
 
-/* LEITURA EXCEL: negativos (parênteses) */
-function __dreParseMoney(v){
-  if(v===null||v===undefined) return null;
-  if(typeof v==="number") return isNaN(v)?null:v;
-  let s=String(v).trim();
-  if(!s) return null;
-  let negative=false;
-  if(s.includes("(") && s.includes(")")){ negative=true; s=s.replace(/[()]/g,""); }
-  if(s.endsWith("-")){ negative=true; s=s.slice(0,-1); }
-  s=s.replace(/R\$\s*/gi,"").replace(/\s+/g,"");
-  if(s.includes(",") && s.includes(".")) s=s.replace(/\./g,"").replace(",",".");
-  else if(s.includes(",") && !s.includes(".")) s=s.replace(",",".");
-  s=s.replace(/[^0-9.\-]/g,"");
-  if(s.startsWith("-")) negative=true;
-  const n=parseFloat(s);
-  if(isNaN(n)) return null;
-  return negative ? -Math.abs(n) : n;
-}
+  // ----------------- RECEITAS EM DINHEIRO -----------------
+  const REC_KEY = "ReceitasNaoOperacionais_v1";
+  function recLoad(){ try{ return JSON.parse(localStorage.getItem(REC_KEY)||"[]"); }catch(e){ return []; } }
+  function recSave(arr){ localStorage.setItem(REC_KEY, JSON.stringify(arr)); }
 
-async function drLerDREExcel(){
-  const st=document.getElementById("drXlsStatus");
-  const inp=document.getElementById("drXlsInput");
-  if(!inp.files || !inp.files[0]){ alert("Selecione o arquivo."); return; }
-  if(!window.XLSX){ alert("Biblioteca XLSX não carregou."); return; }
-  st.textContent="Lendo...";
-  try{
-    const buf=await inp.files[0].arrayBuffer();
-    const wb=XLSX.read(buf,{type:"array"});
-    const ws=wb.Sheets[wb.SheetNames[0]];
-    const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:""});
-    let found=null;
+  function recSetCurrentMonth(){
+    const m = new Date().toISOString().slice(0,7);
+    document.getElementById("recFilterMonth").value = m;
+    recEnsureRecurring(m);
+    recRender(); renderTenants();
+  }
 
-    // acha linha com "Lucro/Prejuízo do Exercício" e pega o primeiro valor numérico depois
-    for(const r of rows){
-      const label=String(r[0]||"").toLowerCase();
-      if(label.includes("lucro") && label.includes("exerc")){
-        for(let i=1;i<r.length;i++){
-          const p=__dreParseMoney(r[i]);
-          if(p!==null){ found=p; break; }
-        }
+  function recAddTransaction(){
+    const date = document.getElementById("recDateInput").value;
+    const desc = (document.getElementById("recDescInput").value||"").trim();
+    const type = document.getElementById("recTypeInput").value;
+    const value = parseFloat(String(document.getElementById("recValueInput").value||"").replace(",", "."));
+    const recurring = !!document.getElementById("recRecurringInput").checked;
+    if(!date || !desc || !type || isNaN(value)){ alert("Preencha data, descrição e valor."); return; }
+    const arr = recLoad();
+    arr.push({id:Date.now()+Math.floor(Math.random()*1000), date, description:desc, type, value, recurring});
+    recSave(arr);
+    if(!document.getElementById("recFilterMonth").value) document.getElementById("recFilterMonth").value = date.slice(0,7);
+    document.getElementById("recDescInput").value="";
+    document.getElementById("recValueInput").value="";
+    document.getElementById("recRecurringInput").checked=false;
+    recEnsureRecurring(date.slice(0,7));
+    recRender(); renderTenants();
+  }
+
+  function recDeleteTransaction(id){
+    if(!confirm("Excluir este lançamento?")) return;
+    recSave(recLoad().filter(t=>t.id!==id));
+    recRender(); renderTenants();
+  }
+
+  function recExportData(){
+    const area=document.getElementById("recJsonArea");
+    area.style.display="block";
+    area.value=JSON.stringify(recLoad(), null, 2);
+    alert("JSON exibido abaixo.");
+  }
+
+  function recDownloadBackup(){
+    const blob=new Blob([JSON.stringify(recLoad(), null, 2)], {type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="ReceitasNaoOperacionais-backup-"+new Date().toISOString().replace(/[:.]/g,"-")+".json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function recImportData(){
+    const area=document.getElementById("recJsonArea");
+    area.style.display="block";
+    if(!area.value.trim()){ alert("Cole o JSON antes de importar."); return; }
+    try{
+      const arr=JSON.parse(area.value);
+      if(!Array.isArray(arr)) throw new Error("Formato inválido");
+      recSave(arr);
+      alert("Importado com sucesso.");
+      recRender(); renderTenants();
+    }catch(e){ alert("Erro: "+e.message); }
+  }
+
+  function recEnsureRecurring(monthStr){
+    if(!monthStr) return;
+    let data=recLoad();
+    const templates=data.filter(t=>t.recurring);
+    let changed=false;
+
+    templates.forEach(tpl=>{
+      const exists=data.some(t=>
+        t.recurring &&
+        t.type===tpl.type &&
+        t.description===tpl.description &&
+        Math.abs(Number(t.value||0)-Number(tpl.value||0))<0.001 &&
+        (t.date||"").slice(0,7)===monthStr
+      );
+      if(!exists){
+        const day=(tpl.date||"01").slice(8,10) || "01";
+        data.push({
+          id:Date.now()+Math.floor(Math.random()*100000),
+          date:monthStr+"-"+day,
+          description:tpl.description,
+          type:tpl.type,
+          value:tpl.value,
+          recurring:true
+        });
+        changed=true;
       }
-      if(found!==null) break;
-    }
-    if(found===null){
-      st.textContent="Não encontrei a linha do Lucro/Prejuízo do Exercício.";
-      return;
-    }
-    document.getElementById("dre_lucro_exercicio").value=Number(found).toFixed(2);
-    st.textContent="OK. Valor lido: "+found;
-    drAtualizarResumo();
-  }catch(e){
-    st.textContent="Erro: "+e.message;
+    });
+
+    if(changed) recSave(data);
   }
-}
 
-/* INIT */
-window.addEventListener("load", ()=>{
-  loadConfig();
-  const mesAtual=new Date().toISOString().slice(0,7);
-  document.getElementById("mesRef").value=mesAtual;
-  currentMonth=mesAtual;
-  loadMonthData(currentMonth);
-  renderTenants();
+  function getReceitasLiquidasMes(monthStr){
+    if(!monthStr) return {totalCreditos:0,totalDebitos:0,liquido:0};
+    const data=recLoad();
+    let c=0,d=0;
+    data.forEach(t=>{
+      if((t.date||"").slice(0,7)===monthStr){
+        if(t.type==="CREDITO") c+=Number(t.value||0);
+        if(t.type==="DEBITO") d+=Number(t.value||0);
+      }
+    });
+    return {totalCreditos:c,totalDebitos:d,liquido:(c-d)};
+  }
 
-  const dateStr=new Date().toISOString().slice(0,10);
-  document.getElementById("acetDateInput").value=dateStr;
-  document.getElementById("recDateInput").value=dateStr;
+  function recRender(){
+    const month=document.getElementById("recFilterMonth").value||"";
+    if(month) recEnsureRecurring(month);
 
-  document.getElementById("btnCarregarMes").addEventListener("click", initMonth);
-  document.getElementById("valorKwh").addEventListener("change", ()=>{ saveConfig(); renderTenants(); });
+    const data=recLoad().filter(t=> !month || (t.date||"").slice(0,7)===month )
+      .sort((a,b)=>(a.date||"").localeCompare(b.date||"") || (a.id-b.id));
 
-  document.getElementById("acetFilterMonth").value=mesAtual;
-  document.getElementById("acetFilterMonth").addEventListener("change", ()=>{ acetRender(); renderTenants(); });
-  acetRender();
+    const tbody=document.getElementById("recTableBody");
+    const totais=document.getElementById("recTotaisBox");
+    const resumo=document.getElementById("recResumoMes");
+    tbody.innerHTML="";
 
-  document.getElementById("recFilterMonth").value=mesAtual;
-  document.getElementById("recFilterMonth").addEventListener("change", ()=>{ recRender(); renderTenants(); });
-  recRender();
+    let c=0,d=0;
+    data.forEach(t=>{
+      if(t.type==="CREDITO") c+=Number(t.value||0);
+      if(t.type==="DEBITO") d+=Number(t.value||0);
+      const tr=document.createElement("tr");
+      tr.innerHTML=`
+        <td style="text-align:left">${t.date||""}</td>
+        <td style="text-align:left">${(t.description||"")}${t.recurring?" 🔁":""}</td>
+        <td style="text-align:left">${t.type==="CREDITO"?"Crédito":"Débito"}</td>
+        <td>${t.type==="CREDITO"?formatMoney(t.value):""}</td>
+        <td>${t.type==="DEBITO"?formatMoney(t.value):""}</td>
+        <td><button class="btn-danger" onclick="recDeleteTransaction(${t.id})">X</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
 
-  document.getElementById("drFilterMonth").value=mesAtual;
-  document.getElementById("drFilterMonth").addEventListener("change", ()=>drAtualizarResumo());
-  drAtualizarResumo();
-});
+    if(!data.length){
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td colspan="6" style="text-align:center">Nenhum lançamento</td>`;
+      tbody.appendChild(tr);
+    }
+
+    const liq=c-d;
+    totais.innerHTML=`
+      <div><b>Total Créditos:</b> ${formatMoney(c)}</div>
+      <div><b>Total Débitos:</b> ${formatMoney(d)}</div>
+      <div style="margin-top:6px;font-weight:900">
+        <b>Resultado líquido:</b> ${formatMoney(liq)} (${liq>=0?"entra como RECEITA":"entra como DÉBITO"})
+      </div>
+    `;
+
+    resumo.textContent =
+      "RECEITAS EM DINHEIRO (NÃO OPERACIONAIS)\n"+
+      "Mês: "+(month||"sem mês")+"\n\n"+
+      "Total Créditos: "+formatMoney(c)+"\n"+
+      "Total Débitos: "+formatMoney(d)+"\n"+
+      "Resultado líquido (para ajuste do DRE): "+formatMoney(liq)+"\n";
+  }
+
+  // ----------------- ALUGUEIS + ENERGIA -----------------
+  function calcTenant(tData, valorKwh){
+    const consumo = Math.max((Number(tData.eEnd||0)-Number(tData.eStart||0)), 0);
+    const energiaBruta = consumo * valorKwh;
+    const descontoValor = energiaBruta * ((Number(tData.discount||0))/100);
+    const energiaLiquida = energiaBruta - descontoValor;
+    const totalMes = Number(tData.rent||0) + energiaLiquida;
+
+    let pagos=0;
+    (tData.payments||[]).forEach(p=> pagos += Number(p.value||0));
+    const saldo = totalMes - pagos;
+
+    let status="ABERTO";
+    if(Math.abs(saldo)<0.01 && totalMes>0) status="PAGO";
+    else if(pagos>0 && saldo>0.01) status="PARCIAL";
+
+    return {consumo, energiaBruta, descontoValor, energiaLiquida, totalMes, totalPagos:pagos, saldo, status};
+  }
+
+  function renderTenants(){
+    const container=document.getElementById("cardsContainer");
+    container.innerHTML="";
+    const valorKwh=parseFloat(String(document.getElementById("valorKwh").value||"0").replace(",", ".")) || 0;
+
+    let sumAlug=0, sumEner=0, sumReceb=0, sumSaldo=0;
+    const quickRows=[];
+
+    tenantsDefault.forEach((nome, i)=>{
+      if(!tenantsData[nome]) tenantsData[nome]=defaultTenantData();
+      const tData=tenantsData[nome];
+
+      const isLava = (nome==="Lava Rápido");
+
+      // Receita: Lava NÃO entra (troca de favores)
+      const rent = isLava ? 0 : Number(tData.rent||0);
+      const calc = calcTenant({...tData, rent}, valorKwh);
+
+      // Soma para DRE apenas se NÃO for Lava
+      if(!isLava){
+        sumAlug += rent;
+        sumEner += calc.energiaLiquida;
+        sumReceb += calc.totalPagos;
+        sumSaldo += calc.saldo;
+      }
+
+      // Resumo de tabela (mostra Lava como 0 de receita)
+      quickRows.push({
+        nome,
+        aluguel: rent,
+        energia: calc.energiaLiquida,
+        totalMes: (rent + calc.energiaLiquida),
+        pago: calc.totalPagos,
+        saldo: calc.saldo,
+        status: isLava ? "ACERTO" : calc.status
+      });
+
+      const card=document.createElement("div");
+      card.className="card";
+
+      // pagamentos
+      let paymentsHtml = "";
+      if((tData.payments||[]).length){
+        tData.payments.forEach((p, idx)=>{
+          paymentsHtml += `
+            <div class="payment-row">
+              <div>
+                <div><b>${formatMoney(p.value||0)}</b></div>
+                <div class="muted">${p.date||""} – ${p.note||""}</div>
+              </div>
+              <div>
+                <button class="secondary btn-small" style="padding:6px 10px" onclick="removePayment(${i},${idx})">x</button>
+              </div>
+            </div>
+          `;
+        });
+      }else{
+        paymentsHtml = `<div class="muted">Nenhum pagamento lançado.</div>`;
+      }
+
+      const lavaInfo = isLava ? getLavaDebCred(currentMonth) : null;
+
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:900">${nome}</div>
+          <div class="status-tag ${isLava ? "status-parcial" : statusClass(calc.status)}">
+            ${isLava ? "ACERTO" : calc.status}
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Aluguel (R$) ${isLava ? "<br><span class='small-label'>(Lava não paga aluguel – troca de favores)</span>" : ""}</label>
+            <input type="number" step="0.01" inputmode="decimal" id="t${i}_rent" value="${isLava ? "" : (tData.rent||"")}"
+              ${isLava ? "readonly" : `onblur="updateTenant(${i})"`} />
+          </div>
+          <div>
+            <label>Desconto energia (%)</label>
+            <input type="number" step="0.01" inputmode="decimal" id="t${i}_discount" value="${tData.discount||""}" onblur="updateTenant(${i})" />
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <label>Leitura inicial (kWh)</label>
+            <input type="number" step="0.01" inputmode="decimal" id="t${i}_eStart" value="${tData.eStart||""}" onblur="updateTenant(${i})" />
+          </div>
+          <div>
+            <label>Leitura final (kWh)</label>
+            <input type="number" step="0.01" inputmode="decimal" id="t${i}_eEnd" value="${tData.eEnd||""}" onblur="updateTenant(${i})" />
+          </div>
+          <div>
+            <div class="small-label">Consumo</div>
+            <div class="small-value">${calc.consumo.toFixed(2)}</div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:10px;">
+          <div><div class="small-label">Energia bruta</div><div class="small-value">${formatMoney(calc.energiaBruta)}</div></div>
+          <div><div class="small-label">Desconto</div><div class="small-value">${formatMoney(calc.descontoValor)}</div></div>
+          <div><div class="small-label">Energia líquida</div><div class="small-value">${formatMoney(calc.energiaLiquida)}</div></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px;">
+          <div><div class="small-label">Total do mês</div><div class="small-value">${formatMoney(rent + calc.energiaLiquida)}</div></div>
+          <div><div class="small-label">Total pago</div><div class="small-value">${formatMoney(calc.totalPagos)}</div></div>
+        </div>
+
+        <div style="margin-top:6px;">
+          <div class="small-label">Saldo</div>
+          <div class="small-value">${formatMoney(calc.saldo)}</div>
+        </div>
+
+        ${isLava ? `
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e5e5ea;">
+            <div class="small-label">Lava Rápido é ACERTO (não é receita)</div>
+            <div class="small-value">Débitos RF (adiantado): ${formatMoney(lavaInfo.debitos)}</div>
+            <div class="small-value">Créditos Juliano (pagos): ${formatMoney(lavaInfo.creditos)}</div>
+            <div class="muted">Veja detalhes na aba “Acerto Juliano”.</div>
+          </div>
+        ` : ""}
+
+        <div class="payments">
+          <b>Pagamentos diretos do mês</b>
+          <div class="payments-list">${paymentsHtml}</div>
+
+          <div class="grid-3" style="margin-top:8px;">
+            <div><label>Valor (R$)</label><input type="number" step="0.01" inputmode="decimal" id="t${i}_payValue" /></div>
+            <div><label>Data</label><input type="date" id="t${i}_payDate" /></div>
+            <div><label>Obs.</label><input type="text" id="t${i}_payNote" placeholder="Ex: PIX, dinheiro..." /></div>
+          </div>
+
+          <button onclick="addPayment(${i})">Adicionar pagamento</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    // resumo
+    const receitasMes = currentMonth ? getReceitasLiquidasMes(currentMonth) : {liquido:0};
+    const receitasLiquidas = Number(receitasMes.liquido||0);
+
+    const summaryBox = document.getElementById("summaryBox");
+    summaryBox.style.display="block";
+    document.getElementById("sumAlugueis").textContent = formatMoney(sumAlug);
+    document.getElementById("sumEnergia").textContent = formatMoney(sumEner);
+    document.getElementById("sumTotalMes").textContent = formatMoney(sumAlug + sumEner);
+    document.getElementById("sumReceitasExtra").textContent = formatMoney(receitasLiquidas);
+    document.getElementById("sumTotalGeral").textContent = formatMoney(sumAlug + sumEner + receitasLiquidas);
+    document.getElementById("sumRecebido").textContent = formatMoney(sumReceb);
+    document.getElementById("sumSaldo").textContent = formatMoney(sumSaldo);
+
+    const tbody = document.getElementById("summaryUnidadesBody");
+    document.getElementById("summaryUnidadesBox").style.display="block";
+    tbody.innerHTML = quickRows.map(r=>`
+      <tr>
+        <td>${r.nome}</td>
+        <td>${formatMoney(r.aluguel)}</td>
+        <td>${formatMoney(r.energia)}</td>
+        <td>${formatMoney(r.totalMes)}</td>
+        <td>${formatMoney(r.pago)}</td>
+        <td>${formatMoney(r.saldo)}</td>
+        <td>${r.status}</td>
+      </tr>
+    `).join("");
+
+    drAtualizarResumo();
+  }
+
+  function updateTenant(index){
+    const nome=tenantsDefault[index];
+    const tData=tenantsData[nome]||defaultTenantData();
+
+    if(nome!=="Lava Rápido"){
+      const r = parseFloat(String(document.getElementById("t"+index+"_rent").value||"0").replace(",", ".")) || 0;
+      tData.rent = r;
+    }
+
+    tData.eStart = parseFloat(String(document.getElementById("t"+index+"_eStart").value||"0").replace(",", ".")) || 0;
+    tData.eEnd   = parseFloat(String(document.getElementById("t"+index+"_eEnd").value||"0").replace(",", ".")) || 0;
+    tData.discount = parseFloat(String(document.getElementById("t"+index+"_discount").value||"0").replace(",", ".")) || 0;
+
+    tenantsData[nome]=tData;
+    saveConfig();
+    saveMonthData();
+    renderTenants();
+  }
+
+  function addPayment(index){
+    const nome=tenantsDefault[index];
+    const tData=tenantsData[nome]||defaultTenantData();
+
+    const v = parseFloat(String(document.getElementById("t"+index+"_payValue").value||"0").replace(",", ".")) || 0;
+    if(v<=0){ alert("Informe um valor > 0."); return; }
+
+    const date = document.getElementById("t"+index+"_payDate").value || "";
+    const note = document.getElementById("t"+index+"_payNote").value || "";
+
+    tData.payments = tData.payments || [];
+    tData.payments.push({value:v, date, note});
+
+    document.getElementById("t"+index+"_payValue").value="";
+    document.getElementById("t"+index+"_payDate").value="";
+    document.getElementById("t"+index+"_payNote").value="";
+
+    tenantsData[nome]=tData;
+    saveMonthData();
+    renderTenants();
+  }
+
+  function removePayment(index, payIndex){
+    const nome=tenantsDefault[index];
+    const tData=tenantsData[nome]||defaultTenantData();
+    if(!Array.isArray(tData.payments)) return;
+    tData.payments.splice(payIndex, 1);
+    tenantsData[nome]=tData;
+    saveMonthData();
+    renderTenants();
+  }
+
+  function initMonth(){
+    const val=document.getElementById("mesRef").value;
+    if(!val){ alert("Selecione o mês."); return; }
+    currentMonth=val;
+    loadMonthData(currentMonth);
+    saveConfig();
+    renderTenants();
+
+    document.getElementById("acetFilterMonth").value=currentMonth; acetRender();
+    document.getElementById("recFilterMonth").value=currentMonth; recEnsureRecurring(currentMonth); recRender();
+    document.getElementById("drFilterMonth").value=currentMonth; drAtualizarResumo();
+  }
+
+  // ----------------- DRE (OCR IMAGEM) -----------------
+  async function drLerDREImagem(){
+    const inp=document.getElementById("drImgInput");
+    if(!inp.files || !inp.files[0]){ alert("Selecione uma imagem."); return; }
+    try{
+      alert("Lendo imagem (OCR)...");
+      const result = await Tesseract.recognize(inp.files[0], "por");
+      const text = (result.data && result.data.text) ? result.data.text : "";
+      drPreencherCamposComTexto(text);
+      drAtualizarResumo();
+      alert("OCR concluído. Confira os valores.");
+    }catch(e){
+      console.error(e);
+      alert("Erro no OCR. Use o Excel se possível.");
+    }
+  }
+
+  function drExtrairNumeroDaLinha(linha){
+    // (1.234,56) ou 1.234,56-
+    const rx = /(\(?\d{1,3}(\.\d{3})*,\d{2}\)?-?)/g;
+    let match, last=null;
+    while((match=rx.exec(linha))!==null) last=match[1];
+    if(!last) return 0;
+
+    let s=last.trim();
+    let neg=false;
+    if(s.includes("(")&&s.includes(")")){ neg=true; s=s.replace(/[()]/g,""); }
+    if(s.endsWith("-")){ neg=true; s=s.slice(0,-1); }
+
+    s = s.replace(/\./g,"").replace(",",".");
+    const n = parseFloat(s);
+    if(isNaN(n)) return 0;
+    return neg ? -Math.abs(n) : n;
+  }
+
+  function drValorPorRotulo(texto, rotulo){
+    const linhas = String(texto||"").split(/\r?\n/);
+    const target = rotulo.toLowerCase();
+    for(const linha of linhas){
+      if(linha.toLowerCase().includes(target)){
+        return drExtrairNumeroDaLinha(linha);
+      }
+    }
+    return 0;
+  }
+
+  function drPreencherCamposComTexto(texto){
+    const map = [
+      ["dre_receita_produtos","Receita Bruta de Vendas de Produtos"],
+      ["dre_receita_servicos","Receita Bruta de Vendas de Serviços"],
+      ["dre_total_bruta","Total da Receita Bruta"],
+      ["dre_devolucoes","Devoluções de Vendas"],
+      ["dre_impostos","Impostos Incidentes"],
+      ["dre_receita_liquida","Receita Líquida"],
+      ["dre_custos_produtos","Custos dos Produtos Vendidos"],
+      ["dre_custos_servicos","Custos dos Serviços"],
+      ["dre_lucro_bruto","Lucro/Prejuízo Bruto"],
+      ["dre_desp_adm","Despesas Administrativas"],
+      ["dre_desp_vendas","Despesas de Vendas"],
+      ["dre_prov_sociais","Provisões Sociais"],
+      ["dre_desp_fin","Despesas Financeiras"],
+      ["dre_var_estoques","Variação de Estoques"],
+      ["dre_rec_fin","Receitas Financeiras"],
+      ["dre_lucro_oper","Lucro/Prejuízo Operacional"],
+      ["dre_desp_nao_op","Despesas não Operacionais"],
+      ["dre_rec_nao_op","Receitas não Operacionais"],
+      ["dre_lucro_antes_dep","Antes da Depreciação"],
+      ["dre_depreciacoes","Depreciações"],
+      ["dre_lucro_exercicio","Lucro/Prejuízo do Exercício"]
+    ];
+    map.forEach(([id, rot])=>{
+      const v = drValorPorRotulo(texto, rot);
+      const el=document.getElementById(id);
+      if(el) el.value = v ? v.toFixed(2) : "";
+    });
+  }
+
+  function drVal(id){
+    const el=document.getElementById(id);
+    const v=parseFloat(String(el && el.value ? el.value : "0").replace(",", "."));
+    return isNaN(v) ? 0 : v;
+  }
+
+  function getResumoAlugueisEnergiaMes(monthStr){
+    if(!monthStr) return {sumTotal:0};
+    // soma apenas unidades que geram receita (exclui Lava)
+    const cfgStr=localStorage.getItem("alugueisConfig");
+    let valorKwh=0;
+    try{ valorKwh = JSON.parse(cfgStr||"{}").valorKwh || 0; }catch(e){}
+    const raw=localStorage.getItem("alugueisMes_"+monthStr);
+    let map={};
+    try{ map=JSON.parse(raw||"{}"); }catch(e){ map={}; }
+
+    let sumTotal=0;
+    tenantsDefault.forEach(nome=>{
+      if(nome==="Lava Rápido") return; // regra de negócio
+      const t = map[nome] ? map[nome] : defaultTenantData();
+      const rent = Number(t.rent||0);
+      const consumo = Math.max((Number(t.eEnd||0)-Number(t.eStart||0)),0);
+      const energiaBruta = consumo * Number(valorKwh||0);
+      const desc = energiaBruta * (Number(t.discount||0)/100);
+      const energiaLiquida = energiaBruta - desc;
+      sumTotal += (rent + energiaLiquida);
+    });
+    return {sumTotal};
+  }
+
+  function drAtualizarResumo(){
+    const mes = (document.getElementById("drFilterMonth").value || "");
+    const lucroEx = drVal("dre_lucro_exercicio");
+
+    let ajustes=0;
+    if(mes){
+      const alug = getResumoAlugueisEnergiaMes(mes);
+      const dinheiro = getReceitasLiquidasMes(mes);
+      ajustes = Number(alug.sumTotal||0) + Number(dinheiro.liquido||0);
+    }
+
+    document.getElementById("dre_ajustes_sistema").value = ajustes.toFixed(2);
+    const lucroAdj = lucroEx + ajustes;
+    document.getElementById("dre_lucro_ajustado").value = lucroAdj.toFixed(2);
+
+    const caixa = parseFloat(String(document.getElementById("drResultadoCaixa").value||"0").replace(",", ".")) || 0;
+    const diff = caixa - lucroAdj;
+
+    const fmt = (v)=>"R$ "+Number(v||0).toFixed(2).replace(".", ",");
+    document.getElementById("drResumoTabelaBody").innerHTML = `
+      <tr><td style="text-align:left">Lucro/Prejuízo do Exercício (DRE)</td><td>${fmt(lucroEx)}</td></tr>
+      <tr><td style="text-align:left">Ajuste do sistema (aluguéis+energia + dinheiro)</td><td>${fmt(ajustes)}</td></tr>
+      <tr><td style="text-align:left"><b>Lucro/Prejuízo Ajustado</b></td><td><b>${fmt(lucroAdj)}</b></td></tr>
+      <tr><td style="text-align:left">Caixa real (caixa/banco)</td><td>${fmt(caixa)}</td></tr>
+      <tr><td style="text-align:left"><b>Diferença (Caixa - Ajustado)</b></td><td><b>${fmt(diff)}</b></td></tr>
+    `;
+
+    let txt = "DRE CONSOLIDADO – "+(mes||"sem mês")+"\n\n";
+    txt += "Lucro/Prejuízo do Exercício (DRE): "+fmt(lucroEx)+"\n";
+    txt += "Ajuste do sistema: "+fmt(ajustes)+"\n";
+    txt += "Lucro/Prejuízo Ajustado: "+fmt(lucroAdj)+"\n\n";
+    txt += "Caixa real: "+fmt(caixa)+"\n";
+    txt += "Diferença (Caixa - Ajustado): "+fmt(diff)+"\n";
+    document.getElementById("drResumoTexto").textContent = txt;
+  }
+
+  function drSetCurrentMonth(){
+    const m=new Date().toISOString().slice(0,7);
+    document.getElementById("drFilterMonth").value=m;
+    drAtualizarResumo();
+  }
+
+  // ----------------- DRE: EXCEL (XLS/XLSX) -----------------
+  function __dreNorm(s){
+    try{
+      return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+    }catch(e){
+      return String(s||"").toLowerCase().replace(/\s+/g," ").trim();
+    }
+  }
+
+  // >>> FUNÇÃO CRÍTICA: RESPEITA NEGATIVO CONTÁBIL (1) (1.234,56) (2) 1.234,56- (3) -1.234,56
+  function __dreParseMoney(v){
+    if(v===null || v===undefined) return null;
+
+    // quando SheetJS entrega string formatada (raw:false), vem com parênteses e etc
+    let s = String(v).trim();
+    if(!s) return null;
+
+    let negative=false;
+
+    if(s.includes("(") && s.includes(")")){
+      negative=true;
+      s = s.replace(/[()]/g,"");
+    }
+    if(s.endsWith("-")){
+      negative=true;
+      s = s.slice(0,-1);
+    }
+
+    s = s.replace(/R\$\s*/gi,"").replace(/\s+/g,"");
+
+    // 1.234,56 -> 1234.56
+    if(s.includes(",") && s.includes(".")) s = s.replace(/\./g,"").replace(",",".");
+    else if(s.includes(",") && !s.includes(".")) s = s.replace(",", ".");
+
+    // preserva sinal inicial se houver
+    if(s.startsWith("-")) negative=true;
+
+    s = s.replace(/[^0-9\.\-]/g,"");
+    const n = parseFloat(s);
+    if(isNaN(n)) return null;
+
+    const val = Math.abs(n);
+    return negative ? -val : val;
+  }
+
+  function __dreFill(id,val){
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.value = (typeof val==="number" && !isNaN(val)) ? val.toFixed(2) : "";
+  }
+
+  async function drLerDREExcel(){
+    const st=document.getElementById("drXlsStatus");
+    const inp=document.getElementById("drXlsInput");
+    if(!inp.files || !inp.files[0]){ alert("Selecione o arquivo XLS/XLSX."); return; }
+    if(!window.XLSX){ alert("Biblioteca XLSX não carregou (internet)."); return; }
+
+    st.textContent="Lendo Excel...";
+    try{
+      const buf = await inp.files[0].arrayBuffer();
+      const wb = XLSX.read(buf, {type:"array"});
+
+      // pega a primeira aba (se quiser, dá pra melhorar depois)
+      const ws = wb.Sheets[wb.SheetNames[0]];
+
+      // IMPORTANTÍSSIMO: raw:false para preservar FORMATAÇÃO contábil (parênteses)
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, raw:false, defval:""});
+
+      // monta candidatos: escolhe o valor do "mês" (não o último da linha)
+      const cand=[];
+      for(const r of rows){
+        if(!r || !r.length) continue;
+
+        // acha label e índice
+        let labelIdx=0, labelCell="";
+        for(let i=0;i<r.length;i++){
+          if(typeof r[i]==="string" && String(r[i]).trim().length>2){
+            labelIdx=i; labelCell=r[i]; break;
+          }
+        }
+        if(!labelCell) labelCell=r[0];
+
+        const label=String(labelCell||"").trim();
+        if(!label) continue;
+
+        // coleta valores após o label
+        const nums=[];
+        for(let i=labelIdx+1;i<r.length;i++){
+          const raw = r[i];
+          const rawStr = String(raw||"");
+          const parsed = __dreParseMoney(rawStr);
+          if(parsed!==null){
+            const hasParen = rawStr.includes("(") && rawStr.includes(")");
+            const hasMinus = rawStr.trim().startsWith("-") || rawStr.endsWith("-") || rawStr.includes("−");
+            nums.push({v:parsed, hasParen, hasMinus, idx:i, raw:rawStr});
+          }
+        }
+        if(!nums.length) continue;
+
+        // prioriza negativo contábil (parênteses) ou sinal explícito; senão usa o PRIMEIRO número pós-label (mês)
+        let chosen = nums.find(x=>x.hasParen || x.hasMinus);
+        if(!chosen) chosen = nums[0];
+
+        cand.push({label, n:__dreNorm(label), val:chosen.v});
+      }
+
+      const MAP = [
+        ["dre_receita_produtos", ["receita bruta de vendas de produtos","receita bruta de produtos"]],
+        ["dre_receita_servicos", ["receita bruta de vendas de servicos","receita bruta de servicos"]],
+        ["dre_total_bruta", ["total da receita bruta","total receita bruta"]],
+        ["dre_devolucoes", ["devolucoes de vendas","devoluções de vendas"]],
+        ["dre_impostos", ["impostos incidentes sobre vendas","impostos incidentes"]],
+        ["dre_receita_liquida", ["receita liquida de venda de produtos e servicos","receita liquida","receita líquida"]],
+        ["dre_custos_produtos", ["custos dos produtos vendidos","custo dos produtos vendidos"]],
+        ["dre_custos_servicos", ["custos dos servicos prestados","custos dos serviços prestados","custos dos servicos vendidos"]],
+        ["dre_lucro_bruto", ["lucro/prejuizo bruto","lucro bruto","lucro/prejuízo bruto"]],
+        ["dre_desp_adm", ["despesas administrativas","despesa administrativa"]],
+        ["dre_desp_vendas", ["despesas de vendas","despesa de vendas"]],
+        ["dre_prov_sociais", ["provisoes sociais trabalhistas","provisões sociais trabalhistas"]],
+        ["dre_desp_fin", ["despesas financeiras","despesa financeira"]],
+        ["dre_var_estoques", ["variacao de estoques","variação de estoques"]],
+        ["dre_rec_fin", ["receitas financeiras","receita financeira"]],
+        ["dre_lucro_oper", ["lucro/prejuizo operacional","lucro operacional","lucro/prejuízo operacional"]],
+        ["dre_desp_nao_op", ["despesas nao operacionais","despesas não operacionais"]],
+        ["dre_rec_nao_op", ["receitas nao operacionais","receitas não operacionais"]],
+        ["dre_lucro_antes_dep", ["antes da depreciacao","antes da depreciação","lucro antes da depreciacao"]],
+        ["dre_depreciacoes", ["depreciacoes","depreciações"]],
+        ["dre_lucro_exercicio", ["lucro/prejuizo do exercicio","lucro/prejuízo do exercício","lucro do exercicio","prejuizo do exercicio"]],
+      ];
+
+      let filled=0, missing=0;
+      for(const [id, aliases] of MAP){
+        const found = cand.find(c=> aliases.some(a=> c.n.includes(__dreNorm(a))) );
+        if(found){ __dreFill(id, found.val); filled++; } else { missing++; }
+      }
+
+      st.textContent = `Excel lido. Campos preenchidos: ${filled}${missing?(" | Não encontrados: "+missing):""}.`;
+      drAtualizarResumo();
+    }catch(e){
+      console.error(e);
+      st.textContent="Erro ao ler Excel: "+(e&&e.message?e.message:String(e));
+      alert("Erro ao ler o Excel.");
+    }
+  }
+
+  // ----------------- STARTUP -----------------
+  window.addEventListener("load", ()=>{
+    loadConfig();
+    acetEnsureSeed();
+
+    const now=new Date();
+    const mes=now.toISOString().slice(0,7);
+    currentMonth=mes;
+
+    document.getElementById("mesRef").value=mes;
+    document.getElementById("acetFilterMonth").value=mes;
+    document.getElementById("recFilterMonth").value=mes;
+    document.getElementById("drFilterMonth").value=mes;
+
+    const dateStr=now.toISOString().slice(0,10);
+    document.getElementById("acetDateInput").value=dateStr;
+    document.getElementById("recDateInput").value=dateStr;
+
+    loadMonthData(currentMonth);
+    recEnsureRecurring(currentMonth);
+
+    document.getElementById("btnCarregarMes").addEventListener("click", initMonth);
+    document.getElementById("valorKwh").addEventListener("change", ()=>{ saveConfig(); renderTenants(); });
+
+    document.getElementById("acetFilterMonth").addEventListener("change", ()=>{ acetRender(); renderTenants(); });
+    document.getElementById("recFilterMonth").addEventListener("change", ()=>{ recEnsureRecurring(document.getElementById("recFilterMonth").value); recRender(); renderTenants(); });
+    document.getElementById("drFilterMonth").addEventListener("change", drAtualizarResumo);
+
+    acetRender();
+    recRender();
+    renderTenants();
+  });
 </script>
 </body>
 </html>
