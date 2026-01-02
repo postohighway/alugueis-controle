@@ -1432,8 +1432,10 @@
         if (!tData) tData = defaultTenantData();
 
         let rent = tData.rent || 0;
-        if (nome === "Lava Rápido") rent = lavaTotals.debitos || 0;
 
+        if (nome === "Lava Rápido") {
+          return; // acerto/adiantamento (não é receita)
+        }
         const consumo = Math.max((tData.eEnd || 0) - (tData.eStart || 0), 0);
         const energiaBruta = consumo * valorKwh;
         const descontoValor = energiaBruta * ((tData.discount || 0) / 100);
@@ -1608,7 +1610,8 @@
       const energiaBruta = consumo * valorKwh;
       const descontoValor = energiaBruta * ((tData.discount || 0) / 100);
       const energiaLiquida = energiaBruta - descontoValor;
-      const totalMes = (tData.rent || 0) + energiaLiquida;
+      const rentConsidered = (tData.isBarterRent ? 0 : (tData.rent || 0));
+      const totalMes = rentConsidered + energiaLiquida;
 
       let totalPagos = 0;
       if (Array.isArray(tData.payments)) {
@@ -1618,7 +1621,13 @@
 
       const saldo = totalMes - totalPagos;
       let status = "ABERTO";
-      if (Math.abs(saldo) < 0.01 && totalMes > 0) status = "PAGO";
+      if (tData.isBarterRent) {
+        // Se for troca, só consideramos energia (se houver). Se energia for zero, fica como PAGO.
+        if (totalMes <= 0.01) status = "PAGO";
+        else if (Math.abs(saldo) < 0.01) status = "PAGO";
+      } else {
+        if (Math.abs(saldo) < 0.01 && totalMes > 0) status = "PAGO";
+      }
       else if (totalPagos > 0 && saldo > 0.01) status = "PARCIAL";
 
       return { consumo, energiaBruta, descontoValor, energiaLiquida, totalMes, totalPagos, saldo, status, extraPagos };
@@ -1658,18 +1667,59 @@
         let displayRent = tData.rent || 0;
         let extraPagos = 0;
 
-        if (nome === "Lava Rápido") {
-          displayRent = lavaTotals.debitos;
-          extraPagos = lavaTotals.credits || lavaTotals.creditos || 0;
+        // REGRA DE NEGÓCIO:
+        // - Lava Rápido NÃO paga aluguel (troca de favores: Juliano cuida da pista em troca do aluguel).
+        // - O que existe é ACERTO: RF adianta contas (débitos) e o Juliano vai pagando (créditos).
+        // - Portanto: Lava Rápido NÃO entra como receita de aluguel/energia no resumo/DRE.
+        const isLava = (nome === "Lava Rápido");
+        if (isLava) {
+          displayRent = 0;    // não existe aluguel como receita
+          extraPagos = 0;     // não usa pagamentos diretos + extra no mesmo modelo
+          tData.isBarterRent = true;
         }
 
-        const calc = calcTenant({ ...tData, rent: displayRent }, valorKwh, extraPagos);
+        let calc;
+        if (!isLava) {
+          calc = calcTenant({ ...tData, rent: displayRent }, valorKwh, extraPagos);
+        } else {
+          const lavaDebCred = currentMonth ? getLavaRapidoDebitoCreditoMes(currentMonth) : { debitos: 0, creditos: 0 };
+          const debitosRF = lavaDebCred.debitos || 0;          // RF adiantou (contas pagas pela RF)
+          const creditosJuliano = lavaDebCred.creditos || 0;   // Juliano pagou no mês
 
-        sumAlugueis += displayRent;
-        sumEnergia += calc.energiaLiquida;
-        sumTotalMes += calc.totalMes;
-        sumRecebido += calc.totalPagos;
-        sumSaldo += calc.saldo;
+          // Energia do Lava Rápido (se você lançar leituras aqui) entra como "a cobrar no acerto", não como receita.
+          const consumo = Math.max((tData.eEnd || 0) - (tData.eStart || 0), 0);
+          const energiaBruta = consumo * valorKwh;
+          const descontoValor = energiaBruta * ((tData.discount || 0) / 100);
+          const energiaLiquida = energiaBruta - descontoValor;
+
+          const totalCobrar = debitosRF + energiaLiquida;
+          const totalPagos = creditosJuliano;
+          const saldo = totalCobrar - totalPagos;
+
+          let status = "ABERTO";
+          if (Math.abs(saldo) < 0.01 && totalCobrar > 0) status = "PAGO";
+          else if (totalPagos > 0 && saldo > 0.01) status = "PARCIAL";
+
+          calc = {
+            consumo, energiaBruta, descontoValor, energiaLiquida,
+            totalMes: totalCobrar,
+            totalPagos,
+            saldo,
+            status,
+            extraPagos: 0,
+            _lava_debitosRF: debitosRF,
+            _lava_creditosJuliano: creditosJuliano
+          };
+        }
+
+        // Somatórios de RECEITA (resumo/DRE): NÃO incluem Lava Rápido
+        if (!isLava) {
+          sumAlugueis += displayRent;
+          sumEnergia += calc.energiaLiquida;
+          sumTotalMes += (displayRent + calc.energiaLiquida);
+          sumRecebido += calc.totalPagos;
+          sumSaldo += calc.saldo;
+        }
 
         quickRows.push({
           nome,
@@ -1707,7 +1757,7 @@
           paymentsHtml = `<div class="payment-note">Nenhum pagamento lançado.</div>`;
         }
 
-        const isLava = nome === "Lava Rápido";
+        const isLavaCard = nome === "Lava Rápido";
 
         card.innerHTML = `
           <div class="card-header">
@@ -1719,10 +1769,10 @@
 
           <div class="grid-2">
             <div>
-              <label>Aluguel (R$) ${isLava ? "<br><span class='small-label'>(somatório das contas pagas pela RF no mês)</span>" : ""}</label>
+              <label>Aluguel (R$) ${isLavaCard ? "<br><span class='small-label'>(lava = acerto/adiantamento, não é receita)</span>" : ""}</label>
               <input type="number" step="0.01" inputmode="decimal"
                      id="t${i}_rent" value="${displayRent || ""}"
-                     ${isLava ? "readonly" : "onblur=\"updateTenant(" + i + ")\""} />
+                     ${isLavaCard ? "readonly" : "onblur=\"updateTenant(" + i + ")\""} />
             </div>
             <div>
               <label>Desconto energia (%)</label>
@@ -1782,10 +1832,11 @@
             <span class="small-value" id="t${i}_saldo">${formatMoney(calc.saldo)}</span>
           </div>
 
-          ${isLava ? `
-          <div style="margin-top:4px;">
-            <span class="small-label">Pago via Juliano (AcetJuli - mês ${currentMonth || ""})</span><br/>
-            <span class="small-value">${formatMoney(extraPagos)}</span>
+          ${isLavaCard ? `
+          <div style="margin-top:8px; padding-top:6px; border-top:1px solid #e5e5ea;">
+            <span class="small-label">Lava Rápido (Acerto Juliano) – mês ${currentMonth || ""}</span><br/>
+            <span class="small-value">Débitos RF (adiantado): ${formatMoney(calc._lava_debitosRF || 0)}</span><br/>
+            <span class="small-value">Pagos pelo Juliano: ${formatMoney(calc._lava_creditosJuliano || 0)}</span>
           </div>
           ` : ""}
 
