@@ -1627,8 +1627,8 @@
         else if (Math.abs(saldo) < 0.01) status = "PAGO";
       } else {
         if (Math.abs(saldo) < 0.01 && totalMes > 0) status = "PAGO";
+        else if (totalPagos > 0 && saldo > 0.01) status = "PARCIAL";
       }
-      else if (totalPagos > 0 && saldo > 0.01) status = "PARCIAL";
 
       return { consumo, energiaBruta, descontoValor, energiaLiquida, totalMes, totalPagos, saldo, status, extraPagos };
     }
